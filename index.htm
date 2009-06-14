@@ -731,19 +731,11 @@ for (X=Ocean; X<=Mountains; X++){
 }
 document.getElementById('p0_'+(Mountains+1)).src = "city_player.png";
 
-for (Col=0; Col<MaxCol; Col++){
-   document.getElementById('p1_'+Col).src = Product[Col+1].imgStub+"_player.png";
-   document.getElementById('p2_'+Col).src = Product[Col+1].imgStub+"_focus.png";
-   document.getElementById('p3_'+Col).src = Product[Col+1].imgStub+"_enemy.png";
+for (Col=0; Col<StealthFighter-1; Col++){
+   document.write("<img style='display:none' src="+Product[Col+1].imgStub+"_player.png"+" />");
+   document.write("<img style='display:none' src="+Product[Col+1].imgStub+"_focus.png"+" />");
+   document.write("<img style='display:none' src="+Product[Col+1].imgStub+"_enemy.png"+" />");
 }
-for (Col=0; MaxCol+Col<StealthFighter-1; Col++){
-   document.getElementById('p4_'+(Col)).src = Product[MaxCol+Col].imgStub+"_player.png";
-   document.getElementById('p5_'+(Col)).src = Product[MaxCol+Col].imgStub+"_focus.png";
-   document.getElementById('p6_'+(Col)).src = Product[MaxCol+Col].imgStub+"_enemy.png";
-}
-
-
-alert("Please wait for background images to load.")
 
 for (Row=0; Row<7; Row++){
    for (Col=0; Col<MaxCol; Col++){
