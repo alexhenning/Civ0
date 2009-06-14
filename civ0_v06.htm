@@ -1,0 +1,577 @@
+<html>
+<body>
+<script type="text/javascript">
+
+var Debug = 1;
+
+function Rand(X){
+   return(Math.floor(Math.random()*X+1));
+}
+
+function Distance(Row1, Col1, Row2, Col2){
+   return Math.sqrt(Math.pow(Row1-Row2,2)+Math.pow(Col1-Col2,2));
+}
+
+var Terrain = new Array();
+Ocean = 0;
+Terrain[Ocean] = {symbol: "o", food: 1, production: 0, trade: 2, movementCost: 1, defense: 1};
+Glacier = 1;
+Terrain[Glacier] = {symbol: "c", food: 0, production: 0, trade: 0, movementCost: 2, defense: 1};
+Tundra = 2;
+Terrain[Tundra] = {symbol: "t", food: 1, production: 0, trade: 0, movementCost: 1, defense: 1};
+Plains = 3;
+Terrain[Plains] = {symbol: "p", food: 1, production: 1, trade: 0, movementCost: 1, defense: 1};
+Grassland = 4;
+Terrain[Grassland] = {symbol: "g", food: 2, production: 0, trade: 0, movementCost: 1, defense: 1};
+Forest = 5;
+Terrain[Forest] = {symbol: "f", food: 1, production: 2, trade: 0, movementCost: 2, defense: 1.5};
+Swamp = 6;
+Terrain[Swamp] = {symbol: "s", food: 1, production: 0, trade: 0, movementCost: 2, defense: 1.5};
+Jungle = 7;
+Terrain[Jungle] = {symbol: "j", food: 1, production: 0, trade: 0, movementCost: 3, defense: 1.5};
+Desert = 8;
+Terrain[Desert] = {symbol: "d", food: 0, production: 1, trade: 0, movementCost: 1, defense: 1};
+Hills = 9;
+Terrain[Hills] = {symbol: "h", food: 1, production: 0, trade: 0, movementCost: 2, defense: 2};
+Mountains = 10;
+Terrain[Mountains] = {symbol: "m", food: 0, production: 1, trade: 0, movementCost: 3, defense: 3};
+TerrainSymbol = new Array();
+for (X=Ocean; X<=Mountains; X++){
+   TerrainSymbol[Terrain[X].symbol] = X;
+   //alert(X + ", '" + Terrain[X].symbol + "', " + TerrainSymbol[Terrain[X].symbol]);
+}
+
+var Tech = new Array();
+AdvancedFlight = 1;
+Alphabet = 2;
+AmphibiousWarfare = 3;
+Astronomy = 4;
+AtomicTheory = 5;
+Automobile = 6;
+Banking = 7;
+BridgeBuilding = 8;
+BronzeWorking = 9;
+CeremonialBurial = 10;
+Chemistry = 11;
+Chivalry = 12;
+CityBuilding = 13;
+CodeofLaws = 14;
+CombinedArms = 15;
+Combustion = 16;
+Communism = 17;
+Computers = 18;
+Conscription = 19;
+Construction = 20;
+Currency = 21;
+Democracy = 22;
+Economics = 23;
+Electricity = 24;
+Electronics = 25;
+Engineering = 26;
+Environmentalism = 27;
+Espionage = 28;
+Explosives = 29;
+Feudalism = 30;
+Flight = 31;
+Fundamentalism = 32;
+FusionPower = 33;
+GeneticEngineering = 34;
+GuerillaWarfare = 35;
+Gunpowder = 36;
+HorsebackRiding = 37;
+Industrialization = 38;
+Invention = 39;
+IronWorking = 40;
+LaborUnion = 41;
+Laser = 42;
+Leadership = 43;
+Literacy = 44;
+MachineTools = 45;
+Magnetism = 46;
+MapMaking = 47;
+Masonry = 48;
+MassProduction = 49;
+Mathematics = 50;
+Medicine = 51;
+Metallurgy = 52;
+Miniaturization = 53;
+MobileWarfare = 54;
+Monarchy = 55;
+Monotheism = 56;
+Mysticism = 57;
+Navigation = 58;
+NuclearFission = 59;
+NuclearPower = 60;
+Philosophy = 61;
+Physics = 62;
+Plastics = 63;
+Polytheism = 64;
+Pottery = 65;
+Radio = 66;
+Railroad = 67;
+Recycling = 68;
+Refining = 69;
+Refrigeration = 70;
+Robotics = 71;
+Rocketry = 72;
+Sanitation = 73;
+Seafaring = 74;
+SpaceFlight = 75;
+Stealth = 76;
+SteamEngine = 77;
+Steel = 78;
+Superconductors = 79;
+Tactics = 80;
+TheCorporation = 81;
+TheRepublic = 82;
+TheWheel = 83;
+Theology = 84;
+TheoryofGravity = 85;
+Trade = 86;
+University = 87;
+WarriorCode = 88;
+Writing = 89;
+Tech[AdvancedFlight] = {name: 'Advanced Flight', prereq1: Radio, prereq2: MachineTools, playerOwned: false, AIOwned: false};
+Tech[Alphabet] = {name: 'Alphabet', prereq1: CityBuilding, prereq2: CityBuilding, playerOwned: false, AIOwned: false};
+Tech[AmphibiousWarfare] = {name: 'Amphibious Warfare', prereq1: Navigation, prereq2: Tactics, playerOwned: false, AIOwned: false};
+Tech[Astronomy] = {name: 'Astronomy', prereq1: Mysticism, prereq2: Mathematics, playerOwned: false, AIOwned: false};
+Tech[AtomicTheory] = {name: 'Atomic Theory', prereq1: TheoryofGravity, prereq2: Physics, playerOwned: false, AIOwned: false};
+Tech[Automobile] = {name: 'Automobile', prereq1: Combustion, prereq2: Steel, playerOwned: false, AIOwned: false};
+Tech[Banking] = {name: 'Banking', prereq1: Trade, prereq2: TheRepublic, playerOwned: false, AIOwned: false};
+Tech[BridgeBuilding] = {name: 'Bridge Building', prereq1: IronWorking, prereq2: Construction, playerOwned: false, AIOwned: false};
+Tech[BronzeWorking] = {name: 'Bronze Working', prereq1: CityBuilding, prereq2: CityBuilding, playerOwned: false, AIOwned: false};
+Tech[CeremonialBurial] = {name: 'Ceremonial Burial', prereq1: CityBuilding, prereq2: CityBuilding, playerOwned: false, AIOwned: false};
+Tech[Chemistry] = {name: 'Chemistry', prereq1: University, prereq2: Medicine, playerOwned: false, AIOwned: false};
+Tech[Chivalry] = {name: 'Chivalry', prereq1: Feudalism, prereq2: HorsebackRiding, playerOwned: false, AIOwned: false};
+Tech[CityBuilding] = {name: 'City Building', prereq1: CityBuilding, prereq2: CityBuilding, playerOwned: true, AIOwned: true};
+Tech[CodeofLaws] = {name: 'Code of Laws', prereq1: Alphabet, prereq2: CityBuilding, playerOwned: false, AIOwned: false};
+Tech[CombinedArms] = {name: 'Combined Arms', prereq1: MobileWarfare, prereq2: AdvancedFlight, playerOwned: false, AIOwned: false};
+Tech[Combustion] = {name: 'Combustion', prereq1: Refining, prereq2: Explosives, playerOwned: false, AIOwned: false};
+Tech[Communism] = {name: 'Communism', prereq1: Philosophy, prereq2: Industrialization, playerOwned: false, AIOwned: false};
+Tech[Computers] = {name: 'Computers', prereq1: MassProduction, prereq2: Miniaturization, playerOwned: false, AIOwned: false};
+Tech[Conscription] = {name: 'Conscription', prereq1: Democracy, prereq2: Metallurgy, playerOwned: false, AIOwned: false};
+Tech[Construction] = {name: 'Construction', prereq1: Masonry, prereq2: Currency, playerOwned: false, AIOwned: false};
+Tech[Currency] = {name: 'Currency', prereq1: BronzeWorking, prereq2: CityBuilding, playerOwned: false, AIOwned: false};
+Tech[Democracy] = {name: 'Democracy', prereq1: Banking, prereq2: Invention, playerOwned: false, AIOwned: false};
+Tech[Economics] = {name: 'Economics', prereq1: Banking, prereq2: University, playerOwned: false, AIOwned: false};
+Tech[Electricity] = {name: 'Electricity', prereq1: Metallurgy, prereq2: Magnetism, playerOwned: false, AIOwned: false};
+Tech[Electronics] = {name: 'Electronics', prereq1: TheCorporation, prereq2: Electricity, playerOwned: false, AIOwned: false};
+Tech[Engineering] = {name: 'Engineering', prereq1: TheWheel, prereq2: Construction, playerOwned: false, AIOwned: false};
+Tech[Environmentalism] = {name: 'Environmentalism', prereq1: Recycling, prereq2: SpaceFlight, playerOwned: false, AIOwned: false};
+Tech[Espionage] = {name: 'Espionage', prereq1: Communism, prereq2: Democracy, playerOwned: false, AIOwned: false};
+Tech[Explosives] = {name: 'Explosives', prereq1: Gunpowder, prereq2: Chemistry, playerOwned: false, AIOwned: false};
+Tech[Feudalism] = {name: 'Feudalism', prereq1: WarriorCode, prereq2: Monarchy, playerOwned: false, AIOwned: false};
+Tech[Flight] = {name: 'Flight', prereq1: Combustion, prereq2: TheoryofGravity, playerOwned: false, AIOwned: false};
+Tech[Fundamentalism] = {name: 'Fundamentalism', prereq1: Theology, prereq2: Conscription, playerOwned: false, AIOwned: false};
+Tech[FusionPower] = {name: 'Fusion Power', prereq1: NuclearPower, prereq2: Superconductors, playerOwned: false, AIOwned: false};
+Tech[GeneticEngineering] = {name: 'Genetic Engineering', prereq1: Medicine, prereq2: TheCorporation, playerOwned: false, AIOwned: false};
+Tech[GuerillaWarfare] = {name: 'Guerilla Warfare', prereq1: Communism, prereq2: Tactics, playerOwned: false, AIOwned: false};
+Tech[Gunpowder] = {name: 'Gunpowder', prereq1: Invention, prereq2: IronWorking, playerOwned: false, AIOwned: false};
+Tech[HorsebackRiding] = {name: 'Horseback Riding', prereq1: CityBuilding, prereq2: CityBuilding, playerOwned: false, AIOwned: false};
+Tech[Industrialization] = {name: 'Industrialization', prereq1: Railroad, prereq2: Banking, playerOwned: false, AIOwned: false};
+Tech[Invention] = {name: 'Invention', prereq1: Engineering, prereq2: Literacy, playerOwned: false, AIOwned: false};
+Tech[IronWorking] = {name: 'Iron Working', prereq1: BronzeWorking, prereq2: WarriorCode, playerOwned: false, AIOwned: false};
+Tech[LaborUnion] = {name: 'Labor Union', prereq1: MassProduction, prereq2: GuerillaWarfare, playerOwned: false, AIOwned: false};
+Tech[Laser] = {name: 'Laser', prereq1: MassProduction, prereq2: NuclearPower, playerOwned: false, AIOwned: false};
+Tech[Leadership] = {name: 'Leadership', prereq1: Chivalry, prereq2: Gunpowder, playerOwned: false, AIOwned: false};
+Tech[Literacy] = {name: 'Literacy', prereq1: Writing, prereq2: CodeofLaws, playerOwned: false, AIOwned: false};
+Tech[MachineTools] = {name: 'Machine Tools', prereq1: Steel, prereq2: Tactics, playerOwned: false, AIOwned: false};
+Tech[Magnetism] = {name: 'Magnetism', prereq1: IronWorking, prereq2: Physics, playerOwned: false, AIOwned: false};
+Tech[MapMaking] = {name: 'Map Making', prereq1: Alphabet, prereq2: CityBuilding, playerOwned: false, AIOwned: false};
+Tech[Masonry] = {name: 'Masonry', prereq1: CityBuilding, prereq2: CityBuilding, playerOwned: false, AIOwned: false};
+Tech[MassProduction] = {name: 'Mass Production', prereq1: Automobile, prereq2: TheCorporation, playerOwned: false, AIOwned: false};
+Tech[Mathematics] = {name: 'Mathematics', prereq1: Alphabet, prereq2: Masonry, playerOwned: false, AIOwned: false};
+Tech[Medicine] = {name: 'Medicine', prereq1: Philosophy, prereq2: Trade, playerOwned: false, AIOwned: false};
+Tech[Metallurgy] = {name: 'Metallurgy', prereq1: Gunpowder, prereq2: University, playerOwned: false, AIOwned: false};
+Tech[Miniaturization] = {name: 'Miniaturization', prereq1: MachineTools, prereq2: Electronics, playerOwned: false, AIOwned: false};
+Tech[MobileWarfare] = {name: 'Mobile Warfare', prereq1: Automobile, prereq2: Tactics, playerOwned: false, AIOwned: false};
+Tech[Monarchy] = {name: 'Monarchy', prereq1: CeremonialBurial, prereq2: CodeofLaws, playerOwned: false, AIOwned: false};
+Tech[Monotheism] = {name: 'Monotheism', prereq1: Philosophy, prereq2: Polytheism, playerOwned: false, AIOwned: false};
+Tech[Mysticism] = {name: 'Mysticism', prereq1: CeremonialBurial, prereq2: CityBuilding, playerOwned: false, AIOwned: false};
+Tech[Navigation] = {name: 'Navigation', prereq1: Seafaring, prereq2: Astronomy, playerOwned: false, AIOwned: false};
+Tech[NuclearFission] = {name: 'Nuclear Fission', prereq1: MassProduction, prereq2: AtomicTheory, playerOwned: false, AIOwned: false};
+Tech[NuclearPower] = {name: 'Nuclear Power', prereq1: NuclearFission, prereq2: Electronics, playerOwned: false, AIOwned: false};
+Tech[Philosophy] = {name: 'Philosophy', prereq1: Mysticism, prereq2: Literacy, playerOwned: false, AIOwned: false};
+Tech[Physics] = {name: 'Physics', prereq1: Literacy, prereq2: Navigation, playerOwned: false, AIOwned: false};
+Tech[Plastics] = {name: 'Plastics', prereq1: Refining, prereq2: SpaceFlight, playerOwned: false, AIOwned: false};
+Tech[Polytheism] = {name: 'Polytheism', prereq1: HorsebackRiding, prereq2: CeremonialBurial, playerOwned: false, AIOwned: false};
+Tech[Pottery] = {name: 'Pottery', prereq1: CityBuilding, prereq2: CityBuilding, playerOwned: false, AIOwned: false};
+Tech[Radio] = {name: 'Radio', prereq1: Flight, prereq2: Electricity, playerOwned: false, AIOwned: false};
+Tech[Railroad] = {name: 'Railroad', prereq1: SteamEngine, prereq2: BridgeBuilding, playerOwned: false, AIOwned: false};
+Tech[Recycling] = {name: 'Recycling', prereq1: MassProduction, prereq2: Democracy, playerOwned: false, AIOwned: false};
+Tech[Refining] = {name: 'Refining', prereq1: Chemistry, prereq2: TheCorporation, playerOwned: false, AIOwned: false};
+Tech[Refrigeration] = {name: 'Refrigeration', prereq1: Sanitation, prereq2: Electricity, playerOwned: false, AIOwned: false};
+Tech[Robotics] = {name: 'Robotics', prereq1: MobileWarfare, prereq2: Computers, playerOwned: false, AIOwned: false};
+Tech[Rocketry] = {name: 'Rocketry', prereq1: AdvancedFlight, prereq2: Electronics, playerOwned: false, AIOwned: false};
+Tech[Sanitation] = {name: 'Sanitation', prereq1: Engineering, prereq2: Medicine, playerOwned: false, AIOwned: false};
+Tech[Seafaring] = {name: 'Seafaring', prereq1: Pottery, prereq2: MapMaking, playerOwned: false, AIOwned: false};
+Tech[SpaceFlight] = {name: 'Space Flight', prereq1: Computers, prereq2: Rocketry, playerOwned: false, AIOwned: false};
+Tech[Stealth] = {name: 'Stealth', prereq1: Superconductors, prereq2: AdvancedFlight, playerOwned: false, AIOwned: false};
+Tech[SteamEngine] = {name: 'Steam Engine', prereq1: Physics, prereq2: Invention, playerOwned: false, AIOwned: false};
+Tech[Steel] = {name: 'Steel', prereq1: Electricity, prereq2: Industrialization, playerOwned: false, AIOwned: false};
+Tech[Superconductors] = {name: 'Superconductors', prereq1: NuclearPower, prereq2: Laser, playerOwned: false, AIOwned: false};
+Tech[Tactics] = {name: 'Tactics', prereq1: Conscription, prereq2: Leadership, playerOwned: false, AIOwned: false};
+Tech[TheCorporation] = {name: 'The Corporation', prereq1: Economics, prereq2: Industrialization, playerOwned: false, AIOwned: false};
+Tech[TheRepublic] = {name: 'The Republic', prereq1: CodeofLaws, prereq2: Literacy, playerOwned: false, AIOwned: false};
+Tech[TheWheel] = {name: 'The Wheel', prereq1: HorsebackRiding, prereq2: CityBuilding, playerOwned: false, AIOwned: false};
+Tech[Theology] = {name: 'Theology', prereq1: Feudalism, prereq2: Monotheism, playerOwned: false, AIOwned: false};
+Tech[TheoryofGravity] = {name: 'Theory of Gravity', prereq1: Astronomy, prereq2: University, playerOwned: false, AIOwned: false};
+Tech[Trade] = {name: 'Trade', prereq1: Currency, prereq2: CodeofLaws, playerOwned: false, AIOwned: false};
+Tech[University] = {name: 'University', prereq1: Mathematics, prereq2: Philosophy, playerOwned: false, AIOwned: false};
+Tech[WarriorCode] = {name: 'Warrior Code', prereq1: CityBuilding, prereq2: CityBuilding, playerOwned: false, AIOwned: false};
+Tech[Writing] = {name: 'Writing', prereq1: Alphabet, prereq2: CityBuilding, playerOwned: false, AIOwned: false};
+
+CurrentTech = CityBuilding;
+CurrentTechCost = 0;
+TechReserve = 0;
+TechCount = 0;
+
+var Product = new Array();
+Settler = 1; Product[Settler] = {type: 'unit', name: 'Settler', img: 'settler', prereq: CityBuilding, cost: 40, class: 'EI', mobility: 1, attack: 0, defense: 1, health: 10, firepower: 1, transportCapacity: 0, obsolete: false};
+Warrior = 2; Product[Warrior] = {type: 'unit', name: 'Warrior', img: 'warrior', prereq: CityBuilding, cost: 10, class: 'EI', mobility: 1, attack: 1, defense: 1, health: 10, firepower: 1, transportCapacity: 0, obsolete: false};
+Horseman = 3; Product[Horseman] = {type: 'unit', name: 'Horseman', img: 'horseman', prereq: HorsebackRiding, cost: 20, class: 'EC', mobility: 2, attack: 2, defense: 1, health: 10, firepower: 1, transportCapacity: 0, obsolete: false};
+Archer = 4; Product[Archer] = {type: 'unit', name: 'Archer', img: 'archer', prereq: WarriorCode, cost: 30, class: 'EI', mobility: 1, attack: 3, defense: 2, health: 10, firepower: 1, transportCapacity: 0, obsolete: false};
+Phalanx = 5; Product[Phalanx] = {type: 'unit', name: 'Phalanx', img: 'phalanx', prereq: BronzeWorking, cost: 20, class: 'HI', mobility: 1, attack: 1, defense: 2, health: 10, firepower: 1, transportCapacity: 0, obsolete: false};
+Trireme = 6; Product[Trireme] = {type: 'unit', name: 'Trireme', img: 'trireme', prereq: MapMaking, cost: 40, class: 'N', mobility: 3, attack: 1, defense: 1, health: 10, firepower: 1, transportCapacity: 2, obsolete: false};
+Chariot = 7; Product[Chariot] = {type: 'unit', name: 'Chariot', img: 'chariot', prereq: TheWheel, cost: 30, class: 'EC', mobility: 2, attack: 3, defense: 1, health: 10, firepower: 1, transportCapacity: 0, obsolete: false};
+Catapult = 8; Product[Catapult] = {type: 'unit', name: 'Catapult', img: 'catapult', prereq: Mathematics, cost: 40, class: 'SE', mobility: 1, attack: 6, defense: 1, health: 10, firepower: 1, transportCapacity: 0, obsolete: false};
+Legion = 9; Product[Legion] = {type: 'unit', name: 'Legion', img: 'legion', prereq: IronWorking, cost: 40, class: 'HI', mobility: 1, attack: 4, defense: 2, health: 10, firepower: 1, transportCapacity: 0, obsolete: false};
+Pikeman = 10; Product[Pikeman] = {type: 'unit', name: 'Pikeman', img: 'pikeman', prereq: Feudalism, cost: 20, class: 'HI', mobility: 1, attack: 1, defense: 2, health: 10, firepower: 1, transportCapacity: 0, obsolete: false};
+Knight = 11; Product[Knight] = {type: 'unit', name: 'Knight', img: 'knight', prereq: Chivalry, cost: 40, class: 'EC', mobility: 2, attack: 4, defense: 2, health: 10, firepower: 1, transportCapacity: 0, obsolete: false};
+Caravel = 12; Product[Caravel] = {type: 'unit', name: 'Caravel', img: 'caravel', prereq: Navigation, cost: 40, class: 'N', mobility: 3, attack: 2, defense: 1, health: 10, firepower: 1, transportCapacity: 3, obsolete: false};
+Galleon = 13; Product[Galleon] = {type: 'unit', name: 'Galleon', img: 'galleon', prereq: Magnetism, cost: 40, class: 'N', mobility: 4, attack: 0, defense: 2, health: 20, firepower: 1, transportCapacity: 4, obsolete: false};
+Frigate = 14; Product[Frigate] = {type: 'unit', name: 'Frigate', img: 'frigate', prereq: Magnetism, cost: 50, class: 'N', mobility: 4, attack: 4, defense: 2, health: 20, firepower: 1, transportCapacity: 2, obsolete: false};
+Ironclad = 15; Product[Ironclad] = {type: 'unit', name: 'Ironclad', img: 'ironclad', prereq: SteamEngine, cost: 60, class: 'N', mobility: 4, attack: 4, defense: 4, health: 30, firepower: 1, transportCapacity: 0, obsolete: false};
+Musketeer = 16; Product[Musketeer] = {type: 'unit', name: 'Musketeer', img: 'musketeer', prereq: Gunpowder, cost: 30, class: 'LI', mobility: 1, attack: 3, defense: 3, health: 20, firepower: 1, transportCapacity: 0, obsolete: false};
+Dragoon = 17; Product[Dragoon] = {type: 'unit', name: 'Dragoon', img: 'dragoon', prereq: Leadership, cost: 50, class: 'EC', mobility: 2, attack: 5, defense: 2, health: 20, firepower: 1, transportCapacity: 0, obsolete: false};
+Cannon = 18; Product[Cannon] = {type: 'unit', name: 'Cannon', img: 'cannon', prereq: Metallurgy, cost: 40, class: 'SE', mobility: 1, attack: 8, defense: 1, health: 20, firepower: 1, transportCapacity: 0, obsolete: false};
+Transport = 19; Product[Transport] = {type: 'unit', name: 'Transport', img: 'transport', prereq: Industrialization, cost: 50, class: 'N', mobility: 5, attack: 0, defense: 3, health: 30, firepower: 1, transportCapacity: 8, obsolete: false};
+Destroyer = 20; Product[Destroyer] = {type: 'unit', name: 'Destroyer', img: 'destroyer', prereq: Electricity, cost: 60, class: 'N', mobility: 6, attack: 4, defense: 4, health: 30, firepower: 1, transportCapacity: 0, obsolete: false};
+Rifleman = 21; Product[Rifleman] = {type: 'unit', name: 'Rifleman', img: 'rifleman', prereq: Conscription, cost: 40, class: 'LI', mobility: 1, attack: 4, defense: 4, health: 20, firepower: 1, transportCapacity: 0, obsolete: false};
+Cavalry = 22; Product[Cavalry] = {type: 'unit', name: 'Cavalry', img: 'cavalry', prereq: Tactics, cost: 60, class: 'LC', mobility: 2, attack: 8, defense: 3, health: 20, firepower: 1, transportCapacity: 0, obsolete: false};
+Cruiser = 23; Product[Cruiser] = {type: 'unit', name: 'Cruiser', img: 'cruiser', prereq: Steel, cost: 80, class: 'N', mobility: 5, attack: 6, defense: 6, health: 30, firepower: 2, transportCapacity: 0, obsolete: false};
+Battleship = 24; Product[Battleship] = {type: 'unit', name: 'Battleship', img: 'battleship', prereq: Automobile, cost: 160, class: 'N', mobility: 4, attack: 12, defense: 12, health: 40, firepower: 2, transportCapacity: 0, obsolete: false};
+Artillery = 25; Product[Artillery] = {type: 'unit', name: 'Artillery', img: 'artillery', prereq: MachineTools, cost: 50, class: 'SE', mobility: 1, attack: 10, defense: 1, health: 20, firepower: 2, transportCapacity: 0, obsolete: false};
+Fighter = 26; Product[Fighter] = {type: 'unit', name: 'Fighter', img: 'fighter', prereq: Flight, cost: 60, class: 'AF', mobility: 10, attack: 4, defense: 3, health: 20, firepower: 2, transportCapacity: 0, obsolete: false};
+Carrier = 27; Product[Carrier] = {type: 'unit', name: 'Carrier', img: 'carrier', prereq: AdvancedFlight, cost: 160, class: 'N', mobility: 5, attack: 1, defense: 9, health: 40, firepower: 2, transportCapacity: 8, obsolete: false};
+Armor = 28; Product[Armor] = {type: 'unit', name: 'Armor', img: 'armor', prereq: MobileWarfare, cost: 80, class: 'LC', mobility: 3, attack: 10, defense: 5, health: 30, firepower: 1, transportCapacity: 0, obsolete: false};
+MechInf = 29; Product[MechInf] = {type: 'unit', name: 'Mech. Inf.', img: 'mech_inf', prereq: LaborUnion, cost: 50, class: 'LI', mobility: 3, attack: 6, defense: 6, health: 30, firepower: 1, transportCapacity: 0, obsolete: false};
+Howitzer = 30; Product[Howitzer] = {type: 'unit', name: 'Howitzer', img: 'howitzer', prereq: Robotics, cost: 70, class: 'SE', mobility: 2, attack: 12, defense: 2, health: 30, firepower: 2, transportCapacity: 0, obsolete: false};
+Bomber = 31; Product[Bomber] = {type: 'unit', name: 'Bomber', img: 'bomber', prereq: AdvancedFlight, cost: 120, class: 'AF', mobility: 8, attack: 12, defense: 1, health: 20, firepower: 2, transportCapacity: 0, obsolete: false};
+SpyPlane = 32; Product[SpyPlane] = {type: 'unit', name: 'Spy Plane', img: 'spy_plane', prereq: AdvancedFlight, cost: 140, class: 'AF', mobility: 16, attack: 0, defense: 1, health: 20, firepower: 1, transportCapacity: 0, obsolete: false};
+NuclearMissile = 33; Product[NuclearMissile] = {type: 'unit', name: 'Nuclear Missile', img: 'nuclear_missile', prereq: Rocketry, cost: 160, class: 'M', mobility: 16, attack: 99, defense: 0, health: 10, firepower: 1, transportCapacity: 0, obsolete: false};
+CruiseMissile = 34; Product[CruiseMissile] = {type: 'unit', name: 'Cruise Missile', img: 'cruise_missile', prereq: Rocketry, cost: 60, class: 'M', mobility: 12, attack: 18, defense: 0, health: 10, firepower: 1, transportCapacity: 0, obsolete: false};
+StealthBomber = 35; Product[StealthBomber] = {type: 'unit', name: 'Stealth Bomber', img: 'stealth_bomber', prereq: Stealth, cost: 160, class: 'AF', mobility: 12, attack: 18, defense: 5, health: 20, firepower: 2, transportCapacity: 0, obsolete: false};
+StealthFighter = 36; Product[StealthFighter] = {type: 'unit', name: 'Stealth Fighter', img: 'stealth_fighter', prereq: Stealth, cost: 80, class: 'AF', mobility: 14, attack: 8, defense: 4, health: 20, firepower: 2, transportCapacity: 0, obsolete: false};
+
+
+MaxRow = 24;
+MaxCol = 30; //prompt("How wide a world is it?","30");
+StartRow = 0;
+StartCol = 0;
+
+var Region = new Array();
+TerrainProbability = new Array("ttc","ttttc", "tppp", "pppgfs", "gfs", "jjsgg", "jjjssg", "gggd", "dddgg");
+
+var City = new Array();
+
+var Unit = new Array();
+
+function TerrainAtLatitude(Row){
+   switch (Rand(20)){
+      case 1: return Mountains; break;
+      case 2: return Hills; break;
+      default:
+         Latitude = Math.floor(Row/MaxRow*17);
+         if (Latitude>8){Latitude = 17-Latitude};
+         Choices = String(TerrainProbability[Latitude]);
+         Choice = Choices.charAt(Rand(Choices.length)-1);
+         //if (Debug){Debug = confirm(Choice + ": " + TerrainSymbol[Choice] + ". Continue debugging?");}
+         return TerrainSymbol[Choice];
+   }
+}
+
+function RegionImage(Row, Col){
+   if(Region[Row][Col].unit>0){
+      //alert("Region[Row][Col].unit = "+Region[Row][Col].unit);
+      return(Product[Unit[Region[Row][Col].unit].type].img+"_player.png");
+   }else{
+      if(Region[Row][Col].city>0){
+         return("city_player.png")
+      }else{
+         return(Terrain[Region[Row][Col].terrain].symbol+".png");
+         alert(Terrain[Region[Row][Col].terrain].symbol+".png");
+      }
+   }
+}
+
+function GenerateMap(Region){
+
+   for (Row=0; Row<=MaxRow; Row++){
+      Region[Row] = new Array();
+   }
+
+   // sea by default
+   for (Row=0; Row<=MaxRow; Row++){
+      for (Col=0; Col<=MaxCol; Col++){
+         Region[Row][Col] = {terrain: Ocean, unit: 0, city: 0};
+      }
+   }
+   // glaciers
+   for (Col=0; Col<MaxCol; Col++){
+      Region[0][Col].terrain = Glacier;
+      if (Rand(3)==1){
+         Region[1][Col].terrain = Glacier;
+      }
+      if (Rand(6)==1){
+         Region[MaxRow-2][Col].terrain = Glacier;
+      }
+	  Region[MaxRow-1][Col].terrain = Glacier;
+   }
+
+
+   Land1 = Rand(6)+5;
+   LandEnd1 = Land1+Rand(5)+Rand(5);
+   LandOffset2 = Rand(6)+10;
+   Land2 = LandEnd1+LandOffset2;
+   LandEnd2 = Math.min(Land2+Rand(5)+Rand(5),MaxCol);
+   // insert a channel at the narrowest point
+   NarrowestWidth = MaxCol;
+   NarrowestRow = MaxRow;
+   for (Row=1; Row<MaxRow-3; Row++){
+      for (Col=Land1; Col<=LandEnd1; Col++){
+         Region[Row][Col].terrain = TerrainAtLatitude(Row);
+      }
+      if (Row>Rand(4)) {
+         for (Col=Land2; Col<=LandEnd2; Col++){
+            Region[Row][Col].terrain = TerrainAtLatitude(Row);
+         }
+         if ((Row>4) & (LandEnd1-Land1>=2) & (StartRow==0)){
+            StartRow = Row;
+            StartCol = Land1+Rand(LandEnd1-Land1-1);
+         }
+      }
+      Land1 = Math.max(Land1+Rand(5)-3,1);
+      LandEnd1 = LandEnd1+Rand(3)-2;
+      if (LandEnd1<Land1-1){
+         LandEnd1=Land1+Rand(5)+5;
+      	 NarrowestRow=Row;
+      }
+      if ((Row>3+Rand(3))&&(LandEnd1-Land1<NarrowestWidth)){
+         NarrowestWidth=LandEnd1-Land1;
+         NarrowestRow=Row;
+      }
+      Land2 = LandEnd1+LandOffset2+Rand(3)-2;
+      LandEnd2 = Math.min(LandEnd2+Rand(5)-3,MaxCol);
+   }
+   for (Col=0; Col<MaxCol/2; Col++){
+      Region[NarrowestRow][Col].terrain = Ocean;
+   }
+
+}
+
+
+/* Units */
+function DeleteUnit(U){
+   if(U+1<Unit.length){
+      Unit[U] = Unit[Unit.length-1];
+      if (ActiveUnit>U){
+         ActiveUnit=U;
+      }
+   }
+   Unit.length--;
+}
+
+
+/* Nations */
+
+PlayerCityName = new Array("Babylon", "Lagash", "Nippur", "Ur", "Kish", "Shuruppak", "Kisurra", "Cutha", "Adab", "Umma", "Akkad", "Eridu", "Larsa", "Borsippa", "Sippar", "Nineveh", "Ashur", "Calach", "Carcar", "Hamat",  "Opis", "Cunaxa", "Arbela", "Nisibis", "Carrhae", "Seleucia", "Ctesiphon", "Sittace", "Orchoe", "Apamea");
+PlayerCity = 0;
+
+
+/* Cities */
+
+
+function CitySiteString(Row,Col,Food,Production,Trade){
+   if (Region[Row][Col].terrain!=Ocean){
+      Food = 0;
+      Production = 0;
+      Trade = 0;
+      for (var A=-1; A<=1; A++){
+         for (var B=-1; B<=1; B++){
+            Food += Terrain[Region[Row+A][Col+B].terrain].food;
+            Production += Terrain[Region[Row+A][Col+B].terrain].production;
+            Trade += Terrain[Region[Row+A][Col+B].terrain].trade;
+         }
+      }
+      return ("City has potential for "+(Food+Production+Trade)+" points ("+Food+"f/"+Production+"p/"+Trade+"t)");
+   }else{
+      return("");
+   }
+}
+
+function FoundCity(Row,Col,Player){
+   Food = 0; Production=0; Trade=0;
+   CitySiteString(Row,Col,Food,Production,Trade);
+   City[City.length] = {name: "Unnamed", foodReserve: 0, productionReserve: 0, row: Row, col: Col, food: Food, production: Production, trade: Trade, product: Warrior, citizens: 1};
+   Region[Row][Col].city = City.length-1;
+   if (Player){
+      City[City.length-1].name = PlayerCityName[PlayerCity];
+      PlayerCity++;
+   }
+   return (City[City.length-1].name + ", 1 citizen");
+}
+
+
+/* UI */
+
+var ActiveUnit = 1;
+
+function MenuPrompt(Message, Menu){
+   for (X=0; X<Menu.length; X++){
+      Message += (X+1)+". "+Menu[X].name+", ";
+   }
+   Message = Message.substring(0,Message.length-2);
+   X = prompt(Message);
+   if ((1<=X)&(X<=Menu.length)){
+      return (Menu[X-1].value);
+   }else{
+      return 0;
+   }
+}
+
+function NextTech(){
+   if (TechReserve>=CurrentTechCost){
+      TechReserve -= CurrentTechCost;
+   	  Tech[CurrentTech].playerOwned = true;
+      TechCount++;
+      var Menu = new Array();
+      for (X=AdvancedFlight; X<=Writing; X++){
+         if (!Tech[X].playerOwned & Tech[Tech[X].prereq1].playerOwned & Tech[Tech[X].prereq2].playerOwned){
+            Menu.push({name: Tech[X].name, value: X});
+         }
+      }
+      X = MenuPrompt("Your scientists have discovered "+Tech[CurrentTech].name + ". What should they research next? ", Menu);
+      if (X==0) X=Menu[0].value;
+      CurrentTech = X;
+   }
+   TechReserve++; /* TBD: factor in trade progress */
+   CurrentTechCost = TechCount;
+}
+
+
+function NextProduct(CityC){
+   if (CityC.productionReserve>=Product[CityC.product].cost){
+      CityC.productionReserve -= Product[CityC.product].cost;
+      Unit.push({type: CityC.product, row: CityC.row, col: CityC.col, movement: Product[CityC.product].mobility, active: true, player: true});
+      var Menu = new Array();
+      for (X=StealthFighter; X>=Settler; X--){
+         if (Tech[Product[X].prereq].playerOwned){
+            Menu.push({name: Product[X].name, value: X});
+         }
+      }
+      X = MenuPrompt(CityC.name+" has built "+Product[CityC.product].name+". What should they build next? ", Menu);
+      CityC.product = X;
+   }
+}
+
+function Turn(){
+   //alert("starting loop with "+ActiveUnit+" and Unit.length of "+Unit.length);
+   while ((ActiveUnit<Unit.length-1) && ((!Unit[ActiveUnit].active) | (Unit[ActiveUnit].movement==0))){
+      ActiveUnit++;
+   }
+   //alert("Active Unit = " + ActiveUnit);
+   if ((Unit[ActiveUnit].active) & (Unit[ActiveUnit].movement==0)){
+      for (U=1; U<Unit.length; U++){
+         if (Unit[U].active){
+            Unit[U].movement = Product[Unit[U].type].mobility;
+         }
+      }
+      ActiveUnit = 1;
+      NextTech();
+      for (C=0; C<City.length; C++){
+         City[C].productionReserve += Math.max(City[C].production/City[C].citizens,1);
+         NextProduct(City[C]);
+      }
+   }
+   S = 'p'+Unit[ActiveUnit].row+'_'+Unit[ActiveUnit].col;
+   document.getElementById(S).src = Product[Unit[ActiveUnit].type].img+"_focus.png";
+   document.getElementById(S).focus();
+}
+
+
+function i(item, Row, Col){
+   if ((Row==Unit[ActiveUnit].row) & (Col==Unit[ActiveUnit].col)){
+      if (Unit[ActiveUnit].type==Settler){
+         if (confirm("Build a city here? " + CitySiteString(Row,Col) + ".")){
+            item.src="city_player.png";
+            item.title=FoundCity(Row,Col,true);
+            DeleteUnit(ActiveUnit);
+            Turn();
+         }
+      }else{
+         if(confirm("Put the unit on sentry duty (standby)?")){
+            Unit[ActiveUnit].active = false;
+            Unit[ActiveUnit].movement = 0;
+            item.src=Product[Unit[ActiveUnit].type].img+"_player.png";
+            Turn();
+         }
+      }
+   }else{
+      if ((Distance(Row, Col, Unit[ActiveUnit].row, Unit[ActiveUnit].col)<=Math.min(Unit[ActiveUnit].movement,1.5)) & (Region[Row][Col].unit==0) & (Region[Row][Col].terrain!=Ocean)){
+         Region[Unit[ActiveUnit].row][Unit[ActiveUnit].col].unit = 0;
+         Unit[ActiveUnit].row = Row;
+         Unit[ActiveUnit].col = Col;
+         Unit[ActiveUnit].movement = Math.max(0,Unit[ActiveUnit].movement-Terrain[Region[Row][Col].terrain].movementCost);
+         Region[Row][Col].unit = ActiveUnit;
+         for (A=-1; A<=1; A++){
+            for (B=-1; B<=1; B++){
+               //alert(Region[X+A][Y+B].terrain);
+               S = 'p'+(Row+A)+'_'+(Col+B);
+               document.getElementById(S).src = RegionImage(Row+A, Col+B);
+               if(Unit[ActiveUnit].type==Settler){
+                  document.getElementById(S).title = CitySiteString(Row+A,Col+B);
+               }
+            }
+         }
+         Turn();
+      }
+   }
+}
+
+for (Row=0; Row<MaxRow; Row++){
+   for (Col=0; Col<MaxCol; Col++){
+   	  document.write('<img src=u.png id=p', Row,'_', Col,' onclick="i(this,', Row, ',', Col, ')">');
+   }
+   document.writeln("<br>");
+}
+GenerateMap(Region);
+
+/* Preload images */
+for (X=Ocean; X<=Mountains; X++){
+   document.getElementById('p0_'+X).src = Terrain[X].symbol+".png";
+}
+document.getElementById('p0_0').src = "city_player.png";
+for (X=Ocean; X<=Mountains; X++){
+   document.getElementById('p0_'+X).src = "u.png";
+}
+
+for (Row=StartRow-1; Row<=StartRow+1; Row++){
+   for (Col=StartCol-1; Col<=StartCol+2; Col++){
+      document.getElementById('p'+Row+"_"+Col).src = Terrain[Region[Row][Col].terrain].symbol+".png";
+   }
+}
+
+document.getElementById('p'+StartRow+"_"+StartCol).src = "settler_player.png";
+document.getElementById('p'+StartRow+"_"+(StartCol+1)).src = "warrior_player.png";
+Unit[1] = {type: Settler, row: StartRow, col: StartCol, movement: 1, active: true, player: true};
+Unit[2] = {type: Warrior, row: StartRow, col: StartCol+1, movement: 1, active: true, player: true};
+Region[StartRow][StartCol].unit = 1;
+Region[StartRow][StartCol+1].unit = 2;
+
+NextTech();
+Turn();
+
+</script>
+</body>
+</html>

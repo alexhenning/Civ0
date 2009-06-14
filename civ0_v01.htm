@@ -1,0 +1,102 @@
+<html>
+<body>
+<font face="monospace">
+<script type="text/javascript">
+
+function Rand(X){
+	return(Math.floor(Math.random()*X+1));
+	}
+
+MapX = 24;
+MapY = 49;
+var Region = new Array();
+TerrainProbability = new Array("ttc","ttttc", "tppp", "pppgfs", "gfs", "jjsgg", "jjjssg", "gggd", "dddgg");
+
+function TerrainAtLatitude(X){
+   switch (Rand(20)){
+      case 1: return "m"; break;
+      case 2: return "h"; break;
+      default:
+         Latitude = Math.floor(X*18/MapX);
+         if (Latitude>8){Latitude = 17-Latitude};
+         Choices = String(TerrainProbability[Math.floor(Latitude)]);
+         return Choices.charAt(Rand(Choices.length)-1);
+   }
+}
+
+function GenerateMap(Region){
+
+   for (X=0; X<MapX; X++){
+      Region[X] = new Array();
+   }
+
+   // sea by default
+   for (X=1; X<MapX-1; X++){
+      for (Y=0; Y<MapY; Y++){
+         Region[X][Y]="o";
+      }
+   }
+   // glaciers
+   for (Y=0; Y<MapY; Y++){
+      Region[0][Y]="c";
+      if (Rand(3)==1){
+         Region[1][Y]="c";
+      }
+      if (Rand(6)==1){
+         Region[MapX-2][Y]="c";
+      }
+	  Region[MapX-1][Y]="c";
+   }
+
+
+   Land1 = Rand(6)+5;
+   LandEnd1 = Land1+Rand(5)+Rand(5);
+   LandOffset2 = Rand(6)+10;
+   Land2 = LandEnd1+LandOffset2;
+   LandEnd2 = Land2+Rand(5)+Rand(5);
+   // insert a channel at the narrowest point
+   NarrowestWidth = MapY;
+   NarrowestRow = MapX;
+   for (X=1; X<MapX-3; X++){
+      for (Y=Land1; Y<=LandEnd1; Y++){
+         Region[X][Y]=TerrainAtLatitude(X);
+      }
+      if (X>Rand(4)) {
+         for (Y=Land2; Y<=LandEnd2; Y++){
+            Region[X][Y]=TerrainAtLatitude(X);
+         }
+      }
+      Land1 = Math.max(Land1+Rand(5)-3,1);
+      LandEnd1 = LandEnd1+Rand(3)-2;
+      if (LandEnd1<Land1-1){
+         LandEnd1=Land1+Rand(5)+5;
+      	  NarrowestRow=X;
+      }
+      if ((X>3+Rand(3))&&(LandEnd1-Land1<NarrowestWidth)){
+         NarrowestWidth=LandEnd1-Land1;
+         NarrowestRow=X;
+      }
+      Land2 = LandEnd1+LandOffset2+Rand(3)-2;
+      LandEnd2 = LandEnd2+Rand(5)-3;
+   }
+   for (Y=0; Y<MapY/2; Y++){
+      Region[NarrowestRow][Y]="o";
+   }
+
+
+}
+
+
+GenerateMap(Region);
+for (X=0; X<MapX; X++){
+   for (Y=0; Y<MapY; Y++){
+      document.write("<img src=", Region[X][Y], ".png>");
+   }
+   document.write("<br>");
+}
+
+
+</script>
+</font>
+</body>
+</html>
