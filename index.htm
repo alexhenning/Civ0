@@ -41,7 +41,8 @@ for (X=Ocean; X<=Mountains; X++){
    //alert(X + ", '" + Terrain[X].symbol + "', " + TerrainSymbol[Terrain[X].symbol]);
 }
 
-
+// Technology can affect these global variables
+var HealingRate = 1;
 var LostAtSeaLikelihood = 25;
 
 var Tech = new Array();
@@ -152,7 +153,7 @@ Tech[CombinedArms] = {name: 'Combined Arms', prereq1: MobileWarfare, prereq2: Ad
 Tech[Combustion] = {name: 'Combustion', prereq1: Refining, prereq2: Explosives, playerOwned: false, AIOwned: false, code: ""};
 Tech[Communism] = {name: 'Communism', prereq1: Philosophy, prereq2: Industrialization, playerOwned: false, AIOwned: false, code: ""};
 Tech[Computers] = {name: 'Computers', prereq1: MassProduction, prereq2: Miniaturization, playerOwned: false, AIOwned: false, code: ""};
-Tech[Conscription] = {name: 'Conscription', prereq1: Democracy, prereq2: Metallurgy, playerOwned: false, AIOwned: false, code: ""};
+Tech[Conscription] = {name: 'Conscription', prereq1: Democracy, prereq2: Metallurgy, playerOwned: false, AIOwned: false, code: "HealingRate=3;"};
 Tech[Construction] = {name: 'Construction', prereq1: Masonry, prereq2: Currency, playerOwned: false, AIOwned: false, code: ""};
 Tech[Currency] = {name: 'Currency', prereq1: BronzeWorking, prereq2: CityBuilding, playerOwned: false, AIOwned: false, code: ""};
 Tech[Democracy] = {name: 'Democracy', prereq1: Banking, prereq2: Invention, playerOwned: false, AIOwned: false, code: ""};
@@ -163,7 +164,7 @@ Tech[Engineering] = {name: 'Engineering', prereq1: TheWheel, prereq2: Constructi
 Tech[Environmentalism] = {name: 'Environmentalism', prereq1: Recycling, prereq2: SpaceFlight, playerOwned: false, AIOwned: false, code: ""};
 Tech[Espionage] = {name: 'Espionage', prereq1: Communism, prereq2: Democracy, playerOwned: false, AIOwned: false, code: ""};
 Tech[Explosives] = {name: 'Explosives', prereq1: Gunpowder, prereq2: Chemistry, playerOwned: false, AIOwned: false, code: ""};
-Tech[Feudalism] = {name: 'Feudalism', prereq1: WarriorCode, prereq2: Monarchy, playerOwned: false, AIOwned: false, code: ""};
+Tech[Feudalism] = {name: 'Feudalism', prereq1: WarriorCode, prereq2: Monarchy, playerOwned: false, AIOwned: false, code: "HealingRate=2;"};
 Tech[Flight] = {name: 'Flight', prereq1: Combustion, prereq2: TheoryofGravity, playerOwned: false, AIOwned: false, code: ""};
 Tech[Fundamentalism] = {name: 'Fundamentalism', prereq1: Theology, prereq2: Conscription, playerOwned: false, AIOwned: false, code: ""};
 Tech[FusionPower] = {name: 'Fusion Power', prereq1: NuclearPower, prereq2: Superconductors, playerOwned: false, AIOwned: false, code: ""};
@@ -171,7 +172,7 @@ Tech[GeneticEngineering] = {name: 'Genetic Engineering', prereq1: Medicine, prer
 Tech[GuerillaWarfare] = {name: 'Guerilla Warfare', prereq1: Communism, prereq2: Tactics, playerOwned: false, AIOwned: false, code: ""};
 Tech[Gunpowder] = {name: 'Gunpowder', prereq1: Invention, prereq2: IronWorking, playerOwned: false, AIOwned: false, code: ""};
 Tech[HorsebackRiding] = {name: 'Horseback Riding', prereq1: CityBuilding, prereq2: CityBuilding, playerOwned: false, AIOwned: false, code: ""};
-Tech[Industrialization] = {name: 'Industrialization', prereq1: Railroad, prereq2: Banking, playerOwned: false, AIOwned: false, code: "TroopshipClass=ModernTroopship;"};
+Tech[Industrialization] = {name: 'Industrialization', prereq1: Railroad, prereq2: Banking, playerOwned: false, AIOwned: false, code: "TransportClass=ModernTransport;"};
 Tech[Invention] = {name: 'Invention', prereq1: Engineering, prereq2: Literacy, playerOwned: false, AIOwned: false, code: ""};
 Tech[IronWorking] = {name: 'Iron Working', prereq1: BronzeWorking, prereq2: WarriorCode, playerOwned: false, AIOwned: false, code: ""};
 Tech[LaborUnion] = {name: 'Labor Union', prereq1: MassProduction, prereq2: GuerillaWarfare, playerOwned: false, AIOwned: false, code: ""};
@@ -179,19 +180,19 @@ Tech[Laser] = {name: 'Laser', prereq1: MassProduction, prereq2: NuclearPower, pl
 Tech[Leadership] = {name: 'Leadership', prereq1: Chivalry, prereq2: Gunpowder, playerOwned: false, AIOwned: false, code: ""};
 Tech[Literacy] = {name: 'Literacy', prereq1: Writing, prereq2: CodeofLaws, playerOwned: false, AIOwned: false, code: ""};
 Tech[MachineTools] = {name: 'Machine Tools', prereq1: Steel, prereq2: Tactics, playerOwned: false, AIOwned: false, code: ""};
-Tech[Magnetism] = {name: 'Magnetism', prereq1: IronWorking, prereq2: Physics, playerOwned: false, AIOwned: false, code: "TroopshipClass=Galleon; LostAtSeaLikelihood = LostAtSeaLikelihood*2/3;"};
-Tech[MapMaking] = {name: 'Map Making', prereq1: Alphabet, prereq2: CityBuilding, playerOwned: false, AIOwned: false, code: "TroopshipClass=Trireme; LostAtSeaLikelihood = LostAtSeaLikelihood*2/3;"};
+Tech[Magnetism] = {name: 'Magnetism', prereq1: IronWorking, prereq2: Physics, playerOwned: false, AIOwned: false, code: "TransportClass=Galleon; LostAtSeaLikelihood = LostAtSeaLikelihood*2/3;"};
+Tech[MapMaking] = {name: 'Map Making', prereq1: Alphabet, prereq2: CityBuilding, playerOwned: false, AIOwned: false, code: "TransportClass=Trireme; LostAtSeaLikelihood = LostAtSeaLikelihood*2/3;"};
 Tech[Masonry] = {name: 'Masonry', prereq1: CityBuilding, prereq2: CityBuilding, playerOwned: false, AIOwned: false, code: ""};
 Tech[MassProduction] = {name: 'Mass Production', prereq1: Automobile, prereq2: TheCorporation, playerOwned: false, AIOwned: false, code: ""};
 Tech[Mathematics] = {name: 'Mathematics', prereq1: Alphabet, prereq2: Masonry, playerOwned: false, AIOwned: false, code: ""};
 Tech[Medicine] = {name: 'Medicine', prereq1: Philosophy, prereq2: Trade, playerOwned: false, AIOwned: false, code: ""};
 Tech[Metallurgy] = {name: 'Metallurgy', prereq1: Gunpowder, prereq2: University, playerOwned: false, AIOwned: false, code: ""};
 Tech[Miniaturization] = {name: 'Miniaturization', prereq1: MachineTools, prereq2: Electronics, playerOwned: false, AIOwned: false, code: ""};
-Tech[MobileWarfare] = {name: 'Mobile Warfare', prereq1: Automobile, prereq2: Tactics, playerOwned: false, AIOwned: false, code: ""};
+Tech[MobileWarfare] = {name: 'Mobile Warfare', prereq1: Automobile, prereq2: Tactics, playerOwned: false, AIOwned: false, code: "HealingRate=4;"};
 Tech[Monarchy] = {name: 'Monarchy', prereq1: CeremonialBurial, prereq2: CodeofLaws, playerOwned: false, AIOwned: false, code: ""};
 Tech[Monotheism] = {name: 'Monotheism', prereq1: Philosophy, prereq2: Polytheism, playerOwned: false, AIOwned: false, code: ""};
 Tech[Mysticism] = {name: 'Mysticism', prereq1: CeremonialBurial, prereq2: CityBuilding, playerOwned: false, AIOwned: false, code: ""};
-Tech[Navigation] = {name: 'Navigation', prereq1: Seafaring, prereq2: Astronomy, playerOwned: false, AIOwned: false, code: "TroopshipClass=Caravel; LostAtSeaLikelihood = LostAtSeaLikelihood*2/3;"};
+Tech[Navigation] = {name: 'Navigation', prereq1: Seafaring, prereq2: Astronomy, playerOwned: false, AIOwned: false, code: "TransportClass=Caravel; LostAtSeaLikelihood = LostAtSeaLikelihood*2/3;"};
 Tech[NuclearFission] = {name: 'Nuclear Fission', prereq1: MassProduction, prereq2: AtomicTheory, playerOwned: false, AIOwned: false, code: ""};
 Tech[NuclearPower] = {name: 'Nuclear Power', prereq1: NuclearFission, prereq2: Electronics, playerOwned: false, AIOwned: false, code: ""};
 Tech[Philosophy] = {name: 'Philosophy', prereq1: Mysticism, prereq2: Literacy, playerOwned: false, AIOwned: false, code: ""};
@@ -621,10 +622,11 @@ function Turn(){
       for (U=0; U<Unit.length; U++){
          // restore health to standby units
          if (!Unit[U].active){
-            if(Unit[U].health<Product[Unit[U].type].health){
-               Unit[U].health++;
-               if((Unit[U].health==Product[Unit[U].type].health)&&(Unit[U].player)){
-                  Unit[U].active=true;
+            if(Unit[U].health!=Product[Unit[U].type].health){
+               Unit[U].health += HealingRate;
+               if(Unit[U].health>=Product[Unit[U].type].health){
+                  Unit[U].health = Product[Unit[U].type].health;
+                  Unit[U].active = Unit[U].player;
                }
             }
          }
@@ -799,6 +801,7 @@ Turn();
 // [ ] Ships can automove onto land
 
 </script>
+<form><input type="button" value="Resume" onClick="ActiveUnit=0; for (U=0; U<Unit.length; U++){Unit[U].active=true;}; Turn();"></form>
 </body>
 </html>
 
