@@ -14,27 +14,27 @@ function Distance(Row1, Col1, Row2, Col2){
 
 var Terrain = new Array();
 Ocean = 0;
-Terrain[Ocean] = {symbol: "o", food: 1, production: 0, trade: 2, movementCost: 1, defense: 1};
+Terrain[Ocean] = {name: "Ocean", symbol: "o", food: 1, production: 0, trade: 2, movementCost: 1, defense: 1};
 Glacier = 1;
-Terrain[Glacier] = {symbol: "c", food: 0, production: 0, trade: 0, movementCost: 2, defense: 1};
+Terrain[Glacier] = {name: "Glacier", symbol: "c", food: 0, production: 0, trade: 0, movementCost: 2, defense: 1};
 Tundra = 2;
-Terrain[Tundra] = {symbol: "t", food: 1, production: 0, trade: 0, movementCost: 1, defense: 1};
+Terrain[Tundra] = {name: "Tundra", symbol: "t", food: 1, production: 0, trade: 0, movementCost: 1, defense: 1};
 Plains = 3;
-Terrain[Plains] = {symbol: "p", food: 1, production: 1, trade: 0, movementCost: 1, defense: 1};
+Terrain[Plains] = {name: "Plains", symbol: "p", food: 1, production: 1, trade: 0, movementCost: 1, defense: 1};
 Grassland = 4;
-Terrain[Grassland] = {symbol: "g", food: 2, production: 0, trade: 0, movementCost: 1, defense: 1};
+Terrain[Grassland] = {name: "Grassland", symbol: "g", food: 2, production: 0, trade: 0, movementCost: 1, defense: 1};
 Forest = 5;
-Terrain[Forest] = {symbol: "f", food: 1, production: 2, trade: 0, movementCost: 2, defense: 1.5};
+Terrain[Forest] = {name: "Forest", symbol: "f", food: 1, production: 2, trade: 0, movementCost: 2, defense: 1.5};
 Swamp = 6;
-Terrain[Swamp] = {symbol: "s", food: 1, production: 0, trade: 0, movementCost: 2, defense: 1.5};
+Terrain[Swamp] = {name: "Swamp", symbol: "s", food: 1, production: 0, trade: 0, movementCost: 2, defense: 1.5};
 Jungle = 7;
-Terrain[Jungle] = {symbol: "j", food: 1, production: 0, trade: 0, movementCost: 3, defense: 1.5};
+Terrain[Jungle] = {name: "Jungle", symbol: "j", food: 1, production: 0, trade: 0, movementCost: 3, defense: 1.5};
 Desert = 8;
-Terrain[Desert] = {symbol: "d", food: 0, production: 1, trade: 0, movementCost: 1, defense: 1};
+Terrain[Desert] = {name: "Desert", symbol: "d", food: 0, production: 1, trade: 0, movementCost: 1, defense: 1};
 Hills = 9;
-Terrain[Hills] = {symbol: "h", food: 1, production: 0, trade: 0, movementCost: 2, defense: 2};
+Terrain[Hills] = {name: "Hills", symbol: "h", food: 1, production: 0, trade: 0, movementCost: 2, defense: 2};
 Mountains = 10;
-Terrain[Mountains] = {symbol: "m", food: 0, production: 1, trade: 0, movementCost: 3, defense: 3};
+Terrain[Mountains] = {name: "Mountain", symbol: "m", food: 0, production: 1, trade: 0, movementCost: 3, defense: 3};
 TerrainSymbol = new Array();
 for (X=Ocean; X<=Mountains; X++){
    TerrainSymbol[Terrain[X].symbol] = X;
@@ -301,9 +301,9 @@ function TerrainAtLatitude(Row){
 function RegionImage(Row, Col, focus){
    var R;
    var S = 'p'+Row+'_'+Col;
-   var T;
    var U = Region[Row][Col].unit;
    if ((U!=-1)&&(Unit[U] !== undefined)){
+      var T;
       if (Unit[U].player){
          if (focus){
             T = "focus";
@@ -326,8 +326,12 @@ function RegionImage(Row, Col, focus){
    }else{
       if(Region[Row][Col].city!=-1){
          document.getElementById(S).src="city_player.png";
+         var C=Region[Row][Col].city;
+         document.getElementById(S).title = City[C].name+", "+City[C].citizens+" citizens, producing "+Product[City[C].product].name+" ("+Math.floor(100*City[C].productionReserve/Product[City[C].product].cost)+"%)";
       }else{
-         document.getElementById(S).src=Terrain[Region[Row][Col].terrain].symbol+".png";
+         var T=Region[Row][Col].terrain;
+         document.getElementById(S).src=Terrain[T].symbol+".png";
+         document.getElementById(S).title = Terrain[T].name+", "+Math.floor(100*Terrain[T].defense)+"% defense";
       }
    }
 }
@@ -547,7 +551,6 @@ function FoundCity(Row,Col,Player){
    }else{
       RegionImage(Row, Col, false);
    }
-   return (City[City.length-1].name + ", 2 citizens");
 }
 
 
@@ -603,6 +606,7 @@ function NextProduct(C){
       X = MenuPrompt(City[C].name+" has built "+Product[City[C].product].name+". What should they build next? ", Menu);
       City[C].product = X;
    }
+   RegionImage(City[C].row,City[C].col,false);
 }
 
 function Turn(){
@@ -663,7 +667,7 @@ function i(Row, Col){
    if ((Row==Unit[ActiveUnit].row) & (Col==Unit[ActiveUnit].col)){
       if (Unit[ActiveUnit].type==Settler){
          if (confirm("Build a city here? " + CitySiteString(Row,Col) + ".")){
-            RegionTitle(Row,Col,FoundCity(Row,Col,true));
+            FoundCity(Row,Col,true);
             DeleteUnit(ActiveUnit);
             RegionImage(Row, Col, false);
             Turn();
