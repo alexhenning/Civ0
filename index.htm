@@ -615,7 +615,15 @@ function Turn(){
       RegionImage(Unit[ActiveUnit].row, Unit[ActiveUnit].col, true);
    }else{
       for (U=0; U<Unit.length; U++){
-
+         // restore health to standby units
+         if (!Unit[U].active){
+            if(Unit[U].health<Product[Unit[U].type].health){
+               Unit[U].health++;
+               if((Unit[U].health==Product[Unit[U].type].health)&&(Unit[U].player)){
+                  Unit[U].active=true;
+               }
+            }
+         }
          if (Unit[U].active){
             Unit[U].movement = Product[Unit[U].type].mobility;
          }
