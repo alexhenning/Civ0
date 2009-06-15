@@ -433,7 +433,7 @@ function DeleteUnit(U){
 }
 
 function IncreaseUnitVeterancy(U){
-   var R = Rand(20)/10;
+   var R = Rand(10)/10+1;
    if (R>Unit[U].veterancy){
      Unit[U].veterancy = (Unit[U].veterancy+R)/2;
    }
