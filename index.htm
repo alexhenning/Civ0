@@ -534,7 +534,11 @@ function FoundCity(Row,Col,Player){
    City.push({name: "Unnamed", foodReserve: 0, productionReserve: 0, row: Row, col: Col, food: Food, production: Production, trade: Trade, product: Warrior, citizens: 2});
    Region[Row][Col].city = City.length-1;
    if (Player){
-      City[City.length-1].name = PlayerCityName[PlayerCity];
+      if (PlayerCity<=PlayerCityName.length-1){
+         City[City.length-1].name = PlayerCityName[PlayerCity];
+      }else{
+      	 City[City.length-1].name = "City #"+(PlayerCity+1);
+      }
       PlayerCity++;
       if (Unit[1].city=-1){
          Unit[1].city=City.length-1;
@@ -611,6 +615,7 @@ function Turn(){
       RegionImage(Unit[ActiveUnit].row, Unit[ActiveUnit].col, true);
    }else{
       for (U=0; U<Unit.length; U++){
+
          if (Unit[U].active){
             Unit[U].movement = Product[Unit[U].type].mobility;
          }
@@ -780,6 +785,7 @@ Turn();
 // [ ] Building a new unit with a unit on the city loses the first unit
 // [ ] Attacking unit should take the place of defeated defending unit
 // [ ] Ships can automove onto land
+
 </script>
 </body>
 </html>
