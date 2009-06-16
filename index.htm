@@ -1,5 +1,6 @@
 	<html><title>Civ 0--Civilization: Year 0, a JavaScript open-source implementation of a civilization-style game</title>
-<body style="min-width: 600px">
+<body style="min-width: 600px; margin: 0px;">
+<div id="message" style="font-size: 12px; color: black; background-color: white; border: 2px solid black; padding 2px; position: absolute; display: none">Random Text</div>
 <script type="text/javascript">
 
 var Debug = 1;
@@ -599,6 +600,35 @@ function NextProduct(C){
 
 var ActiveUnit = 0;
 
+MessageBox = {
+    element: document.getElementById("message"),
+    SetLocation: function(row, col) {
+        MessageBox.element.style.top = (20 * row + 40) + "px";
+        MessageBox.element.style.left = (20 * col + 10 - ((MessageBox.element.getBoundingClientRect().right - MessageBox.element.getBoundingClientRect().left) / 2)) + "px";
+        MessageBox.SetVisibility(true);
+    },
+    SetVisibility: function(val) {
+        if (val == true) {MessageBox.element.style.display = "block";}
+        else {MessageBox.element.style.display = "none";}
+    },
+    SetText: function(text) {
+        MessageBox.element.innerHTML = text;
+        MessageBox.SetVisibility(true);
+    },
+    OnHover: function(row, col, element) {
+        var text; // below is a hack to disable title text in addition a to the custom one on hover
+        if (element.title != "" && element.title != null) {text = element.title;}
+        else if (element.stored_text == null) {text = "";}
+        else {text = element.stored_text;}
+
+       MessageBox.SetText(text);
+       MessageBox.SetLocation(row, col);
+       element.stored_text = text;
+       element.title = "";
+       if (text == "") {MessageBox.SetVisibility(false);} // prevents black boxes when their is no text
+   }
+}
+
 function MenuPrompt(Message, Menu){
    for (X=0; X<Menu.length; X++){
       Message += (X+1)+". "+Menu[X].name+", ";
@@ -760,7 +790,7 @@ function i(Row, Col){
 
 for (Row=0; Row<MaxRow; Row++){
    for (Col=0; Col<MaxCol; Col++){
-   	  document.write('<img src=u.png id=p', Row,'_', Col,' onclick="i(', Row, ',', Col, ')">');
+   	  document.write('<img src=u.png id=p', Row,'_', Col,' onclick="i(', Row, ',', Col, ')" onmouseover="MessageBox.OnHover(', Row, ',', Col, ', this);" />');
    }
    document.writeln("<br>");
 }
