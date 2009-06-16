@@ -529,9 +529,20 @@ function CitySiteString(Row,Col,Food,Production,Trade){
       }
       return ("City has potential for "+(Food+Production+Trade)+" points ("+Food+"f/"+Production+"p/"+Trade+"t)");
    }else{
-      return("");
+      return("Ocean, 100% defense");
    }
 }
+
+
+function TooCloseToCity(Row,Col){
+   for (var C=0; C<City.length; C++){
+      if (Distance(Row,Col,City[C].row,City[C].col)<3){
+         return(true);
+      }
+   }
+   return(false);
+}
+
 
 function FoundCity(Row,Col,Player){
    Food = 0; Production=0; Trade=0;
@@ -542,7 +553,7 @@ function FoundCity(Row,Col,Player){
       if (PlayerCity<=PlayerCityName.length-1){
          City[City.length-1].name = PlayerCityName[PlayerCity];
       }else{
-      	 City[City.length-1].name = "City #"+(PlayerCity+1);
+         City[City.length-1].name = "City #"+(PlayerCity+1);
       }
       PlayerCity++;
       if (Unit[1].city=-1){
@@ -553,6 +564,35 @@ function FoundCity(Row,Col,Player){
       RegionImage(Row, Col, false);
    }
 }
+
+function NextCitizen(C){
+   City[C].foodReserve += Math.max(City[C].food/City[C].citizens,1);
+   if (City[C].foodReserve>=10*City[C].citizens){
+      City[C].foodReserve -= 10*City[C].citizens;
+      City[C].citizens++;
+   }
+   RegionImage(City[C].row,City[C].col,false);
+}
+
+function NextProduct(C){
+   City[C].productionReserve += Math.max(City[C].production/City[C].citizens,1);
+   if (City[C].productionReserve>=Product[City[C].product].cost){
+      City[C].productionReserve -= Product[City[C].product].cost;
+      Unit.push({type: City[C].product, row: City[C].row, col: City[C].col, movement: Product[City[C].product].mobility, health: Product[City[C].product].health, active: true, player: true, city: C, TroopshipClass: TroopshipClass, veterancy: 1});
+      Region[City[C].row][City[C].col].unit = Unit.length-1;
+      RegionImage(City[C].row, City[C].col, false);
+      var Menu = new Array();
+      for (X=StealthFighter; X>=Settler; X--){
+         if (Tech[Product[X].prereq].playerOwned){
+            Menu.push({name: Product[X].name, value: X});
+         }
+      }
+      X = MenuPrompt(City[C].name+" has built "+Product[City[C].product].name+". What should they build next? ", Menu);
+      City[C].product = X;
+   }
+   RegionImage(City[C].row,City[C].col,false);
+}
+
 
 
 /* UI */
@@ -592,24 +632,6 @@ function NextTech(){
 }
 
 
-function NextProduct(C){
-   if (City[C].productionReserve>=Product[City[C].product].cost){
-      City[C].productionReserve -= Product[City[C].product].cost;
-      Unit.push({type: City[C].product, row: City[C].row, col: City[C].col, movement: Product[City[C].product].mobility, health: Product[City[C].product].health, active: true, player: true, city: C, TroopshipClass: TroopshipClass, veterancy: 1});
-      Region[City[C].row][City[C].col].unit = Unit.length-1;
-      RegionImage(City[C].row, City[C].col, false);
-      var Menu = new Array();
-      for (X=StealthFighter; X>=Settler; X--){
-         if (Tech[Product[X].prereq].playerOwned){
-            Menu.push({name: Product[X].name, value: X});
-         }
-      }
-      X = MenuPrompt(City[C].name+" has built "+Product[City[C].product].name+". What should they build next? ", Menu);
-      City[C].product = X;
-   }
-   RegionImage(City[C].row,City[C].col,false);
-}
-
 function Turn(){
    //alert("starting loop with "+ActiveUnit+" and Unit.length of "+Unit.length);
    while ((ActiveUnit>0) && ((!Unit[ActiveUnit].active) || (Unit[ActiveUnit].movement==0) || (!Unit[ActiveUnit].player))){
@@ -636,7 +658,7 @@ function Turn(){
       }
       NextTech();
       for (C=0; C<City.length; C++){
-         City[C].productionReserve += Math.max(City[C].production/City[C].citizens,1);
+         NextCitizen(C);
          NextProduct(C);
       }
       ActiveUnit = Unit.length-1;
@@ -668,7 +690,7 @@ function Turn(){
 function i(Row, Col){
    if ((Row==Unit[ActiveUnit].row) & (Col==Unit[ActiveUnit].col)){
       if (Unit[ActiveUnit].type==Settler){
-         if (confirm("Build a city here? " + CitySiteString(Row,Col) + ".")){
+         if ((Region[Row][Col].terrain!=Ocean) && !TooCloseToCity(Row,Col) && (confirm("Build a city here? " + CitySiteString(Row,Col) + "."))){
             FoundCity(Row,Col,true);
             DeleteUnit(ActiveUnit);
             RegionImage(Row, Col, false);
@@ -784,19 +806,18 @@ Turn();
 // [x] Putting a unit on sentry duty in the water displays it as a land unit - 6/11
 // [x] Add terrain defense bonus to combat system; indicate terrain unit is on - 6/13
 // [x] Add veteran system to combat system - 6/13
+// [x] Founding a city causes warrior to turn invisible - 6/13
+// [x] Founding a city displays the unit instead of the city - 6/13
 // [x] Add firepower to combat system - 6/14
+// [x] Should not be able to build a city in the suburbs of another city - 6/15
+// [x] Should not be able to build a city in the ocean! - 6/15
 // [ ] Sometimes initial starting place in a row with no land so both start in the sea
-// [ ] Founding a city causes warrior to turn invisible
-// [ ] Founding a city displays the unit instead of the city
 // [ ] Error when exploring top row
-// [ ] Should not be able to build a city in the suburbs of another city
-// [ ] Should not be able to build a city in the ocean!
 // [ ] Should not be able to go to standby on top of a city
 // [ ] Can kill your own unit
-// [ ] Moving between land and water uses all remaining movement points without Amphibious Warfare
+// [ ] Moving between land and water should use all remaining movement points without Amphibious Warfare
 // [ ] Add Barracks, Garrison and Military Academy
-// [ ] Add ribbon of units at bottom; clicking on unit describes it (acts as preload)
-// [ ] Building a new unit with a unit on the city loses the first unit
+// [ ] Building a new unit with a unit on the city hides the first unit
 // [ ] Attacking unit should take the place of defeated defending unit
 // [ ] Ships can automove onto land
 // [ ] Barbarians can attack diagonally even if would exceed movement points
