@@ -798,14 +798,14 @@ GenerateMap(Region);
 
 /* Preload images */
 for (X=Ocean; X<=Mountains; X++){
-   document.getElementById('p0_'+X).src = Terrain[X].symbol+".png";
+   document.write("<img style='display:none' src="+Terrain[X].symbol+".png />");
 }
-document.getElementById('p0_'+(Mountains+1)).src = "city_player.png";
+document.write("<img style='display:none' src=city_player.png />");
 
 for (Col=0; Col<StealthFighter-1; Col++){
-   document.write("<img style='display:none' src="+Product[Col+1].imgStub+"_player.png"+" />");
-   document.write("<img style='display:none' src="+Product[Col+1].imgStub+"_focus.png"+" />");
-   document.write("<img style='display:none' src="+Product[Col+1].imgStub+"_enemy.png"+" />");
+   document.write("<img style='display:none' src="+Product[Col+1].imgStub+"_player.png />");
+   document.write("<img style='display:none' src="+Product[Col+1].imgStub+"_focus.png />");
+   document.write("<img style='display:none' src="+Product[Col+1].imgStub+"_enemy.png />");
 }
 
 for (Row=0; Row<7; Row++){
