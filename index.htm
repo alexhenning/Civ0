@@ -831,27 +831,6 @@ Region[StartRow][StartCol+1].unit = 1;
 NextTech();
 Turn();
 
-
-// Bugs
-// [x] Putting a unit on sentry duty in the water displays it as a land unit - 6/11
-// [x] Add terrain defense bonus to combat system; indicate terrain unit is on - 6/13
-// [x] Add veteran system to combat system - 6/13
-// [x] Founding a city causes warrior to turn invisible - 6/13
-// [x] Founding a city displays the unit instead of the city - 6/13
-// [x] Add firepower to combat system - 6/14
-// [x] Should not be able to build a city in the suburbs of another city - 6/15
-// [x] Should not be able to build a city in the ocean! - 6/15
-// [ ] Sometimes initial starting place in a row with no land so both start in the sea
-// [ ] Error when exploring top row
-// [ ] Should not be able to go to standby on top of a city
-// [ ] Can kill your own unit
-// [ ] Moving between land and water should use all remaining movement points without Amphibious Warfare
-// [ ] Add Barracks, Garrison and Military Academy
-// [ ] Building a new unit with a unit on the city hides the first unit
-// [ ] Attacking unit should take the place of defeated defending unit
-// [ ] Ships can automove onto land
-// [ ] Barbarians can attack diagonally even if would exceed movement points
-
 </script>
 <form><input type="button" value="Resume" onClick="ActiveUnit=0; for (U=0; U<Unit.length; U++){Unit[U].active=true;}; Turn();"></form>
 </body>
