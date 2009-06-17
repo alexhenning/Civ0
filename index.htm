@@ -577,8 +577,8 @@ function NextCitizen(C){
 
 function NextProduct(C){
    City[C].productionReserve += Math.max(City[C].production/City[C].citizens,1);
-   if (City[C].productionReserve>=Product[City[C].product].cost){
-      City[C].productionReserve -= Product[City[C].product].cost;
+   if (City[C].productionReserve>=Product[City[C].product].cost/2){
+      City[C].productionReserve -= Product[City[C].product].cost/2;
       Unit.push({type: City[C].product, row: City[C].row, col: City[C].col, movement: Product[City[C].product].mobility, health: Product[City[C].product].health, active: true, player: true, city: C, TroopshipClass: TroopshipClass, veterancy: 1});
       Region[City[C].row][City[C].col].unit = Unit.length-1;
       RegionImage(City[C].row, City[C].col, false);
