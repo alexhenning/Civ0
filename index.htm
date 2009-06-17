@@ -488,8 +488,46 @@ function Combat(Attacker,Defender){
 }
 
 
-function UnitMoveToDestination(U){
-   if(Unit[U].destinationRow==undefined){
+function MoveUnit(U,Row,Col){
+   Region[Unit[U].row][Unit[U].col].unit = -1;
+   LostAtSea = ((Region[Row][Col].terrain==Ocean) && (Region[Unit[U].row][Unit[U].col].terrain==Ocean) && (Rand(100)*Unit[U].movement<=LostAtSeaLikelihood));
+   if (LostAtSea){
+      alert("This unit was lost at sea.");
+      DeleteUnit(U);
+   }else{
+      var OldRow = Unit[U].row;
+      Unit[U].row = Row;
+      Unit[U].col = Col;
+      Unit[U].movement = Math.max(0,Unit[U].movement-Terrain[Region[Row][Col].terrain].movementCost);
+      Region[Row][Col].unit = U;
+   }
+   var Barbarian=-1;
+   for (A=-1; A<=1; A++){
+      for (B=-1; B<=1; B++){
+         //alert(Region[X+A][Y+B].terrain);
+         var S = 'p'+(Row+A)+'_'+(Col+B);
+         if (((A!=0)||(B!=0)) && (document.getElementById(S).src.indexOf('u.png')!=-1) && ((Region[Row+A][Col+B].terrain!=Ocean)||(Rand(10)==1)) && (Rand(Math.abs(Row-StartRow))+Rand(3)>5)){
+            // Barbarians
+            Unit.push({type: Rand(4)+1, row: Row+A, col: Col+B, movement: 0, active: false, player: false, city: -1, health: 10, TroopshipClass: Math.min(Transport,TroopshipClass+Rand(2)-1), veterancy: 1+(Rand(2)-1)/10});
+            Region[Row+A][Col+B].unit = Unit.length-1;
+         }else{
+            if ((Region[Row+A][Col+B].unit!=-1) && !Unit[Region[Row+A][Col+B].unit].player){
+			   Barbarian=Region[Row+A][Col+B].unit;
+			}
+         }
+         RegionImage(Row+A, Col+B, false);
+         if(!LostAtSea && (Unit[U].type==Settler)){
+            document.getElementById(S).title = CitySiteString(Row+A,Col+B);
+         }
+      }
+   }
+   if ((Barbarian!=-1) && (Math.abs(Row-StartRow)>Math.abs(OldRow-StartRow))){
+      alert("Ambushed by a barbarian "+Product[Unit[Barbarian].type].name+"! "+Combat(Barbarian,U));
+   }
+}
+
+function MoveUnitToDestination(U){
+   if((Unit[U].destinationRow==undefined)||(Unit[U].destinationRow==-1)){
       return(false);
    }
    var GoalRow=Unit[U].row;
@@ -497,14 +535,19 @@ function UnitMoveToDestination(U){
    var GoalDistance=Distance(GoalRow,GoalCol,Unit[U].destinationRow,Unit[U].destinationCol);
    for (Row=Unit[U].row-1; Row<=Unit[U].row+1; Row++){
       for (Col=Unit[U].col-1; Col<=Unit[U].col+1; Col++){
-         if ((Region[Row][Col].unit==-1) && (Distance(Row,Col,Unit[U].destinationRow,Unit[U].destinationCol)<GoalDistance)){
+         if ((Region[Row][Col].unit==-1) && (Region[Row][Col].city==-1) && (Distance(Row,Col,Unit[U].destinationRow,Unit[U].destinationCol)<GoalDistance)){
             GoalDistance = Distance(Row,Col,Unit[U].destinationRow,Unit[U].destinationCol);
             GoalRow=Row;
             GoalCol=Col;
          }
       }
    }
-
+   if((Unit[U].row!=GoalRow)||(Unit[U].col!=GoalCol)){
+      MoveUnit(U, GoalRow, GoalCol);
+      return(true);
+   }else{
+      return(false);
+   }
 }
 
 /* Nations */
@@ -664,6 +707,7 @@ function NextTech(){
 
 function Turn(){
    //alert("starting loop with "+ActiveUnit+" and Unit.length of "+Unit.length);
+do{
    while ((ActiveUnit>0) && ((!Unit[ActiveUnit].active) || (Unit[ActiveUnit].movement==0) || (!Unit[ActiveUnit].player))){
       ActiveUnit--;
    }
@@ -714,10 +758,12 @@ function Turn(){
          RegionImage(Unit[ActiveUnit].row, Unit[ActiveUnit].col, true);
       }
    }
+}while(MoveUnitToDestination(ActiveUnit));
 }
 
 
 function i(Row, Col){
+   Unit[ActiveUnit].destinationRow=-1;
    if ((Row==Unit[ActiveUnit].row) & (Col==Unit[ActiveUnit].col)){
       if (Unit[ActiveUnit].type==Settler){
          if ((Region[Row][Col].terrain!=Ocean) && !TooCloseToCity(Row,Col) && (confirm("Build a city here? " + CitySiteString(Row,Col) + "."))){
@@ -739,48 +785,17 @@ function i(Row, Col){
          if (Region[Row][Col].unit!=-1){
             alert(Combat(ActiveUnit,Region[Row][Col].unit));
          }else{
-            Region[Unit[ActiveUnit].row][Unit[ActiveUnit].col].unit = -1;
-            LostAtSea = ((Region[Row][Col].terrain==Ocean) && (Region[Unit[ActiveUnit].row][Unit[ActiveUnit].col].terrain==Ocean) && (Rand(100)*Unit[ActiveUnit].movement<=LostAtSeaLikelihood));
-            if (LostAtSea){
-               alert("This unit was lost at sea.");
-               DeleteUnit(ActiveUnit);
-            }else{
-               var OldRow = Unit[ActiveUnit].row;
-               Unit[ActiveUnit].row = Row;
-               Unit[ActiveUnit].col = Col;
-               Unit[ActiveUnit].movement = Math.max(0,Unit[ActiveUnit].movement-Terrain[Region[Row][Col].terrain].movementCost);
-               Region[Row][Col].unit = ActiveUnit;
-            }
-            var Barbarian=-1;
-            for (A=-1; A<=1; A++){
-               for (B=-1; B<=1; B++){
-                  //alert(Region[X+A][Y+B].terrain);
-                  var S = 'p'+(Row+A)+'_'+(Col+B);
-                  if (((A!=0)||(B!=0)) && (document.getElementById(S).src.indexOf('u.png')!=-1) && (Rand(Math.abs(Row-StartRow))+Rand(3)>6)){
-                     // Barbarians
-                     Unit.push({type: Rand(4)+1, row: Row+A, col: Col+B, movement: 0, active: false, player: false, city: -1, health: 10, TroopshipClass: Math.min(Transport,TroopshipClass+Rand(2)-1), veterancy: 1});
-                     Region[Row+A][Col+B].unit = Unit.length-1;
-                  }else{
-                     if ((Region[Row+A][Col+B].unit!=-1) && !Unit[Region[Row+A][Col+B].unit].player){
-				        Barbarian=Region[Row+A][Col+B].unit;
-				     }
-                  }
-                  RegionImage(Row+A, Col+B, false);
-                  if(!LostAtSea && (Unit[ActiveUnit].type==Settler)){
-                     document.getElementById(S).title = CitySiteString(Row+A,Col+B);
-                  }
-               }
-            }
-            if ((Barbarian!=-1) && (Math.abs(Row-StartRow)>Math.abs(OldRow-StartRow))){
-              alert("Ambushed by a barbarian "+Product[Unit[Barbarian].type].name+"! "+Combat(Barbarian,ActiveUnit));
-            }
+            MoveUnit(ActiveUnit,Row,Col);
          }
          Turn();
       }else{
-         if (document.getElementById('p'+Row+'_'+Col).src=="u.png"){
+         if (document.getElementById('p'+Row+'_'+Col).src!="u.png"){
+            //alert(Row+", "+Col);
 		    Unit[ActiveUnit].destinationRow = Row;
 		    Unit[ActiveUnit].destinationCol = Col;
-		    Turn();
+		    if(MoveUnitToDestination(ActiveUnit)){
+		       Turn();
+		    }
          }else{
             RegionImage(Unit[ActiveUnit].row, Unit[ActiveUnit].col, true);
          }
@@ -832,7 +847,7 @@ NextTech();
 Turn();
 
 </script>
-<form><input type="button" value="Resume" onClick="ActiveUnit=0; for (U=0; U<Unit.length; U++){Unit[U].active=true;}; Turn();"></form>
+<form><input type="button" value="Resume" onClick="ActiveUnit=0; for (U=0; U<Unit.length; U++){Unit[U].active=true;Unit[U].destinationRow=-1}; Turn();"></form>
 </body>
 </html>
 
