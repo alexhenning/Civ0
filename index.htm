@@ -409,14 +409,14 @@ function RegionImage(Row, Col, focus){
    }else{
       if(Region[Row][Col].city!=-1){
          document.getElementById(S).src="city_player.png";
-         var C=Region[Row][Col].city;
-         document.getElementById(S).title = City[C].name+", "+City[C].citizens+" citizens ("+Math.min(City[C].citizens,City[C].happyCitizens)+" happy, "+Math.min(City[C].citizens,City[C].healthyCitizens)+" healthy), producing "+Product[City[C].product].name+" ("+Math.floor(100*City[C].productionReserve/Product[City[C].product].cost)+"%)";
+         document.getElementById(S).title = CityDescription(Region[Row][Col].city,true);
       }else{
          var T=Region[Row][Col].terrain;
          document.getElementById(S).src=Terrain[T].symbol+".png";
          document.getElementById(S).title = Terrain[T].name+", "+Math.floor(100*Terrain[T].defense)+"% defense";
       }
    }
+   return(document.getElementById(S).title);
 }
 
 
@@ -672,6 +672,13 @@ function CitySiteString(Row,Col,Food,Production,Trade){
    }
 }
 
+function CityDescription(C,TellProduct){
+   var S=City[C].name+", "+City[C].citizens+" citizens ("+Math.min(City[C].citizens,City[C].happyCitizens)+" happy, "+Math.min(City[C].citizens,City[C].healthyCitizens)+" healthy)";
+   if(TellProduct){
+     S += ", producing "+Product[City[C].product].name+" ("+Math.floor(100*City[C].productionReserve/Product[City[C].product].cost)+"%)";
+   }
+   return(S);
+}
 
 function TooCloseToCity(Row,Col){
    for (var C=0; C<City.length; C++){
@@ -752,9 +759,9 @@ function NextProduct(C){
             Menu.push({name: Product[X].name, value: X});
          }
       }
-      X = MenuPrompt(City[C].name+" has built "+Product[P].name+". What should they build next? ", Menu);
+      X = MenuPrompt(CityDescription(C,false)+", has built "+Product[P].name+". What should they build next? ", Menu);
       City[C].product = X;
-   }
+   };
    RegionImage(City[C].row,City[C].col,false);
 }
 
@@ -895,7 +902,7 @@ function i(Row, Col){
             Turn();
          }
       }else{
-         if(confirm("Put the unit on sentry duty (standby)?")){
+         if(confirm("Put the unit - "+RegionImage(Row,Col,false)+" - on sentry duty (standby)?")){
             Unit[ActiveUnit].active = false;
             Unit[ActiveUnit].movement = 0;
             RegionImage(Row, Col, false);
@@ -911,16 +918,16 @@ function i(Row, Col){
          }
          Turn();
       }else{
-         if (document.getElementById('p'+Row+'_'+Col).src!="u.png"){
+         //if (document.getElementById('p'+Row+'_'+Col).src!="u.png"){
             //alert(Row+", "+Col);
 		    Unit[ActiveUnit].destinationRow = Row;
 		    Unit[ActiveUnit].destinationCol = Col;
 		    if(MoveUnitToDestination(ActiveUnit)){
 		       Turn();
 		    }
-         }else{
-            RegionImage(Unit[ActiveUnit].row, Unit[ActiveUnit].col, true);
-         }
+         //}else{
+         //   RegionImage(Unit[ActiveUnit].row, Unit[ActiveUnit].col, true);
+         //}
       }
    }
 }
