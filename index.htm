@@ -1,6 +1,9 @@
 <html><title>Civ 0--Civilization: Year 0, a JavaScript open-source implementation of a civilization-style game</title>
-<body style="min-width: 600px; margin: 0px;">
-<div id="message" style="font-size: 12px; color: black; background-color: white; border: 2px solid black; padding 2px; position: absolute; display: none">Random Text</div>
+<body id="body" onload="MessageBox.OnResize()" onresize="MessageBox.OnResize()" style="min-width: 600px; min-height: 510px; height: 100%;  margin: 0px;">
+<div id="toolbar" style="font-size: 16px; color: black; background-color: white; padding 2px; position: fixed; left: 0px; right: 0px; bottom: 0px; height: 30px; vertical-align: middle; max-width: 600px;">
+<div id="message" style="float: left;"></div>
+<form><input id="resumeButton" type="button" style="float: right" value="Resume" onClick="ActiveUnit=0; for (U=0; U<Unit.length; U++){Unit[U].active=true;Unit[U].destinationRow=-1}; Turn();"></form>
+</div>
 <script type="text/javascript">
 
 var Debug = 1;
@@ -772,32 +775,32 @@ function NextProduct(C){
 var ActiveUnit = 0;
 
 MessageBox = {
+    toolbar: document.getElementById("toolbar"),
     element: document.getElementById("message"),
-    SetLocation: function(row, col) {
-        MessageBox.element.style.top = (20 * row + 40) + "px";
-        MessageBox.element.style.left = (20 * col + 10 - ((MessageBox.element.getBoundingClientRect().right - MessageBox.element.getBoundingClientRect().left) / 2)) + "px";
-        MessageBox.SetVisibility(true);
-    },
-    SetVisibility: function(val) {
-        if (val == true) {MessageBox.element.style.display = "block";}
-        else {MessageBox.element.style.display = "none";}
-    },
+    resumeButton: document.getElementById("resumeButton"),
+    body: document.getElementById("body"),
     SetText: function(text) {
         MessageBox.element.innerHTML = text;
-        MessageBox.SetVisibility(true);
     },
-    OnHover: function(row, col, element) {
+    OnHover: function(element) {
         var text; // below is a hack to disable title text in addition a to the custom one on hover
         if (element.title != "" && element.title != null) {text = element.title;}
         else if (element.stored_text == null) {text = "";}
         else {text = element.stored_text;}
 
        MessageBox.SetText(text);
-       MessageBox.SetLocation(row, col);
+       //MessageBox.SetLocation(row, col);
        element.stored_text = text;
        element.title = "";
-       if (text == "") {MessageBox.SetVisibility(false);} // prevents black boxes when their is no text
-   }
+    },
+    OnResize: function() {
+        MessageBox.element.style["max-width"] =  (MessageBox.body.getBoundingClientRect().right - MessageBox.body.getBoundingClientRect().left) - (MessageBox.resumeButton.getBoundingClientRect().right - MessageBox.resumeButton.getBoundingClientRect().left + 10)
+        if (510 < (MessageBox.body.getBoundingClientRect().bottom - MessageBox.body.getBoundingClientRect().top)) {
+            MessageBox.toolbar.style["bottom"] = (MessageBox.body.getBoundingClientRect().bottom + MessageBox.body.getBoundingClientRect().top) - 510;
+        } else {
+            MessageBox.toolbar.style["bottom"] = 0;
+        }
+    }
 }
 
 function MenuPrompt(Message, Menu){
@@ -934,7 +937,7 @@ function i(Row, Col){
 
 for (Row=0; Row<MaxRow; Row++){
    for (Col=0; Col<MaxCol; Col++){
-   	  document.write('<img src=u.png id=p', Row,'_', Col,' onclick="i(', Row, ',', Col, ')" onmouseover="MessageBox.OnHover(', Row, ',', Col, ', this);" />');
+   	  document.write('<img src=u.png id=p', Row,'_', Col,' onclick="i(', Row, ',', Col, ')" onmouseover="MessageBox.OnHover(this);" />');
    }
    document.writeln("<br>");
 }
@@ -975,7 +978,6 @@ NextTech();
 Turn();
 
 </script>
-<form><input type="button" value="Resume" onClick="ActiveUnit=0; for (U=0; U<Unit.length; U++){Unit[U].active=true;Unit[U].destinationRow=-1}; Turn();"></form>
 </body>
 </html>
 
