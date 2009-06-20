@@ -9,6 +9,7 @@
 var Debug = 1;
 
 var Year = 0;
+var ManhattanProjectBuilt = false;
 
 function Rand(X){
    return(Math.floor(Math.random()*X+1));
@@ -412,15 +413,16 @@ function RegionImage(Row, Col, focus){
       }else{
          T = "enemy";
       }
-      R = ", health "+Unit[U].health+", "+(Math.floor(100*Terrain[Region[Unit[U].row][Unit[U].col].terrain].defense))+"% defense";
-      R += ", "+Math.floor(100*Unit[U].veterancy-100)+"% veterancy";
       if (Region[Row][Col].terrain!=Ocean){
          document.getElementById(S).src=Product[Unit[U].type].imgStub+"_"+T+".png";
-         document.getElementById(S).title = Product[Unit[U].type].name+R;
+         R = Product[Unit[U].type].name;
       }else{
          document.getElementById(S).src=Troopship[Unit[U].TroopshipClass].imgStub+"_"+T+".png";
-         document.getElementById(S).title = Troopship[Unit[U].TroopshipClass].name+R;
+         R = Troopship[Unit[U].TroopshipClass].name+" (carrying "+Product[Unit[U].type].name+")";
       }
+      R += ", health "+Unit[U].health+", "+(Math.floor(100*Terrain[Region[Unit[U].row][Unit[U].col].terrain].defense))+"% defense";
+      R += ", "+Math.floor(100*Unit[U].veterancy-100)+"% veterancy";
+      document.getElementById(S).title = R;
    }else{
       if(Region[Row][Col].city!=-1){
          document.getElementById(S).src="city_player.png";
@@ -516,6 +518,15 @@ function NeighboringRegions(Row,Col,Code){
       }
    }
    return(X);
+}
+
+
+function UpdateEntireMap(){
+   for (Row=0; Row<MaxRow; Row++){
+      for (Col=0; Col<MaxCol; Col++){
+         RegionImage(Row,Col,false);
+      }
+   }
 }
 
 
@@ -664,6 +675,17 @@ function MoveUnitToDestination(U){
       return(false);
    }
 }
+
+
+function PeaceInOurTime(){
+   for (U=0; U<Units.length; U++){
+      if (!Units[U].player){
+         Units[U].destinationRow=-1;
+         Units[U].active = false;
+      }
+   }
+}
+
 
 /* Nations */
 
