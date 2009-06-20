@@ -1,9 +1,11 @@
 <html><title>Civ 0--Civilization: Year 0, a JavaScript open-source implementation of a civilization-style game</title>
-<body id="body" onload="MessageBox.OnResize()" onresize="MessageBox.OnResize()" style="min-width: 600px; min-height: 510px; height: 100%;  margin: 0px;">
+<body id="body" onload="Toolbar.OnResize()" onresize="Toolbar.OnResize()" onkeypress="KeyPressHandler(event)" style="min-width: 600px; min-height: 510px; height: 100%;  margin: 0px;">
+
 <div id="toolbar" style="font-size: 16px; color: black; background-color: white; padding 2px; position: fixed; left: 0px; right: 0px; bottom: 0px; height: 30px; vertical-align: middle; max-width: 600px;">
-<div id="message" style="float: left;"></div>
+<div id="message" style="float: left; max-height: 25px; max-width:12px; overflow-x: auto; overflow-y: hidden;"></div>
 <form><input id="resumeButton" type="button" style="float: right" value="Resume" onClick="ActiveUnit=0; for (U=0; U<Unit.length; U++){Unit[U].active=true;Unit[U].destinationRow=-1}; Turn();"></form>
 </div>
+
 <script type="text/javascript">
 
 var Debug = 1;
@@ -844,14 +846,23 @@ function BuildInEveryCity(Building){
 /* UI */
 
 var ActiveUnit = 0;
+OnPhone = true;
 
-MessageBox = {
+function GetWidth(elem) {
+    return elem.getBoundingClientRect().right - elem.getBoundingClientRect().left;
+}
+
+function GetHeight(elem) {
+    return elem.getBoundingClientRect().bottom - elem.getBoundingClientRect().top;
+}
+
+Toolbar = {
     toolbar: document.getElementById("toolbar"),
     element: document.getElementById("message"),
     resumeButton: document.getElementById("resumeButton"),
     body: document.getElementById("body"),
     SetText: function(text) {
-        MessageBox.element.innerHTML = text;
+        Toolbar.element.innerHTML = text;
     },
     OnHover: function(element) {
         var text; // below is a hack to disable title text in addition a to the custom one on hover
@@ -859,18 +870,41 @@ MessageBox = {
         else if (element.stored_text == null) {text = "";}
         else {text = element.stored_text;}
 
-       MessageBox.SetText(text);
-       //MessageBox.SetLocation(row, col);
+       Toolbar.SetText(text);
        element.stored_text = text;
        element.title = "";
     },
     OnResize: function() {
-        MessageBox.element.style["max-width"] =  (MessageBox.body.getBoundingClientRect().right - MessageBox.body.getBoundingClientRect().left) - (MessageBox.resumeButton.getBoundingClientRect().right - MessageBox.resumeButton.getBoundingClientRect().left + 10)
-        if (510 < (MessageBox.body.getBoundingClientRect().bottom - MessageBox.body.getBoundingClientRect().top)) {
-            MessageBox.toolbar.style["bottom"] = (MessageBox.body.getBoundingClientRect().bottom + MessageBox.body.getBoundingClientRect().top) - 510;
+        //alert(Toolbar.element.style.maxWidth);
+        Toolbar.element.style.maxWidth =  Math.floor(GetWidth(Toolbar.body) - GetWidth(Toolbar.resumeButton) - GetWidth(Toolbar.resumeButton)) + "px"
+        //alert(Toolbar.element.style.maxWidth);
+        if (510 < (Toolbar.body.getBoundingClientRect().bottom - Toolbar.body.getBoundingClientRect().top)) {
+            Toolbar.toolbar.style["bottom"] = (Toolbar.body.getBoundingClientRect().bottom) - 510;
         } else {
-            MessageBox.toolbar.style["bottom"] = 0;
+            Toolbar.toolbar.style["bottom"] = 0;
         }
+    }
+}
+
+function KeyPressHandler(event) {
+    var key = String.fromCharCode(event.which ? event.which : event.keyCode);
+    var unit = Unit[ActiveUnit];
+    switch (key) {
+    case "*": case "r": ActiveUnit=0; for (U=0; U<Unit.length; U++){Unit[U].active=true;Unit[U].destinationRow=-1}; Turn(); break;
+    case "t": OnPhone = !OnPhone; break;
+
+    //movement OnPhone true = 123\n456\n789\n0 phone set up | OnPhone false = 789\n456\n123\n0 keyboard setup
+    case "1": if (OnPhone) {i(unit.row-1, unit.col-1);} else {i(unit.row+1, unit.col-1);} break;
+    case "2": if (OnPhone) {i(unit.row-1, unit.col);} else {i(unit.row+1, unit.col);} break;
+    case "3": if (OnPhone) {i(unit.row-1, unit.col+1);} else {i(unit.row+1, unit.col+1);} break;
+    case "4": i(unit.row, unit.col-1); break;
+    case "5": i(unit.row, unit.col); break;
+    case "6": i(unit.row, unit.col+1); break;
+    case "7": if (OnPhone) {i(unit.row+1, unit.col-1);} else {i(unit.row-1, unit.col-1);} break;
+    case "8": if (OnPhone) {i(unit.row+1, unit.col);} else {i(unit.row-1, unit.col);} break;
+    case "9": if (OnPhone) {i(unit.row+1, unit.col+1);} else {i(unit.row-1, unit.col+1);} break;
+    
+    //default: alert(key);
     }
 }
 
@@ -1016,7 +1050,7 @@ function i(Row, Col){
 
 for (Row=0; Row<MaxRow; Row++){
    for (Col=0; Col<MaxCol; Col++){
-   	  document.write('<img src=u.png id=p', Row,'_', Col,' onclick="i(', Row, ',', Col, ')" onmouseover="MessageBox.OnHover(this);" />');
+   	  document.write('<img src=u.png id=p', Row,'_', Col,' onclick="i(', Row, ',', Col, ')" onmouseover="Toolbar.OnHover(this);" />');
    }
    document.writeln("<br>");
 }
