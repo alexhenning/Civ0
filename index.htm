@@ -696,7 +696,7 @@ function TooCloseToCity(Row,Col){
 function FoundCity(Row,Col,Player){
    Food = 0; Production=0; Trade=0;
    CitySiteString(Row,Col,Food,Production,Trade);
-   City.push({name: "Unnamed", foodReserve: 0, productionReserve: 0, row: Row, col: Col, food: Food, production: Production, trade: Trade, product: Warrior, citizens: 2, happyCitizens: 4, healthyCitizens: 4});
+   City.push({name: "Unnamed", foodReserve: 0, productionReserve: 0, row: Row, col: Col, food: Food, production: Production, trade: Trade, science: 1, product: Warrior, citizens: 2, happyCitizens: 4, healthyCitizens: 4});
    var C = City.length-1;
    Region[Row][Col].city = C;
    City[C].building = new Array();
@@ -817,6 +817,11 @@ function MenuPrompt(Message, Menu){
 }
 
 function NextTech(){
+   for(C=0; C<City.length; C++){
+      if(City[C].player){
+         TechReserve += Math.max(City[C].science*City[C].trade*WorkingCitizenOutput(C),1)
+      }
+   }
    if (TechReserve>=CurrentTechCost){
       TechReserve -= CurrentTechCost;
    	  Tech[CurrentTech].playerOwned = true;
