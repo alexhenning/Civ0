@@ -12,7 +12,7 @@
 
 <div id="toolbar" style="font-size: 16px; color: black; background-color: white; padding 2px; position: fixed; left: 0px; right: 0px; bottom: 0px; height: 30px; max-width: 600px;">
 <div id="message" style="float: left; max-height: 25px; max-width:12px; overflow-x: auto; overflow-y: hidden;"></div>
-<form><input id="resumeButton" type="button" style="float: right" value="Resume" onClick="ActiveUnit=0; for (U=0; U<Unit.length; U++){Unit[U].active=true;Unit[U].destinationRow=-1}; Turn();"></form>
+<form><input id="resumeButton" type="button" style="float: right" value="Resume" onClick="ActiveUnit=0; for (U=0; U<Unit.length; U++) {Unit[U].active=true;Unit[U].destinationRow=-1}; Turn();"></form>
 </div>
 <script type="text/javascript">
 
@@ -22,12 +22,12 @@ var Year = 0;
 var ManhattanProjectBuilt = false;
 
 
-function Rand(X){
-   return(Math.floor(Math.random()*X+1));
+function Rand(X) {
+    return(Math.floor(Math.random()*X+1));
 }
 
-function Distance(Row1, Col1, Row2, Col2){
-   return Math.sqrt(Math.pow(Row1-Row2,2)+Math.pow(Col1-Col2,2));
+function Distance(Row1, Col1, Row2, Col2) {
+    return Math.sqrt(Math.pow(Row1-Row2,2)+Math.pow(Col1-Col2,2));
 }
 
 var Terrain = new Array();
@@ -54,9 +54,9 @@ Terrain[Hills] = {name: "Hills", symbol: "h", food: 1, production: 0, trade: 0, 
 Mountains = 10;
 Terrain[Mountains] = {name: "Mountain", symbol: "m", food: 0, production: 1, trade: 0, movementCost: 3, defense: 3};
 TerrainSymbol = new Array();
-for (X=Ocean; X<=Mountains; X++){
-   TerrainSymbol[Terrain[X].symbol] = X;
-   //alert(X + ", '" + Terrain[X].symbol + "', " + TerrainSymbol[Terrain[X].symbol]);
+for (X=Ocean; X<=Mountains; X++) {
+    TerrainSymbol[Terrain[X].symbol] = X;
+    //alert(X + ", '" + Terrain[X].symbol + "', " + TerrainSymbol[Terrain[X].symbol]);
 }
 
 // Technology can affect these global variables
@@ -418,8 +418,8 @@ SunTzusWarAcademy = 26; Wonder[SunTzusWarAcademy] = {name: "Sun Tzu's War Academ
 UnitedNations = 27; Wonder[UnitedNations] = {name: "United Nations", prereq: Communism, obsoleteBy: FutureTech, cost: 600, code: 'PeaceInOurTime();', help: "All enemy units cease attacks and become inactive."};
 WomensSuffrage = 28; Wonder[WomensSuffrage] = {name: "Women's Suffrage", prereq: Industrialization, obsoleteBy: FutureTech, cost: 600, code: 'ForCitiesWith(Houses,"City[C].production *= 1.25;")', help: "Boosts production points by 25% for each city."};
 MaxWonder = WomensSuffrage;
-for (W=1; W<MaxWonder; W++){
-   Wonder[W].player = false;
+for (W=1; W<MaxWonder; W++) {
+    Wonder[W].player = false;
 }
 CurrentWonder = 0;
 CurrentWonderCost = 1;
@@ -439,404 +439,404 @@ var Unit = new Array();
 
 /* Techs */
 
-function SetTechHelp(){
-   for (T=1; T<MaxTech; T++){
-      Tech[T].help = "Enables ";
-   }
-   for (U=1; U<MaxUnit; U++){
-      Tech[Product[U].prereq].help += Product[U].name + ", ";
-   }
-   for (U=Troopship; U<MaxTroopship; U++){
-      Tech[Troopship[U].prereq].help += Troopship[U].name + ", ";
-   }
-   for (B=MaxUnit+1; B<MaxProduct; B++){
-      Tech[Product[B].prereq].help += Product[B].name + ", ";
-   }
-   for (W=1; W<MaxWonder; W++){
-      Tech[Wonder[W].prereq].help += Wonder[W].name + ", ";
-   }
-   for (T=1; T<MaxTech; T++){
-      Tech[Tech[T].prereq1].help += Tech[T].name + ", ";
-      Tech[Tech[T].prereq2].help += Tech[T].name + ", ";
-   }
-   for (T=1; T<MaxTech; T++){
-      S = String(Tech[T].code);
-      if (S.indexOf("HealingRate")!=-1){
-         Tech[T].help += "faster healing, ";
-      }
-      if (S.indexOf("LostAtSeaLikelihood")!=-1){
-         Tech[T].help += "safer sailing, ";
-      }
-      if (Tech[T].help=="Enables "){
-         Tech[T].help = "No benefits";
-      }else{
-         Tech[T].help = Tech[T].help.substr(0,Tech[T].help.length-2);
-      }
-      //document.writeln(Tech[T].name, " - ", Tech[T].help, "<br>");
-   }
+function SetTechHelp() {
+    for (T=1; T<MaxTech; T++) {
+	Tech[T].help = "Enables ";
+    }
+    for (U=1; U<MaxUnit; U++) {
+	Tech[Product[U].prereq].help += Product[U].name + ", ";
+    }
+    for (U=Troopship; U<MaxTroopship; U++) {
+	Tech[Troopship[U].prereq].help += Troopship[U].name + ", ";
+    }
+    for (B=MaxUnit+1; B<MaxProduct; B++) {
+	Tech[Product[B].prereq].help += Product[B].name + ", ";
+    }
+    for (W=1; W<MaxWonder; W++) {
+	Tech[Wonder[W].prereq].help += Wonder[W].name + ", ";
+    }
+    for (T=1; T<MaxTech; T++) {
+	Tech[Tech[T].prereq1].help += Tech[T].name + ", ";
+	Tech[Tech[T].prereq2].help += Tech[T].name + ", ";
+    }
+    for (T=1; T<MaxTech; T++) {
+	S = String(Tech[T].code);
+	if (S.indexOf("HealingRate")!=-1) {
+	    Tech[T].help += "faster healing, ";
+	}
+	if (S.indexOf("LostAtSeaLikelihood")!=-1) {
+	    Tech[T].help += "safer sailing, ";
+	}
+	if (Tech[T].help=="Enables ") {
+	    Tech[T].help = "No benefits";
+	} else {
+	    Tech[T].help = Tech[T].help.substr(0,Tech[T].help.length-2);
+	}
+	//document.writeln(Tech[T].name, " - ", Tech[T].help, "<br>");
+    }
 }
 
 
 /* Regions */
 
-function TerrainAtLatitude(Row){
-   switch (Rand(20)){
-      case 1: return Mountains; break;
-      case 2: return Hills; break;
-      default:
-         Latitude = Math.floor(Row/MaxRow*17);
-         if (Latitude>8){Latitude = 17-Latitude};
-         Choices = String(TerrainProbability[Latitude]);
-         Choice = Choices.charAt(Rand(Choices.length)-1);
-         //if (Debug){Debug = confirm(Choice + ": " + TerrainSymbol[Choice] + ". Continue debugging?");}
-         return TerrainSymbol[Choice];
-   }
+function TerrainAtLatitude(Row) {
+    switch (Rand(20)) {
+    case 1: return Mountains; break;
+    case 2: return Hills; break;
+    default:
+	Latitude = Math.floor(Row/MaxRow*17);
+	if (Latitude>8) {Latitude = 17-Latitude};
+	Choices = String(TerrainProbability[Latitude]);
+	Choice = Choices.charAt(Rand(Choices.length)-1);
+	//if (Debug) {Debug = confirm(Choice + ": " + TerrainSymbol[Choice] + ". Continue debugging?");}
+	return TerrainSymbol[Choice];
+    }
 }
 
-function RegionImage(Row, Col, focus){
-   var R;
-   var S = 'p'+Row+'_'+Col;
-   var U = Region[Row][Col].unit;
-   if ((U!=-1)&&(Unit[U] !== undefined)){
-      var T;
-      if (Unit[U].player){
-         if (focus){
-            T = "focus";
-            document.getElementById(S).focus();
-         }else{
-            T = "player";
-         }
-      }else{
-         T = "enemy";
-      }
-      if (Region[Row][Col].terrain!=Ocean){
-         document.getElementById(S).src=Product[Unit[U].type].imgStub+"_"+T+".png";
-         R = Product[Unit[U].type].name;
-      }else{
-         document.getElementById(S).src=Troopship[Unit[U].TroopshipClass].imgStub+"_"+T+".png";
-         R = Troopship[Unit[U].TroopshipClass].name+" (carrying "+Product[Unit[U].type].name+")";
-      }
-      R += ", health "+Unit[U].health+", "+(Math.floor(100*Terrain[Region[Unit[U].row][Unit[U].col].terrain].defense))+"% defense";
-      R += ", "+Math.floor(100*Unit[U].veterancy-100)+"% veterancy";
-      document.getElementById(S).title = R;
-   }else{
-      if(Region[Row][Col].city!=-1){
-         document.getElementById(S).src="city_player.png";
-         document.getElementById(S).title = CityDescription(Region[Row][Col].city,true);
-      }else{
-         var T=Region[Row][Col].terrain;
-         document.getElementById(S).src=Terrain[T].symbol+".png";
-         document.getElementById(S).title = Terrain[T].name+", "+Math.floor(100*Terrain[T].defense)+"% defense";
-      }
-   }
-   return(document.getElementById(S).title);
-}
-
-
-function RegionTitle(Row, Col, Title){
-   var S = 'p'+Row+'_'+Col;
-   document.getElementById(S).title = Title;
-}
-
-function GenerateMap(Region){
-
-   for (Row=-1; Row<=MaxRow+1; Row++){
-      Region[Row] = new Array();
-   }
-
-   // sea by default
-   for (Row=-1; Row<=MaxRow+1; Row++){
-      for (Col=-1; Col<=MaxCol+1; Col++){
-         Region[Row][Col] = {terrain: Ocean, unit: -1, city: -1};
-      }
-   }
-   // glaciers
-   for (Col=-1; Col<MaxCol+1; Col++){
-      Region[0][Col].terrain = Glacier;
-      if (Rand(3)==1){
-         Region[1][Col].terrain = Glacier;
-      }
-      if (Rand(6)==1){
-         Region[MaxRow-2][Col].terrain = Glacier;
-      }
-	  Region[MaxRow-1][Col].terrain = Glacier;
-   }
-
-
-   Land1 = Rand(6)+5;
-   LandEnd1 = Land1+Rand(5)+Rand(5);
-   LandOffset2 = Rand(6)+10;
-   Land2 = LandEnd1+LandOffset2;
-   LandEnd2 = Math.min(Land2+Rand(5)+Rand(5),MaxCol);
-   // insert a channel at the narrowest point
-   NarrowestWidth = MaxCol;
-   NarrowestRow = MaxRow;
-   for (Row=1; Row<MaxRow-3; Row++){
-      for (Col=Land1; Col<=LandEnd1; Col++){
-         Region[Row][Col].terrain = TerrainAtLatitude(Row);
-      }
-      if (Row>Rand(4)) {
-         for (Col=Land2; Col<=LandEnd2; Col++){
-            Region[Row][Col].terrain = TerrainAtLatitude(Row);
-         }
-         if ((Row>4) & (LandEnd1-Land1>=2) & (StartRow==0)){
-            StartRow = Row;
-            StartCol = Land1+Rand(LandEnd1-Land1-1);
-         }
-      }
-      Land1 = Math.max(Land1+Rand(5)-3,1);
-      LandEnd1 = LandEnd1+Rand(3)-2;
-      if (LandEnd1<Land1-1){
-         LandEnd1=Land1+Rand(5)+5;
-      	 NarrowestRow=Row;
-      }
-      if ((Row>3+Rand(3))&&(LandEnd1-Land1<NarrowestWidth)){
-         NarrowestWidth=LandEnd1-Land1;
-         NarrowestRow=Row;
-      }
-      Land2 = LandEnd1+LandOffset2+Rand(3)-2;
-      LandEnd2 = Math.min(LandEnd2+Rand(5)-3,MaxCol);
-   }
-   for (Col=0; Col<MaxCol/2; Col++){
-      Region[NarrowestRow][Col].terrain = Ocean;
-   }
-
+function RegionImage(Row, Col, focus) {
+    var R;
+    var S = 'p'+Row+'_'+Col;
+    var U = Region[Row][Col].unit;
+    if ((U!=-1)&&(Unit[U] !== undefined)) {
+	var T;
+	if (Unit[U].player) {
+	    if (focus) {
+		T = "focus";
+		document.getElementById(S).focus();
+	    } else {
+		T = "player";
+	    }
+	} else {
+	    T = "enemy";
+	}
+	if (Region[Row][Col].terrain!=Ocean) {
+	    document.getElementById(S).src=Product[Unit[U].type].imgStub+"_"+T+".png";
+	    R = Product[Unit[U].type].name;
+	} else {
+	    document.getElementById(S).src=Troopship[Unit[U].TroopshipClass].imgStub+"_"+T+".png";
+	    R = Troopship[Unit[U].TroopshipClass].name+" (carrying "+Product[Unit[U].type].name+")";
+	}
+	R += ", health "+Unit[U].health+", "+(Math.floor(100*Terrain[Region[Unit[U].row][Unit[U].col].terrain].defense))+"% defense";
+	R += ", "+Math.floor(100*Unit[U].veterancy-100)+"% veterancy";
+	document.getElementById(S).title = R;
+    } else {
+	if(Region[Row][Col].city!=-1) {
+	    document.getElementById(S).src="city_player.png";
+	    document.getElementById(S).title = CityDescription(Region[Row][Col].city,true);
+	} else {
+	    var T=Region[Row][Col].terrain;
+	    document.getElementById(S).src=Terrain[T].symbol+".png";
+	    document.getElementById(S).title = Terrain[T].name+", "+Math.floor(100*Terrain[T].defense)+"% defense";
+	}
+    }
+    return(document.getElementById(S).title);
 }
 
 
-function NeighboringRegions(Row,Col,Code){
-   var X=0;
-   for (var A=-1; A<=1; A++){
-      for (var B=-1; B<=1; B++){
-         if(eval("Region["+(Row+A)+"]["+(Col+B)+"]"+Code)){
-            X++;
-         }
-      }
-   }
-   return(X);
+function RegionTitle(Row, Col, Title) {
+    var S = 'p'+Row+'_'+Col;
+    document.getElementById(S).title = Title;
+}
+
+function GenerateMap(Region) {
+
+    for (Row=-1; Row<=MaxRow+1; Row++) {
+	Region[Row] = new Array();
+    }
+
+    // sea by default
+    for (Row=-1; Row<=MaxRow+1; Row++) {
+	for (Col=-1; Col<=MaxCol+1; Col++) {
+	    Region[Row][Col] = {terrain: Ocean, unit: -1, city: -1};
+	}
+    }
+    // glaciers
+    for (Col=-1; Col<MaxCol+1; Col++) {
+	Region[0][Col].terrain = Glacier;
+	if (Rand(3)==1) {
+	    Region[1][Col].terrain = Glacier;
+	}
+	if (Rand(6)==1) {
+	    Region[MaxRow-2][Col].terrain = Glacier;
+	}
+	Region[MaxRow-1][Col].terrain = Glacier;
+    }
+
+
+    Land1 = Rand(6)+5;
+    LandEnd1 = Land1+Rand(5)+Rand(5);
+    LandOffset2 = Rand(6)+10;
+    Land2 = LandEnd1+LandOffset2;
+    LandEnd2 = Math.min(Land2+Rand(5)+Rand(5),MaxCol);
+    // insert a channel at the narrowest point
+    NarrowestWidth = MaxCol;
+    NarrowestRow = MaxRow;
+    for (Row=1; Row<MaxRow-3; Row++) {
+	for (Col=Land1; Col<=LandEnd1; Col++) {
+	    Region[Row][Col].terrain = TerrainAtLatitude(Row);
+	}
+	if (Row>Rand(4)) {
+	    for (Col=Land2; Col<=LandEnd2; Col++) {
+		Region[Row][Col].terrain = TerrainAtLatitude(Row);
+	    }
+	    if ((Row>4) & (LandEnd1-Land1>=2) & (StartRow==0)) {
+		StartRow = Row;
+		StartCol = Land1+Rand(LandEnd1-Land1-1);
+	    }
+	}
+	Land1 = Math.max(Land1+Rand(5)-3,1);
+	LandEnd1 = LandEnd1+Rand(3)-2;
+	if (LandEnd1<Land1-1) {
+	    LandEnd1=Land1+Rand(5)+5;
+	    NarrowestRow=Row;
+	}
+	if ((Row>3+Rand(3))&&(LandEnd1-Land1<NarrowestWidth)) {
+	    NarrowestWidth=LandEnd1-Land1;
+	    NarrowestRow=Row;
+	}
+	Land2 = LandEnd1+LandOffset2+Rand(3)-2;
+	LandEnd2 = Math.min(LandEnd2+Rand(5)-3,MaxCol);
+    }
+    for (Col=0; Col<MaxCol/2; Col++) {
+	Region[NarrowestRow][Col].terrain = Ocean;
+    }
+
 }
 
 
-function UpdateEntireMap(){
-   for (Row=0; Row<MaxRow; Row++){
-      for (Col=0; Col<MaxCol; Col++){
-         RegionImage(Row,Col,false);
-      }
-   }
+function NeighboringRegions(Row,Col,Code) {
+    var X=0;
+    for (var A=-1; A<=1; A++) {
+	for (var B=-1; B<=1; B++) {
+	    if(eval("Region["+(Row+A)+"]["+(Col+B)+"]"+Code)) {
+		X++;
+	    }
+	}
+    }
+    return(X);
+}
+
+
+function UpdateEntireMap() {
+    for (Row=0; Row<MaxRow; Row++) {
+	for (Col=0; Col<MaxCol; Col++) {
+	    RegionImage(Row,Col,false);
+	}
+    }
 }
 
 
 /* Units */
-function UnitString(){
-   var S=Product[Unit[0].type].name;
-   for (U=1; U<Unit.length; U++){
-      S = S + ", " + Product[Unit[U].type].name;
-   }
-   return(S);
+function UnitString() {
+    var S=Product[Unit[0].type].name;
+    for (U=1; U<Unit.length; U++) {
+	S = S + ", " + Product[Unit[U].type].name;
+    }
+    return(S);
 }
 
-function DeleteUnit(U){
-   //alert("["+Unit[U].row+","+Unit[U].col+"]");
-   Region[Unit[U].row][Unit[U].col].unit = -1;
-   RegionImage(Unit[U].row,Unit[U].col,false);
-   //alert(UnitString());
-   if(U<Unit.length-1){
-      if (ActiveUnit==U) {ActiveUnit = Unit.length-2};
-      Unit[U] = Unit[Unit.length-1];
-      Region[Unit[U].row][Unit[U].col].unit = U;
-      //RegionImage(Unit[U].row,Unit[U].col,false);
-      //alert("["+Unit[U].row+","+Unit[U].col+"].unit="+Region[Unit[U].row][Unit[U].col].unit);
-      Unit.pop();
-   }else{
-      Unit.pop();
-      ActiveUnit = Unit.length-1;
-   }
-   //alert(UnitString());
+function DeleteUnit(U) {
+    //alert("["+Unit[U].row+","+Unit[U].col+"]");
+    Region[Unit[U].row][Unit[U].col].unit = -1;
+    RegionImage(Unit[U].row,Unit[U].col,false);
+    //alert(UnitString());
+    if(U<Unit.length-1) {
+	if (ActiveUnit==U) {ActiveUnit = Unit.length-2};
+	Unit[U] = Unit[Unit.length-1];
+	Region[Unit[U].row][Unit[U].col].unit = U;
+	//RegionImage(Unit[U].row,Unit[U].col,false);
+	//alert("["+Unit[U].row+","+Unit[U].col+"].unit="+Region[Unit[U].row][Unit[U].col].unit);
+	Unit.pop();
+    } else {
+	Unit.pop();
+	ActiveUnit = Unit.length-1;
+    }
+    //alert(UnitString());
 }
 
-function IncreaseUnitVeterancy(U){
-   var R = Rand(10)/10+1;
-   if (R>Unit[U].veterancy){
-     Unit[U].veterancy = (Unit[U].veterancy+R)/2;
-   }
-}
-
-
-function DefenseStrength(Attacker,Defender){
-   var DefenseStr=Product[Unit[Defender].type].defense*Unit[Defender].veterancy*Terrain[Region[Unit[Defender].row][Unit[Defender].col].terrain].defense;
-   var C=Region[Unit[Defender].row][Unit[Defender].col].city;
-   if (C>=0){
-      DefenseStr *= City[C].defenseAgainst[Unit[Attacker].kind];
-   }
-   return(DefenseStr);
-}
-
-function Combat(Attacker,Defender){
-   //alert("Combat! "+Attacker+" vs. "+Defender);
-   var AttackStrength = Product[Unit[Attacker].type].attack*Unit[Attacker].veterancy;
-   var DefenseStr = DefenseStrength(Attacker,Defender);
-   for (var Round=1; Round<10; Round++){
-      if (Rand(100)<100*AttackStrength/(AttackStrength+DefenseStrength)){
-         Unit[Defender].health-=2*Product[Unit[Attacker].type].firepower;
-      }else{
-         Unit[Attacker].health-=2*Product[Unit[Defender].type].firepower;
-      }
-   }
-   //alert("Combat! "+Unit[Attacker].health+" vs. "+Unit[Defender].health);
-   Unit[Defender].health=Math.max(Unit[Defender].health,0);
-   Unit[Attacker].health=Math.max(Unit[Attacker].health,0);
-   var S = ""
-   /* Careful: Deletions can change the order of the Unit array and invalidate subsequent indices */
-   if ((Unit[Attacker].health==0) && (Unit[Defender].health==0)){
-      DeleteUnit(Attacker);
-      DeleteUnit(Defender);
-      S="Both units were killed in combat.";
-   }else{
-      if (Unit[Attacker].health==0){
-         RegionImage(Unit[Defender].row,Unit[Defender].col,false);
-         IncreaseUnitVeterancy(Defender);
-         S = "The attacker was killed in combat. Defender's health is "+Unit[Defender].health+".";
-         DeleteUnit(Attacker);
-      }else{
-         if (Unit[Defender].health==0){
-            RegionImage(Unit[Attacker].row,Unit[Attacker].col,false);
-            IncreaseUnitVeterancy(Attacker);
-            S="The defender was killed in combat. Attacker's health is "+Unit[Attacker].health+".";
-	        DeleteUnit(Defender);
-         }else{
-            RegionImage(Unit[Defender].row,Unit[Defender].col,false);
-            RegionImage(Unit[Attacker].row,Unit[Attacker].col,false);
-            S="Combat was a draw. The attacker's health is "+Unit[Attacker].health+"; the defender's health is "+Unit[Defender].health+".";
-         }
-      }
-   }
-   return(S);
+function IncreaseUnitVeterancy(U) {
+    var R = Rand(10)/10+1;
+    if (R>Unit[U].veterancy) {
+	Unit[U].veterancy = (Unit[U].veterancy+R)/2;
+    }
 }
 
 
-function MoveUnit(U,Row,Col){
-   Region[Unit[U].row][Unit[U].col].unit = -1;
-   LostAtSea = ((Unit[U].player) && (Region[Row][Col].terrain==Ocean) && (Region[Unit[U].row][Unit[U].col].terrain==Ocean) && (Rand(100)*Unit[U].movement<=LostAtSeaLikelihood));
-   if (LostAtSea){
-      alert("This unit was lost at sea.");
-      DeleteUnit(U);
-   }else{
-      var OldRow = Unit[U].row;
-      Unit[U].row = Row;
-      Unit[U].col = Col;
-      Unit[U].movement = Math.max(0,Unit[U].movement-Terrain[Region[Row][Col].terrain].movementCost);
-      Region[Row][Col].unit = U;
-   }
-   var Barbarian=-1;
-   for (A=-1; A<=1; A++){
-      for (B=-1; B<=1; B++){
-         //alert(Region[X+A][Y+B].terrain);
-         var S = 'p'+(Row+A)+'_'+(Col+B);
-         if (((A!=0)||(B!=0)) && (document.getElementById(S).src.indexOf('u.png')!=-1) && ((Region[Row+A][Col+B].terrain!=Ocean)||(Rand(10)==1)) && (Rand(Math.abs(Row-StartRow))+Rand(3)>5)){
-            // Barbarians
-            Unit.push({type: Rand(4)+1, row: Row+A, col: Col+B, movement: 0, active: false, player: false, city: -1, health: 10, TroopshipClass: Math.min(Transport,TroopshipClass+Rand(2)-1), veterancy: 1+(Rand(2)-1)/10});
-            Region[Row+A][Col+B].unit = Unit.length-1;
-         }else{
-            if ((Region[Row+A][Col+B].unit!=-1) && !Unit[Region[Row+A][Col+B].unit].player){
-			   Barbarian=Region[Row+A][Col+B].unit;
-               if(Rand(25)<=5+City.length){
-                  Unit[Barbarian].destinationRow = StartRow;
-                  Unit[Barbarian].destinationCol = StartCol;
-                  Unit[Barbarian].active = true;
-               }
-			}
-         }
-         RegionImage(Row+A, Col+B, false);
-         if(!LostAtSea && (Unit[U].type==Settler)){
-            document.getElementById(S).title = CitySiteString(Row+A,Col+B);
-         }
-      }
-   }
-   if ((Unit[U].player) && (Barbarian!=-1) && (Math.abs(Row-StartRow)>Math.abs(OldRow-StartRow))){
-   	  RegionImage(Row, Col, true);
-      alert("Ambushed by a barbarian "+Product[Unit[Barbarian].type].name+"! "+Combat(Barbarian,U));
-   }
+function DefenseStrength(Attacker,Defender) {
+    var DefenseStr=Product[Unit[Defender].type].defense*Unit[Defender].veterancy*Terrain[Region[Unit[Defender].row][Unit[Defender].col].terrain].defense;
+    var C=Region[Unit[Defender].row][Unit[Defender].col].city;
+    if (C>=0) {
+	DefenseStr *= City[C].defenseAgainst[Unit[Attacker].kind];
+    }
+    return(DefenseStr);
 }
 
-function CombatNeighboringUnit(Attacker){
-   var GoalRow=Unit[Attacker].row;
-   var GoalCol=Unit[Attacker].col;
-   var GoalCost=99;
-   for (Row=Unit[Attacker].row-1; Row<=Unit[Attacker].row+1; Row++){
-      for (Col=Unit[Attacker].col-1; Col<=Unit[Attacker].col+1; Col++){
-         DefenseStr = DefenseStrength(Attacker,Region[Row][Col].unit);
-         if ((Region[Row][Col].unit>=0) && (DefenseStr<GoalCost)){
-            GoalRow=Row;
-            GoalCol=Col;
-            GoalCost=DefenseStr;
-         }
-      }
-   }
-   if((Unit[Attacker].row!=GoalRow)||(Unit[Attacker].col!=GoalCol)){
-      CombatUnit(Attacker, Region[GoalRow][GoalCol].unit);
-      return(true);
-   }else{
-      return(false);
-   }
-}
-
-function MoveUnitToDestination(U){
-   if((Unit[U].destinationRow==undefined)||(Unit[U].destinationRow==-1)){
-      return(false);
-   }
-   var GoalRow=Unit[U].row;
-   var GoalCol=Unit[U].col;
-   var GoalDistance=Distance(GoalRow,GoalCol,Unit[U].destinationRow,Unit[U].destinationCol);
-   var GoalCost=99;
-   for (Row=Unit[U].row-1; Row<=Unit[U].row+1; Row++){
-      for (Col=Unit[U].col-1; Col<=Unit[U].col+1; Col++){
-         if ((Region[Row][Col].unit==-1) && (Region[Row][Col].city==-1) && (Distance(Row,Col,Unit[U].destinationRow,Unit[U].destinationCol)<=GoalDistance)){
-            if ((Distance(Row,Col,Unit[U].destinationRow,Unit[U].destinationCol)<GoalDistance)||(Terrain[Region[Row][Col].terrain].movementCost<GoalCost)){
-               GoalDistance = Distance(Row,Col,Unit[U].destinationRow,Unit[U].destinationCol);
-               GoalRow=Row;
-               GoalCol=Col;
-               GoalCost=Terrain[Region[Row][Col].terrain].movementCost;
-            }
-         }
-      }
-   }
-   if((Unit[U].row!=GoalRow)||(Unit[U].col!=GoalCol)){
-      MoveUnit(U, GoalRow, GoalCol);
-      return(true);
-   }else{
-      if(!Unit[U].player){
-         CombatNeighboringUnit(U);
-      }
-      return(false);
-   }
+function Combat(Attacker,Defender) {
+    //alert("Combat! "+Attacker+" vs. "+Defender);
+    var AttackStrength = Product[Unit[Attacker].type].attack*Unit[Attacker].veterancy;
+    var DefenseStr = DefenseStrength(Attacker,Defender);
+    for (var Round=1; Round<10; Round++) {
+	if (Rand(100)<100*AttackStrength/(AttackStrength+DefenseStrength)) {
+	    Unit[Defender].health-=2*Product[Unit[Attacker].type].firepower;
+	} else {
+	    Unit[Attacker].health-=2*Product[Unit[Defender].type].firepower;
+	}
+    }
+    //alert("Combat! "+Unit[Attacker].health+" vs. "+Unit[Defender].health);
+    Unit[Defender].health=Math.max(Unit[Defender].health,0);
+    Unit[Attacker].health=Math.max(Unit[Attacker].health,0);
+    var S = ""
+	/* Careful: Deletions can change the order of the Unit array and invalidate subsequent indices */
+	if ((Unit[Attacker].health==0) && (Unit[Defender].health==0)) {
+	    DeleteUnit(Attacker);
+	    DeleteUnit(Defender);
+	    S="Both units were killed in combat.";
+	} else {
+	    if (Unit[Attacker].health==0) {
+		RegionImage(Unit[Defender].row,Unit[Defender].col,false);
+		IncreaseUnitVeterancy(Defender);
+		S = "The attacker was killed in combat. Defender's health is "+Unit[Defender].health+".";
+		DeleteUnit(Attacker);
+	    } else {
+		if (Unit[Defender].health==0) {
+		    RegionImage(Unit[Attacker].row,Unit[Attacker].col,false);
+		    IncreaseUnitVeterancy(Attacker);
+		    S="The defender was killed in combat. Attacker's health is "+Unit[Attacker].health+".";
+		    DeleteUnit(Defender);
+		} else {
+		    RegionImage(Unit[Defender].row,Unit[Defender].col,false);
+		    RegionImage(Unit[Attacker].row,Unit[Attacker].col,false);
+		    S="Combat was a draw. The attacker's health is "+Unit[Attacker].health+"; the defender's health is "+Unit[Defender].health+".";
+		}
+	    }
+	}
+    return(S);
 }
 
 
-function PeaceInOurTime(){
-   for (U=0; U<Units.length; U++){
-      if (!Units[U].player){
-         Units[U].destinationRow=-1;
-         Units[U].active = false;
-      }
-   }
+function MoveUnit(U,Row,Col) {
+    Region[Unit[U].row][Unit[U].col].unit = -1;
+    LostAtSea = ((Unit[U].player) && (Region[Row][Col].terrain==Ocean) && (Region[Unit[U].row][Unit[U].col].terrain==Ocean) && (Rand(100)*Unit[U].movement<=LostAtSeaLikelihood));
+    if (LostAtSea) {
+	alert("This unit was lost at sea.");
+	DeleteUnit(U);
+    } else {
+	var OldRow = Unit[U].row;
+	Unit[U].row = Row;
+	Unit[U].col = Col;
+	Unit[U].movement = Math.max(0,Unit[U].movement-Terrain[Region[Row][Col].terrain].movementCost);
+	Region[Row][Col].unit = U;
+    }
+    var Barbarian=-1;
+    for (A=-1; A<=1; A++) {
+	for (B=-1; B<=1; B++) {
+	    //alert(Region[X+A][Y+B].terrain);
+	    var S = 'p'+(Row+A)+'_'+(Col+B);
+	    if (((A!=0)||(B!=0)) && (document.getElementById(S).src.indexOf('u.png')!=-1) && ((Region[Row+A][Col+B].terrain!=Ocean)||(Rand(10)==1)) && (Rand(Math.abs(Row-StartRow))+Rand(3)>5)) {
+		// Barbarians
+		Unit.push({type: Rand(4)+1, row: Row+A, col: Col+B, movement: 0, active: false, player: false, city: -1, health: 10, TroopshipClass: Math.min(Transport,TroopshipClass+Rand(2)-1), veterancy: 1+(Rand(2)-1)/10});
+		Region[Row+A][Col+B].unit = Unit.length-1;
+	    } else {
+		if ((Region[Row+A][Col+B].unit!=-1) && !Unit[Region[Row+A][Col+B].unit].player) {
+		    Barbarian=Region[Row+A][Col+B].unit;
+		    if(Rand(25)<=5+City.length) {
+			Unit[Barbarian].destinationRow = StartRow;
+			Unit[Barbarian].destinationCol = StartCol;
+			Unit[Barbarian].active = true;
+		    }
+		}
+	    }
+	    RegionImage(Row+A, Col+B, false);
+	    if(!LostAtSea && (Unit[U].type==Settler)) {
+		document.getElementById(S).title = CitySiteString(Row+A,Col+B);
+	    }
+	}
+    }
+    if ((Unit[U].player) && (Barbarian!=-1) && (Math.abs(Row-StartRow)>Math.abs(OldRow-StartRow))) {
+	RegionImage(Row, Col, true);
+	alert("Ambushed by a barbarian "+Product[Unit[Barbarian].type].name+"! "+Combat(Barbarian,U));
+    }
 }
 
-function RestoreUnitHealth(){
-   for (U=0; U<Unit.length; U++){
-	  // restore health to standby units
-	  if (!Unit[U].active){
-		 if(Unit[U].health!=Product[Unit[U].type].health){
-		    Unit[U].health += HealingRate;
-		    if(Unit[U].health>=Product[Unit[U].type].health){
-		       Unit[U].health = Product[Unit[U].type].health;
-		       Unit[U].active = Unit[U].player;
-			}
-		 }
-	  }
-      if (Unit[U].active){
-         Unit[U].movement = Product[Unit[U].type].mobility;
-      }
-   }
+function CombatNeighboringUnit(Attacker) {
+    var GoalRow=Unit[Attacker].row;
+    var GoalCol=Unit[Attacker].col;
+    var GoalCost=99;
+    for (Row=Unit[Attacker].row-1; Row<=Unit[Attacker].row+1; Row++) {
+	for (Col=Unit[Attacker].col-1; Col<=Unit[Attacker].col+1; Col++) {
+	    DefenseStr = DefenseStrength(Attacker,Region[Row][Col].unit);
+	    if ((Region[Row][Col].unit>=0) && (DefenseStr<GoalCost)) {
+		GoalRow=Row;
+		GoalCol=Col;
+		GoalCost=DefenseStr;
+	    }
+	}
+    }
+    if((Unit[Attacker].row!=GoalRow)||(Unit[Attacker].col!=GoalCol)) {
+	CombatUnit(Attacker, Region[GoalRow][GoalCol].unit);
+	return(true);
+    } else {
+	return(false);
+    }
+}
+
+function MoveUnitToDestination(U) {
+    if((Unit[U].destinationRow==undefined)||(Unit[U].destinationRow==-1)) {
+	return(false);
+    }
+    var GoalRow=Unit[U].row;
+    var GoalCol=Unit[U].col;
+    var GoalDistance=Distance(GoalRow,GoalCol,Unit[U].destinationRow,Unit[U].destinationCol);
+    var GoalCost=99;
+    for (Row=Unit[U].row-1; Row<=Unit[U].row+1; Row++) {
+	for (Col=Unit[U].col-1; Col<=Unit[U].col+1; Col++) {
+	    if ((Region[Row][Col].unit==-1) && (Region[Row][Col].city==-1) && (Distance(Row,Col,Unit[U].destinationRow,Unit[U].destinationCol)<=GoalDistance)) {
+		if ((Distance(Row,Col,Unit[U].destinationRow,Unit[U].destinationCol)<GoalDistance)||(Terrain[Region[Row][Col].terrain].movementCost<GoalCost)) {
+		    GoalDistance = Distance(Row,Col,Unit[U].destinationRow,Unit[U].destinationCol);
+		    GoalRow=Row;
+		    GoalCol=Col;
+		    GoalCost=Terrain[Region[Row][Col].terrain].movementCost;
+		}
+	    }
+	}
+    }
+    if((Unit[U].row!=GoalRow)||(Unit[U].col!=GoalCol)) {
+	MoveUnit(U, GoalRow, GoalCol);
+	return(true);
+    } else {
+	if(!Unit[U].player) {
+	    CombatNeighboringUnit(U);
+	}
+	return(false);
+    }
+}
+
+
+function PeaceInOurTime() {
+    for (U=0; U<Units.length; U++) {
+	if (!Units[U].player) {
+	    Units[U].destinationRow=-1;
+	    Units[U].active = false;
+	}
+    }
+}
+
+function RestoreUnitHealth() {
+    for (U=0; U<Unit.length; U++) {
+	// restore health to standby units
+	if (!Unit[U].active) {
+	    if(Unit[U].health!=Product[Unit[U].type].health) {
+		Unit[U].health += HealingRate;
+		if(Unit[U].health>=Product[Unit[U].type].health) {
+		    Unit[U].health = Product[Unit[U].type].health;
+		    Unit[U].active = Unit[U].player;
+		}
+	    }
+	}
+	if (Unit[U].active) {
+	    Unit[U].movement = Product[Unit[U].type].mobility;
+	}
+    }
 }
 
 
@@ -848,161 +848,161 @@ PlayerCity = 0;
 
 /* Cities */
 
-function CitySiteStats(Row,Col){
-   var Stats = {food: 0, production: 0, trade: 0};
-   for (var A=-1; A<=1; A++){
-      for (var B=-1; B<=1; B++){
-         Stats.food += Terrain[Region[Row+A][Col+B].terrain].food;
-         Stats.production += Terrain[Region[Row+A][Col+B].terrain].production;
-         Stats.trade += Terrain[Region[Row+A][Col+B].terrain].trade;
-      }
-   }
-   return(Stats);
+function CitySiteStats(Row,Col) {
+    var Stats = {food: 0, production: 0, trade: 0};
+    for (var A=-1; A<=1; A++) {
+	for (var B=-1; B<=1; B++) {
+	    Stats.food += Terrain[Region[Row+A][Col+B].terrain].food;
+	    Stats.production += Terrain[Region[Row+A][Col+B].terrain].production;
+	    Stats.trade += Terrain[Region[Row+A][Col+B].terrain].trade;
+	}
+    }
+    return(Stats);
 }
 
-function CitySiteString(Row,Col){
-   if (Region[Row][Col].terrain!=Ocean){
-      var Stats = CitySiteStats(Row,Col);
-      return ("City has potential for "+(Stats.food+Stats.production+Stats.trade)+" points ("+Stats.food+"f/"+Stats.production+"p/"+Stats.trade+"t)");
-   }else{
-      return("Ocean, 100% defense");
-   }
+function CitySiteString(Row,Col) {
+    if (Region[Row][Col].terrain!=Ocean) {
+	var Stats = CitySiteStats(Row,Col);
+	return ("City has potential for "+(Stats.food+Stats.production+Stats.trade)+" points ("+Stats.food+"f/"+Stats.production+"p/"+Stats.trade+"t)");
+    } else {
+	return("Ocean, 100% defense");
+    }
 }
 
-function CityDescription(C,TellProduct){
-   var S=City[C].name+", "+City[C].citizens+" citizens ("+Math.min(City[C].citizens,City[C].happyCitizens)+" happy, "+Math.min(City[C].citizens,City[C].healthyCitizens)+" healthy)";
-   S+=", "+City[C].food+"f/"+City[C].production+"p/"+City[C].trade+"t"; //+City[C].science+"s/"+City[C].corruptionRate+"c";
-   if(TellProduct){
-     S += ", producing "+Product[City[C].product].name+" ("+Math.floor(100*City[C].productionReserve/Product[City[C].product].cost)+"%)";
-   }
-   return(S);
+function CityDescription(C,TellProduct) {
+    var S=City[C].name+", "+City[C].citizens+" citizens ("+Math.min(City[C].citizens,City[C].happyCitizens)+" happy, "+Math.min(City[C].citizens,City[C].healthyCitizens)+" healthy)";
+    S+=", "+City[C].food+"f/"+City[C].production+"p/"+City[C].trade+"t"; //+City[C].science+"s/"+City[C].corruptionRate+"c";
+    if(TellProduct) {
+	S += ", producing "+Product[City[C].product].name+" ("+Math.floor(100*City[C].productionReserve/Product[City[C].product].cost)+"%)";
+    }
+    return(S);
 }
 
-function TooCloseToCity(Row,Col){
-   for (var C=0; C<City.length; C++){
-      if (Distance(Row,Col,City[C].row,City[C].col)<3){
-         return(true);
-      }
-   }
-   return(false);
+function TooCloseToCity(Row,Col) {
+    for (var C=0; C<City.length; C++) {
+	if (Distance(Row,Col,City[C].row,City[C].col)<3) {
+	    return(true);
+	}
+    }
+    return(false);
 }
 
 
-function FoundCity(Row,Col,Player){
-   var Stats=CitySiteStats(Row,Col);
-   City.push({name: "Unnamed", player: Player, foodReserve: 0, productionReserve: 0, row: Row, col: Col, food: Stats.food, production: Stats.production, trade: Stats.trade, science: 1, corruptionRate: 1, product: Warrior, citizens: 2, happyCitizens: 4, healthyCitizens: 4});
-   var C = City.length-1;
-   Region[Row][Col].city = C;
-   /* Initialize buildings */
-   City[C].building = new Array();
-   for (X=MaxUnit+1; X<MaxBuilding; X++){
-      City[C].building[X] = false;
-   }
-   City[C].building[Houses] = true;
-   City[C].building[Wharf] = (NeighboringRegions(Row,Col,".terrain==Ocean")>0);
-   /* Veterancy */
-   City[C].veterancy = new Array();
-   City[C].veterancy["land"] = 0;
-   City[C].veterancy["sea"] = 0;
-   City[C].veterancy["air"] = 0;
-   City[C].veterancy["missile"] = 0;
-   /* DefenseAgainst */
-   City[C].defenseAgainst = new Array();
-   City[C].defenseAgainst["land"] = 1;
-   City[C].defenseAgainst["sea"] = 1;
-   City[C].defenseAgainst["air"] = 1;
-   City[C].defenseAgainst["missile"] = 1;
-   /* Name the city */
-   if (Player){
-      if (PlayerCity<=PlayerCityName.length-1){
-         City[City.length-1].name = PlayerCityName[PlayerCity];
-      }else{
-         City[City.length-1].name = "City #"+(PlayerCity+1);
-      }
-      PlayerCity++;
-      if (Unit[1].city=-1){
-         Unit[1].city=City.length-1;
-         RegionImage(Unit[1].row, Unit[1].col, false);
-      }
-   }else{
-      RegionImage(Row, Col, false);
-   }
+function FoundCity(Row,Col,Player) {
+    var Stats=CitySiteStats(Row,Col);
+    City.push({name: "Unnamed", player: Player, foodReserve: 0, productionReserve: 0, row: Row, col: Col, food: Stats.food, production: Stats.production, trade: Stats.trade, science: 1, corruptionRate: 1, product: Warrior, citizens: 2, happyCitizens: 4, healthyCitizens: 4});
+    var C = City.length-1;
+    Region[Row][Col].city = C;
+    /* Initialize buildings */
+    City[C].building = new Array();
+    for (X=MaxUnit+1; X<MaxBuilding; X++) {
+	City[C].building[X] = false;
+    }
+    City[C].building[Houses] = true;
+    City[C].building[Wharf] = (NeighboringRegions(Row,Col,".terrain==Ocean")>0);
+    /* Veterancy */
+    City[C].veterancy = new Array();
+    City[C].veterancy["land"] = 0;
+    City[C].veterancy["sea"] = 0;
+    City[C].veterancy["air"] = 0;
+    City[C].veterancy["missile"] = 0;
+    /* DefenseAgainst */
+    City[C].defenseAgainst = new Array();
+    City[C].defenseAgainst["land"] = 1;
+    City[C].defenseAgainst["sea"] = 1;
+    City[C].defenseAgainst["air"] = 1;
+    City[C].defenseAgainst["missile"] = 1;
+    /* Name the city */
+    if (Player) {
+	if (PlayerCity<=PlayerCityName.length-1) {
+	    City[City.length-1].name = PlayerCityName[PlayerCity];
+	} else {
+	    City[City.length-1].name = "City #"+(PlayerCity+1);
+	}
+	PlayerCity++;
+	if (Unit[1].city=-1) {
+	    Unit[1].city=City.length-1;
+	    RegionImage(Unit[1].row, Unit[1].col, false);
+	}
+    } else {
+	RegionImage(Row, Col, false);
+    }
 }
 
-function WorkingCitizenOutput(C){
-   WorkingCitizens = Math.min(City[C].citizens,Math.min(City[C].healthyCitizens,City[C].happyCitizens));
-   return(WorkingCitizens/9);
+function WorkingCitizenOutput(C) {
+    WorkingCitizens = Math.min(City[C].citizens,Math.min(City[C].healthyCitizens,City[C].happyCitizens));
+    return(WorkingCitizens/9);
 }
 
-function NextCitizen(C){
-   City[C].foodReserve += Math.max(City[C].food*WorkingCitizenOutput(C),1);
-   if (City[C].foodReserve>=10*City[C].citizens){
-      City[C].foodReserve -= 10*City[C].citizens;
-      City[C].citizens++;
-   }
-   RegionImage(City[C].row,City[C].col,false);
+function NextCitizen(C) {
+    City[C].foodReserve += Math.max(City[C].food*WorkingCitizenOutput(C),1);
+    if (City[C].foodReserve>=10*City[C].citizens) {
+	City[C].foodReserve -= 10*City[C].citizens;
+	City[C].citizens++;
+    }
+    RegionImage(City[C].row,City[C].col,false);
 }
 
-function ChangeProduct(C, Prompt){
-      var Menu = new Array();
-      for (X=MaxUnit; X>=Settler; X--){
-         if (Tech[Product[X].prereq].playerOwned){
+function ChangeProduct(C, Prompt) {
+    var Menu = new Array();
+    for (X=MaxUnit; X>=Settler; X--) {
+	if (Tech[Product[X].prereq].playerOwned) {
             Menu.push({name: Product[X].name, value: X});
-         }
-      }
-      for (X=MaxBuilding-1; X>MaxUnit; X--){
-         //if ((Tech[Product[X].prereq].playerOwned)&&(City[C].building[(Product[X].prebuilding)])&&(!City[C].building[X])){
-         if ((Tech[Product[X].prereq].playerOwned)&&(!City[C].building[X])){
+	}
+    }
+    for (X=MaxBuilding-1; X>MaxUnit; X--) {
+	//if ((Tech[Product[X].prereq].playerOwned)&&(City[C].building[(Product[X].prebuilding)])&&(!City[C].building[X])) {
+	if ((Tech[Product[X].prereq].playerOwned)&&(!City[C].building[X])) {
             Menu.push({name: Product[X].name, value: X});
-         }
-      }
-      X = MenuPrompt(Prompt+"  What should they build next? ", Menu);
-      City[C].product = X;
+	}
+    }
+    X = MenuPrompt(Prompt+"  What should they build next? ", Menu);
+    City[C].product = X;
 }
 
-function NextProduct(C){
-   var P=City[C].product;
-   City[C].productionReserve += Math.max(City[C].production*WorkingCitizenOutput(C),1);
-   if (City[C].productionReserve>=Product[P].cost/2){
-      City[C].productionReserve -= Product[P].cost/2;
-      if (Product[P].type=='unit'){
-         Unit.push({type: P, row: City[C].row, col: City[C].col, movement: Product[City[C].product].mobility, health: Product[P].health, active: true, player: true, city: C, TroopshipClass: TroopshipClass, veterancy: Rand(City[C].veterancy[Product[City[C].product].kind])/10+0.9});
-         Region[City[C].row][City[C].col].unit = Unit.length-1;
-         RegionImage(City[C].row, City[C].col, false);
-      }else{
-         if (Product[P].type=='building'){
-            City[C].building[P] = true;
-            eval(Product[P].code);
-         }
-      }
-      ChangeProduct(C, CityDescription(C,false)+", has built "+Product[P].name+". ");
-   }
-   RegionImage(City[C].row,City[C].col,false);
+function NextProduct(C) {
+    var P=City[C].product;
+    City[C].productionReserve += Math.max(City[C].production*WorkingCitizenOutput(C),1);
+    if (City[C].productionReserve>=Product[P].cost/2) {
+	City[C].productionReserve -= Product[P].cost/2;
+	if (Product[P].type=='unit') {
+	    Unit.push({type: P, row: City[C].row, col: City[C].col, movement: Product[City[C].product].mobility, health: Product[P].health, active: true, player: true, city: C, TroopshipClass: TroopshipClass, veterancy: Rand(City[C].veterancy[Product[City[C].product].kind])/10+0.9});
+	    Region[City[C].row][City[C].col].unit = Unit.length-1;
+	    RegionImage(City[C].row, City[C].col, false);
+	} else {
+	    if (Product[P].type=='building') {
+		City[C].building[P] = true;
+		eval(Product[P].code);
+	    }
+	}
+	ChangeProduct(C, CityDescription(C,false)+", has built "+Product[P].name+". ");
+    }
+    RegionImage(City[C].row,City[C].col,false);
 }
 
 
-function BuildInEveryCity(Building){
-   for (C=0; C<City.length; C++){
-      if (City[C].player){
-         if(!City[C].building[Building]){
-           City[C].building[Building] = true;
-           eval(Product[Building].code);
-         }
-         if (City[C].product==Building){
-            ChangeProduct(C, CityDescription(C,false)+", has built "+Product[P].name+". ");
-         }
-      }
-   }
+function BuildInEveryCity(Building) {
+    for (C=0; C<City.length; C++) {
+	if (City[C].player) {
+	    if(!City[C].building[Building]) {
+		City[C].building[Building] = true;
+		eval(Product[Building].code);
+	    }
+	    if (City[C].product==Building) {
+		ChangeProduct(C, CityDescription(C,false)+", has built "+Product[P].name+". ");
+	    }
+	}
+    }
 }
 
-function ForCitiesWith(Building, Code){
-   for (C=0; C<City.length; C++){
-      if (City[C].player){
-         if(City[C].building[Building]){
-           eval(Code);
-         }
-      }
-   }
+function ForCitiesWith(Building, Code) {
+    for (C=0; C<City.length; C++) {
+	if (City[C].player) {
+	    if(City[C].building[Building]) {
+		eval(Code);
+	    }
+	}
+    }
 }
 
 
@@ -1033,15 +1033,15 @@ var Toolbar = {
         else if (element.stored_text == null) {text = "";}
         else {text = element.stored_text;}
 
-       this.SetText(text);
-       element.stored_text = text;
-       element.title = "";
+	this.SetText(text);
+	element.stored_text = text;
+	element.title = "";
     },
     OnResize: function() {
         //alert(Toolbar.element.style.maxWidth);
         this.element.style.maxWidth =  Math.floor(GetWidth(this.body) - GetWidth(this.resumeButton) - GetWidth(this.resumeButton)) + "px";
         //alert(Toolbar.element.style.maxWidth);
-	    //alert(GetHeight(this.body));
+	//alert(GetHeight(this.body));
         if (540 < GetHeight(this.body)) {
             this.toolbar.style["bottom"] = (this.body.getBoundingClientRect().bottom + this.body.getBoundingClientRect().top) - 540;
         } else {
@@ -1069,10 +1069,10 @@ function KeyPressHandler(event) {
     var key = String.fromCharCode(event.which ? event.which : event.keyCode);
     var unit = Unit[ActiveUnit];
     switch (key) {
-    case "*": case "r": ActiveUnit=0; for (U=0; U<Unit.length; U++){Unit[U].active=true;Unit[U].destinationRow=-1}; Turn(); break;
+    case "*": case "r": ActiveUnit=0; for (U=0; U<Unit.length; U++) {Unit[U].active=true;Unit[U].destinationRow=-1}; Turn(); break;
     case "t": OnPhone = !OnPhone; break;
 
-    //movement OnPhone true = 123\n456\n789\n0 phone set up | OnPhone false = 789\n456\n123\n0 keyboard setup
+	//movement OnPhone true = 123\n456\n789\n0 phone set up | OnPhone false = 789\n456\n123\n0 keyboard setup
     case "1": if (OnPhone) {i(unit.row-1, unit.col-1);} else {i(unit.row+1, unit.col-1);} break;
     case "2": if (OnPhone) {i(unit.row-1, unit.col);} else {i(unit.row+1, unit.col);} break;
     case "3": if (OnPhone) {i(unit.row-1, unit.col+1);} else {i(unit.row+1, unit.col+1);} break;
@@ -1083,7 +1083,7 @@ function KeyPressHandler(event) {
     case "8": if (OnPhone) {i(unit.row+1, unit.col);} else {i(unit.row-1, unit.col);} break;
     case "9": if (OnPhone) {i(unit.row+1, unit.col+1);} else {i(unit.row-1, unit.col+1);} break;
 
-    //default: alert(key);
+	//default: alert(key);
     }
 }
 
@@ -1114,8 +1114,8 @@ function NextTech() {
 	if (Tech[CurrentTech].code!="") eval(Tech[CurrentTech].code);
 	TechCount++;
 	Controlbar.ClearOptions(Controlbar.techOptions);
-	for (X=AdvancedFlight; X<=Writing; X++){
-	    if (!Tech[X].playerOwned & Tech[Tech[X].prereq1].playerOwned & Tech[Tech[X].prereq2].playerOwned){
+	for (X=AdvancedFlight; X<=Writing; X++) {
+	    if (!Tech[X].playerOwned & Tech[Tech[X].prereq1].playerOwned & Tech[Tech[X].prereq2].playerOwned) {
 		Controlbar.techOptions.options.add(new Option(Tech[X].name, X));
 	    }
 	}
@@ -1134,7 +1134,7 @@ function ChangeTech(index) {
 
 function NextWonder() {
     for(C=0; C<City.length; C++) {
-	if(City[C].player){
+	if(City[C].player) {
 	    TradeReserve += Math.floor(City[C].science*City[C].trade*WorkingCitizenOutput(C)*(1-.3*City[C].corruptionRate));
 	}
     }
@@ -1146,7 +1146,7 @@ function NextWonder() {
 	}
 	Controlbar.ClearOptions(Controlbar.wonderOptions);
 	for (W=1; W<MaxWonder; W++) {
-	    if (!Wonder[W].player && Tech[Wonder[W].prereq].playerOwned && !Tech[Wonder[W].obsoleteBy].player){
+	    if (!Wonder[W].player && Tech[Wonder[W].prereq].playerOwned && !Tech[Wonder[W].obsoleteBy].player) {
 		Controlbar.wonderOptions.options.add(new Option(Wonder[W].name, W));
 	    }
 	}
@@ -1167,130 +1167,130 @@ function ChangeWonder(index) {
 
 
 
-function Turn(){
-   //alert("starting loop with "+ActiveUnit+" and Unit.length of "+Unit.length);
-   do{
-      while ((ActiveUnit>0) && ((!Unit[ActiveUnit].active) || (Unit[ActiveUnit].movement==0) || (!Unit[ActiveUnit].player))){
-         while ((Unit[ActiveUnit].active) && (Unit[ActiveUnit].movement) && (!Unit[ActiveUnit].player)){
-            Unit[ActiveUnit].active=MoveUnitToDestination(ActiveUnit);
-         }
-         ActiveUnit--;
-      }
-      //alert("Active Unit = " + ActiveUnit);
-      if ((Unit[ActiveUnit].active) && (Unit[ActiveUnit].movement) && (Unit[ActiveUnit].player)){
-         RegionImage(Unit[ActiveUnit].row, Unit[ActiveUnit].col, true);
-      }else{
-         Year++;
-         RestoreUnitHealth();
-         NextTech();
-         NextWonder();
-         for (C=0; C<City.length; C++){
-            NextCitizen(C);
-            NextProduct(C);
-         }
-         ActiveUnit = Unit.length-1;
-         while (ActiveUnit && ((!Unit[ActiveUnit].active) || (!Unit[ActiveUnit].movement) || (!Unit[ActiveUnit].player))){
-            ActiveUnit--;
-         }
-         if (!ActiveUnit && !Unit[ActiveUnit].active && !Unit[ActiveUnit].player){
-            for (U=0; U<Unit.length; U++){
-               if (Unit[U].player){
-                  Unit[U].active = true;
-                  Unit[U].movement = Product[Unit[U].type].mobility;
-               }
-            }
-         }
-         ActiveUnit = Unit.length-1;
-         while (ActiveUnit && ((!Unit[ActiveUnit].active) || (!Unit[ActiveUnit].movement) || (!Unit[ActiveUnit].player))){
-            ActiveUnit--;
-         }
-         if (!ActiveUnit && !Unit[ActiveUnit].active && !Unit[ActiveUnit].player){
-            alert("All your units are destroyed. Game over.")
-            ActiveUnit=-1;
-         }else{
-            RegionImage(Unit[ActiveUnit].row, Unit[ActiveUnit].col, true);
-         }
-      }
-   }while(MoveUnitToDestination(ActiveUnit));
-}
-
-
-function i(Row, Col){
-   Unit[ActiveUnit].destinationRow=-1;
-   if ((Row==Unit[ActiveUnit].row) & (Col==Unit[ActiveUnit].col)){
-      if (Unit[ActiveUnit].type==Settler){
-         if ((Region[Row][Col].terrain!=Ocean) && !TooCloseToCity(Row,Col) && (confirm("Build a city here? " + CitySiteString(Row,Col) + "."))){
-            FoundCity(Row,Col,true);
-            DeleteUnit(ActiveUnit);
-            RegionImage(Row, Col, false);
-            Turn();
-         }else{
-            RegionImage(Row, Col, true);
-         }
-      }else{
-         if(confirm("Put the unit - "+RegionImage(Row,Col,false)+" - on sentry duty (standby)?")){
-            Unit[ActiveUnit].active = false;
-            Unit[ActiveUnit].movement = 0;
-            RegionImage(Row, Col, false);
-            Turn();
-         }else{
-            RegionImage(Row, Col, true);
-         }
-      }
-   }else{
-      if (Distance(Row, Col, Unit[ActiveUnit].row, Unit[ActiveUnit].col)<=Math.min(Unit[ActiveUnit].movement,1.5)){
-         if (Region[Row][Col].unit!=-1){
-            alert(Combat(ActiveUnit,Region[Row][Col].unit));
-         }else{
-            MoveUnit(ActiveUnit,Row,Col);
-         }
-         Turn();
-      }else{
-         //if (document.getElementById('p'+Row+'_'+Col).src!="u.png"){
-            //alert(Row+", "+Col);
-		    Unit[ActiveUnit].destinationRow = Row;
-		    Unit[ActiveUnit].destinationCol = Col;
-		    if(MoveUnitToDestination(ActiveUnit)){
-		       Turn();
+function Turn() {
+    //alert("starting loop with "+ActiveUnit+" and Unit.length of "+Unit.length);
+    do{
+	while ((ActiveUnit>0) && ((!Unit[ActiveUnit].active) || (Unit[ActiveUnit].movement==0) || (!Unit[ActiveUnit].player))) {
+	    while ((Unit[ActiveUnit].active) && (Unit[ActiveUnit].movement) && (!Unit[ActiveUnit].player)) {
+		Unit[ActiveUnit].active=MoveUnitToDestination(ActiveUnit);
+	    }
+	    ActiveUnit--;
+	}
+	//alert("Active Unit = " + ActiveUnit);
+	if ((Unit[ActiveUnit].active) && (Unit[ActiveUnit].movement) && (Unit[ActiveUnit].player)) {
+	    RegionImage(Unit[ActiveUnit].row, Unit[ActiveUnit].col, true);
+	} else {
+	    Year++;
+	    RestoreUnitHealth();
+	    NextTech();
+	    NextWonder();
+	    for (C=0; C<City.length; C++) {
+		NextCitizen(C);
+		NextProduct(C);
+	    }
+	    ActiveUnit = Unit.length-1;
+	    while (ActiveUnit && ((!Unit[ActiveUnit].active) || (!Unit[ActiveUnit].movement) || (!Unit[ActiveUnit].player))) {
+		ActiveUnit--;
+	    }
+	    if (!ActiveUnit && !Unit[ActiveUnit].active && !Unit[ActiveUnit].player) {
+		for (U=0; U<Unit.length; U++) {
+		    if (Unit[U].player) {
+			Unit[U].active = true;
+			Unit[U].movement = Product[Unit[U].type].mobility;
 		    }
-         //}else{
-         //   RegionImage(Unit[ActiveUnit].row, Unit[ActiveUnit].col, true);
-         //}
-      }
-   }
+		}
+	    }
+	    ActiveUnit = Unit.length-1;
+	    while (ActiveUnit && ((!Unit[ActiveUnit].active) || (!Unit[ActiveUnit].movement) || (!Unit[ActiveUnit].player))) {
+		ActiveUnit--;
+	    }
+	    if (!ActiveUnit && !Unit[ActiveUnit].active && !Unit[ActiveUnit].player) {
+		alert("All your units are destroyed. Game over.")
+		    ActiveUnit=-1;
+	    } else {
+		RegionImage(Unit[ActiveUnit].row, Unit[ActiveUnit].col, true);
+	    }
+	}
+    }while(MoveUnitToDestination(ActiveUnit));
 }
 
-for (Row=0; Row<MaxRow; Row++){
-   for (Col=0; Col<MaxCol; Col++){
-   	  document.write('<img src=u.png id=p', Row,'_', Col,' onclick="i(', Row, ',', Col, ')" onmouseover="Toolbar.OnHover(this);" />');
-   }
-   document.writeln("<br>");
+
+function i(Row, Col) {
+    Unit[ActiveUnit].destinationRow=-1;
+    if ((Row==Unit[ActiveUnit].row) & (Col==Unit[ActiveUnit].col)) {
+	if (Unit[ActiveUnit].type==Settler) {
+	    if ((Region[Row][Col].terrain!=Ocean) && !TooCloseToCity(Row,Col) && (confirm("Build a city here? " + CitySiteString(Row,Col) + "."))) {
+		FoundCity(Row,Col,true);
+		DeleteUnit(ActiveUnit);
+		RegionImage(Row, Col, false);
+		Turn();
+	    } else {
+		RegionImage(Row, Col, true);
+	    }
+	} else {
+	    if(confirm("Put the unit - "+RegionImage(Row,Col,false)+" - on sentry duty (standby)?")) {
+		Unit[ActiveUnit].active = false;
+		Unit[ActiveUnit].movement = 0;
+		RegionImage(Row, Col, false);
+		Turn();
+	    } else {
+		RegionImage(Row, Col, true);
+	    }
+	}
+    } else {
+	if (Distance(Row, Col, Unit[ActiveUnit].row, Unit[ActiveUnit].col)<=Math.min(Unit[ActiveUnit].movement,1.5)) {
+	    if (Region[Row][Col].unit!=-1) {
+		alert(Combat(ActiveUnit,Region[Row][Col].unit));
+	    } else {
+		MoveUnit(ActiveUnit,Row,Col);
+	    }
+	    Turn();
+	} else {
+	    //if (document.getElementById('p'+Row+'_'+Col).src!="u.png") {
+            //alert(Row+", "+Col);
+	    Unit[ActiveUnit].destinationRow = Row;
+	    Unit[ActiveUnit].destinationCol = Col;
+	    if(MoveUnitToDestination(ActiveUnit)) {
+		Turn();
+	    }
+	    //} else {
+	    //   RegionImage(Unit[ActiveUnit].row, Unit[ActiveUnit].col, true);
+	    //}
+	}
+    }
+}
+
+for (Row=0; Row<MaxRow; Row++) {
+    for (Col=0; Col<MaxCol; Col++) {
+	document.write('<img src=u.png id=p', Row,'_', Col,' onclick="i(', Row, ',', Col, ')" onmouseover="Toolbar.OnHover(this);" />');
+    }
+    document.writeln("<br>");
 }
 GenerateMap(Region);
 SetTechHelp();
 
 /* Preload images */
-for (X=Ocean; X<=Mountains; X++){
-   document.write("<img style='display:none' src="+Terrain[X].symbol+".png />");
+for (X=Ocean; X<=Mountains; X++) {
+    document.write("<img style='display:none' src="+Terrain[X].symbol+".png />");
 }
 document.write("<img style='display:none' src=city_player.png />");
 
-for (Col=0; Col<MaxUnit-1; Col++){
-   document.write("<img style='display:none' src="+Product[Col+1].imgStub+"_player.png />");
-   document.write("<img style='display:none' src="+Product[Col+1].imgStub+"_focus.png />");
-   document.write("<img style='display:none' src="+Product[Col+1].imgStub+"_enemy.png />");
+for (Col=0; Col<MaxUnit-1; Col++) {
+    document.write("<img style='display:none' src="+Product[Col+1].imgStub+"_player.png />");
+    document.write("<img style='display:none' src="+Product[Col+1].imgStub+"_focus.png />");
+    document.write("<img style='display:none' src="+Product[Col+1].imgStub+"_enemy.png />");
 }
 
-for (Row=0; Row<7; Row++){
-   for (Col=0; Col<MaxCol; Col++){
-      document.getElementById('p'+Row+"_"+Col).src = "u.png";
-   }
+for (Row=0; Row<7; Row++) {
+    for (Col=0; Col<MaxCol; Col++) {
+	document.getElementById('p'+Row+"_"+Col).src = "u.png";
+    }
 }
 
-for (Row=StartRow-1; Row<=StartRow+1; Row++){
-   for (Col=StartCol-1; Col<=StartCol+2; Col++){
-      document.getElementById('p'+Row+"_"+Col).src = Terrain[Region[Row][Col].terrain].symbol+".png";
-   }
+for (Row=StartRow-1; Row<=StartRow+1; Row++) {
+    for (Col=StartCol-1; Col<=StartCol+2; Col++) {
+	document.getElementById('p'+Row+"_"+Col).src = Terrain[Region[Row][Col].terrain].symbol+".png";
+    }
 }
 
 document.getElementById('p'+StartRow+"_"+StartCol).src = "settler_player.png";
