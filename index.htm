@@ -1,7 +1,13 @@
 <html><title>Civ 0--Civilization: Year 0, a JavaScript open-source implementation of a civilization-style game</title>
-<body id="body" onload="Toolbar.OnResize()" onresize="Toolbar.OnResize()" onkeypress="KeyPressHandler(event)" style="min-width: 600px; min-height: 510px; height: 100%;  margin: 0px;">
+<body id="body" onload="Toolbar.OnResize()" onresize="Toolbar.OnResize()" onkeypress="KeyPressHandler(event)" style="min-width: 600px; min-height: 540px; height: 100%; padding-top: 30px; margin: 0px;">
 
-<div id="toolbar" style="font-size: 16px; color: black; background-color: white; padding 2px; position: fixed; left: 0px; right: 0px; bottom: 0px; height: 30px; vertical-align: middle; max-width: 600px;">
+<div id="controlbar" style="font-size: 16px; color: black; background-color: white; padding 2px; position: fixed; left: 0px; right: 0px; top: 0px; height: 30px; max-width: 600px;">
+<select id="techOptions" onchange="ChangeTech(this.selectedIndex)">
+<option>City Building</option>
+</select>
+</div>
+
+<div id="toolbar" style="font-size: 16px; color: black; background-color: white; padding 2px; position: fixed; left: 0px; right: 0px; bottom: 0px; height: 30px; max-width: 600px;">
 <div id="message" style="float: left; max-height: 25px; max-width:12px; overflow-x: auto; overflow-y: hidden;"></div>
 <form><input id="resumeButton" type="button" style="float: right" value="Resume" onClick="ActiveUnit=0; for (U=0; U<Unit.length; U++){Unit[U].active=true;Unit[U].destinationRow=-1}; Turn();"></form>
 </div>
@@ -846,7 +852,7 @@ Toolbar = {
     resumeButton: document.getElementById("resumeButton"),
     body: document.getElementById("body"),
     SetText: function(text) {
-        Toolbar.element.innerHTML = text;
+        this.element.innerHTML = text;
     },
     OnHover: function(element) {
         var text; // below is a hack to disable title text in addition a to the custom one on hover
@@ -854,21 +860,30 @@ Toolbar = {
         else if (element.stored_text == null) {text = "";}
         else {text = element.stored_text;}
 
-       Toolbar.SetText(text);
+       this.SetText(text);
        element.stored_text = text;
        element.title = "";
     },
     OnResize: function() {
         //alert(Toolbar.element.style.maxWidth);
-        Toolbar.element.style.maxWidth =  Math.floor(GetWidth(Toolbar.body) - GetWidth(Toolbar.resumeButton) - GetWidth(Toolbar.resumeButton)) + "px"
+        this.element.style.maxWidth =  Math.floor(GetWidth(this.body) - GetWidth(this.resumeButton) - GetWidth(this.resumeButton)) + "px";
         //alert(Toolbar.element.style.maxWidth);
-        if (510 < (Toolbar.body.getBoundingClientRect().bottom - Toolbar.body.getBoundingClientRect().top)) {
-            Toolbar.toolbar.style["bottom"] = (Toolbar.body.getBoundingClientRect().bottom) - 510;
+        if (540 < GetHeight(this.body)) {
+            this.toolbar.style["bottom"] = (this.body.getBoundingClientRect().bottom + this.body.getBoundingClientRect().top) - 540;
         } else {
-            Toolbar.toolbar.style["bottom"] = 0;
+            this.toolbar.style["bottom"] = 0;
         }
     }
-}
+};
+
+Controlbar = {
+    controlbar: document.getElementById("controlbar"),
+    techOptions: document.getElementById("techOptions"),
+    HighlightTechOptions: function(bool) {
+	if (bool) {this.techOptions.style.backgroundColor = "red";} 
+	else {this.techOptions.style.backgroundColor = "";}
+    }
+};
 
 function KeyPressHandler(event) {
     var key = String.fromCharCode(event.which ? event.which : event.keyCode);
@@ -916,16 +931,23 @@ function NextTech(){
    	  Tech[CurrentTech].playerOwned = true;
    	  if (Tech[CurrentTech].code!="") eval(Tech[CurrentTech].code);
       TechCount++;
-      var Menu = new Array();
+      for(var i=Controlbar.techOptions.options.length-1; i>=0; i--) {
+	  Controlbar.techOptions.remove(i);
+      };
       for (X=AdvancedFlight; X<=Writing; X++){
          if (!Tech[X].playerOwned & Tech[Tech[X].prereq1].playerOwned & Tech[Tech[X].prereq2].playerOwned){
-            Menu.push({name: Tech[X].name, value: X});
+	    Controlbar.techOptions.options.add(new Option(Tech[X].name, X))
          }
       }
-      X = MenuPrompt("Year "+Year+". Your civilization has discovered "+Tech[CurrentTech].name + ". What do you want to research next? ", Menu);
-      CurrentTech = X;
+      Controlbar.HighlightTechOptions(true);
    }
    CurrentTechCost = 5*TechCount;
+}
+
+function ChangeTech(index) {
+    CurrentTech = Controlbar.techOptions.options[index].value;
+    Controlbar.HighlightTechOptions(false);
+    Controlbar.techOptions.focus();
 }
 
 
