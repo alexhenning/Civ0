@@ -2,19 +2,17 @@
 <body id="body" onload="Toolbar.OnResize()" onresize="Toolbar.OnResize()" onkeypress="KeyPressHandler(event)" style="min-width: 600px; min-height: 510px; height: 100%; padding-top: 30px; margin: 0px;">
 
 <div id="controlbar" style="font-size: 16px; color: black; background-color: white; padding 2px; position: fixed; left: 0px; right: 0px; top: 0px; height: 30px; max-width: 600px;">
-<select id="techOptions" onchange="ChangeTech(this.selectedIndex)">
-<option>City Building</option>
-</select>
-<select id="wonderOptions" onchange="ChangeWonder(this.selectedIndex)">
-<option>Nothing</option>
-</select>
+<span style="float: left;">
+<select id="techOptions" onchange="ChangeTech(this.selectedIndex)"><option>City Building</option></select>
+<select id="wonderOptions" onchange="ChangeWonder(this.selectedIndex)"><option>Nothing</option></select></span>
+<span id="cities" style="float: left; padding-left: 5px;"></span>
 </div>
 
 <div id="toolbar" style="font-size: 16px; color: black; background-color: white; padding 2px; position: fixed; left: 0px; right: 0px; bottom: 0px; height: 30px; max-width: 600px;">
 <div id="message" style="float: left; max-height: 25px; max-width:12px; overflow-x: auto; overflow-y: hidden;"></div>
 <form><input id="resumeButton" type="button" style="float: right" value="Resume" onClick="ActiveUnit=0; for (U=0; U<Unit.length; U++) {Unit[U].active=true;Unit[U].destinationRow=-1}; Turn();"></form>
 </div>
-<script type="text/javascript">
+<script type="text/javascript">;
 
 var Debug = 1;
 
@@ -927,6 +925,40 @@ function FoundCity(Row,Col,Player) {
     } else {
 	RegionImage(Row, Col, false);
     }
+    CreateCityBuildQueque(C);
+    ChangeProduct(C);
+}
+
+function CreateCityBuildQueque(C) {
+    var cities = document.getElementById("cities");
+    City[C].queque = document.createElement('div');
+    City[C].queque.id = City[C].name+"_queque";
+    City[C].queque.style.cssFloat = "left";
+    City[C].queque.style.styleFloat = "left"; // for ie
+    cities.appendChild(City[C].queque);
+
+    City[C].quequeImage = document.createElement('img');
+    City[C].quequeImage.id = City[C].name;
+    City[C].quequeImage.src = Product[City[C].product].imgStub + "_enemy.png";
+    City[C].queque.appendChild(City[C].quequeImage);
+
+    City[C].canBuild = document.createElement('div');
+    City[C].canBuild.style.width = "40px";
+    City[C].canBuild.style.maxHeight = (window.screen.height - 100) + "px";
+    City[C].canBuild.style.overflowY = "auto";
+    City[C].canBuild.style.display = "none";
+    City[C].queque.appendChild(City[C].canBuild);
+
+    City[C].quequeImage.onmouseover = function() {
+	City[C].canBuild.style.display = "";
+	Toolbar.SetText(CityDescription(C, true));
+    };
+    City[C].quequeImage.onmouseout = function() {
+	City[C].canBuild.style.display = "none";
+	Toolbar.SetText("");
+    };
+    City[C].canBuild.onmouseover = function() {City[C].canBuild.style.display = "";};
+    City[C].canBuild.onmouseout = function() {City[C].canBuild.style.display = "none";};
 }
 
 function WorkingCitizenOutput(C) {
@@ -943,21 +975,44 @@ function NextCitizen(C) {
     RegionImage(City[C].row,City[C].col,false);
 }
 
-function ChangeProduct(C, Prompt) {
-    var Menu = new Array();
+function ChangeProduct(C) {
+    City[C].canBuild.innerHTML = "";
+    var initial = -1;
+    var AddX = function(X) {
+	var image = document.createElement('img');
+	image.unit = Product[X];
+	image.value = X;
+	image.src = Product[X].imgStub + "_enemy.png";
+	City[C].canBuild.appendChild(image);
+
+	image.onmouseover = function() {
+	    Toolbar.SetText(image.unit.help); 
+	    image.src = image.unit.imgStub+"_focus.png";
+	}
+	image.onmouseout = function() {
+	    Toolbar.SetText(""); 
+	    image.src = image.unit.imgStub+"_enemy.png";
+	}
+	image.onmouseup = function() {
+	    Toolbar.SetText(""); 
+	    image.src = image.unit.imgStub+"_enemy.png";
+	    City[C].canBuild.style.display = "none";
+	    City[C].product = image.value;
+	    City[C].quequeImage.src = image.unit.imgStub+"_enemy.png";
+	}
+    }
     for (X=MaxUnit; X>=Settler; X--) {
 	if (Tech[Product[X].prereq].playerOwned) {
-            Menu.push({name: Product[X].name, value: X});
+	    if (initial == -1) {initial = X;}
+	    AddX(X);
 	}
     }
     for (X=MaxBuilding-1; X>MaxUnit; X--) {
 	//if ((Tech[Product[X].prereq].playerOwned)&&(City[C].building[(Product[X].prebuilding)])&&(!City[C].building[X])) {
-	if ((Tech[Product[X].prereq].playerOwned)&&(!City[C].building[X])) {
-            Menu.push({name: Product[X].name, value: X});
-	}
+	if ((Tech[Product[X].prereq].playerOwned)&&(!City[C].building[X])) { Product[X].imgStub = "dne"; AddX(X); }
     }
-    X = MenuPrompt(Prompt+"  What should they build next? ", Menu);
-    City[C].product = X;
+    City[C].product = initial;
+    City[C].quequeImage.src = Product[initial].imgStub + "_player.png"; 
 }
 
 function NextProduct(C) {
@@ -975,7 +1030,7 @@ function NextProduct(C) {
 		eval(Product[P].code);
 	    }
 	}
-	ChangeProduct(C, CityDescription(C,false)+", has built "+Product[P].name+". ");
+	ChangeProduct(C);
     }
     RegionImage(City[C].row,City[C].col,false);
 }
@@ -989,7 +1044,7 @@ function BuildInEveryCity(Building) {
 		eval(Product[Building].code);
 	    }
 	    if (City[C].product==Building) {
-		ChangeProduct(C, CityDescription(C,false)+", has built "+Product[P].name+". ");
+		ChangeProduct(C);
 	    }
 	}
     }
@@ -1054,6 +1109,7 @@ var Controlbar = {
     controlbar: document.getElementById("controlbar"),
     techOptions: document.getElementById("techOptions"),
     wonderOptions: document.getElementById("wonderOptions"),
+    cities: document.getElementById("cities"),
     HighlightTechOptions: function(bool) {
 	if (bool) {this.techOptions.style.backgroundColor = "red";}
 	else {this.techOptions.style.backgroundColor = "";}
@@ -1069,10 +1125,12 @@ function KeyPressHandler(event) {
     var key = String.fromCharCode(event.which ? event.which : event.keyCode);
     var unit = Unit[ActiveUnit];
     switch (key) {
+    //case "#": toggleToControlBar
     case "*": case "r": ActiveUnit=0; for (U=0; U<Unit.length; U++) {Unit[U].active=true;Unit[U].destinationRow=-1}; Turn(); break;
     case "t": OnPhone = !OnPhone; break;
 
-	//movement OnPhone true = 123\n456\n789\n0 phone set up | OnPhone false = 789\n456\n123\n0 keyboard setup
+    //movement OnPhone true = 123\n456\n789\n0 phone set up | OnPhone false = 789\n456\n123\n0 keyboard setup
+    //case "0": pass 
     case "1": if (OnPhone) {i(unit.row-1, unit.col-1);} else {i(unit.row+1, unit.col-1);} break;
     case "2": if (OnPhone) {i(unit.row-1, unit.col);} else {i(unit.row+1, unit.col);} break;
     case "3": if (OnPhone) {i(unit.row-1, unit.col+1);} else {i(unit.row+1, unit.col+1);} break;
@@ -1083,7 +1141,7 @@ function KeyPressHandler(event) {
     case "8": if (OnPhone) {i(unit.row+1, unit.col);} else {i(unit.row-1, unit.col);} break;
     case "9": if (OnPhone) {i(unit.row+1, unit.col+1);} else {i(unit.row-1, unit.col+1);} break;
 
-	//default: alert(key);
+    //default: alert(key);
     }
 }
 
