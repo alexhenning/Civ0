@@ -1,5 +1,5 @@
 <html><title>Civ 0--Civilization: Year 0, a JavaScript open-source implementation of a civilization-style game</title>
-<body id="body" onload="Toolbar.OnResize()" onresize="Toolbar.OnResize()" onkeypress="KeyPressHandler(event)" style="min-width: 600px; min-height: 540px; height: 100%; padding-top: 30px; margin: 0px;">
+<body id="body" onload="Toolbar.OnResize()" onresize="Toolbar.OnResize()" onkeypress="KeyPressHandler(event)" style="min-width: 600px; min-height: 510px; height: 100%; padding-top: 30px; margin: 0px;">
 
 <div id="controlbar" style="font-size: 16px; color: black; background-color: white; padding 2px; position: fixed; left: 0px; right: 0px; top: 0px; height: 30px; max-width: 600px;">
 <select id="techOptions" onchange="ChangeTech(this.selectedIndex)">
@@ -11,7 +11,6 @@
 <div id="message" style="float: left; max-height: 25px; max-width:12px; overflow-x: auto; overflow-y: hidden;"></div>
 <form><input id="resumeButton" type="button" style="float: right" value="Resume" onClick="ActiveUnit=0; for (U=0; U<Unit.length; U++){Unit[U].active=true;Unit[U].destinationRow=-1}; Turn();"></form>
 </div>
-
 <script type="text/javascript">
 
 var Debug = 1;
@@ -93,63 +92,65 @@ Explosives = 29;
 Feudalism = 30;
 Flight = 31;
 Fundamentalism = 32;
-FusionPower = 33;
-GeneticEngineering = 34;
-GuerillaWarfare = 35;
-Gunpowder = 36;
-HorsebackRiding = 37;
-Industrialization = 38;
-Invention = 39;
-IronWorking = 40;
-LaborUnion = 41;
-Laser = 42;
-Leadership = 43;
-Literacy = 44;
-MachineTools = 45;
-Magnetism = 46;
-MapMaking = 47;
-Masonry = 48;
-MassProduction = 49;
-Mathematics = 50;
-Medicine = 51;
-Metallurgy = 52;
-Miniaturization = 53;
-MobileWarfare = 54;
-Monarchy = 55;
-Monotheism = 56;
-Mysticism = 57;
-Navigation = 58;
-NuclearFission = 59;
-NuclearPower = 60;
-Philosophy = 61;
-Physics = 62;
-Plastics = 63;
-Polytheism = 64;
-Pottery = 65;
-Radio = 66;
-Railroad = 67;
-Recycling = 68;
-Refining = 69;
-Refrigeration = 70;
-Robotics = 71;
-Rocketry = 72;
-Sanitation = 73;
-Seafaring = 74;
-SpaceFlight = 75;
-Stealth = 76;
-SteamEngine = 77;
-Steel = 78;
-Superconductors = 79;
-Tactics = 80;
-TheCorporation = 81;
-TheRepublic = 82;
-TheWheel = 83;
-Theology = 84;
-TheoryofGravity = 85;
-Trade = 86;
-University = 87;
-WarriorCode = 88;
-Writing = 89;
+FutureTech = 33;
+FusionPower = 34;
+GeneticEngineering = 35;
+GuerillaWarfare = 36;
+Gunpowder = 37;
+HorsebackRiding = 38;
+Industrialization = 39;
+Invention = 40;
+IronWorking = 41;
+LaborUnion = 42;
+Laser = 43;
+Leadership = 44;
+Literacy = 45;
+MachineTools = 46;
+Magnetism = 47;
+MapMaking = 48;
+Masonry = 49;
+MassProduction = 50;
+Mathematics = 51;
+Medicine = 52;
+Metallurgy = 53;
+Miniaturization = 54;
+MobileWarfare = 55;
+Monarchy = 56;
+Monotheism = 57;
+Mysticism = 58;
+Navigation = 59;
+NuclearFission = 60;
+NuclearPower = 61;
+Philosophy = 62;
+Physics = 63;
+Plastics = 64;
+Polytheism = 65;
+Pottery = 66;
+Radio = 67;
+Railroad = 68;
+Recycling = 69;
+Refining = 70;
+Refrigeration = 71;
+Robotics = 72;
+Rocketry = 73;
+Sanitation = 74;
+Seafaring = 75;
+SpaceFlight = 76;
+Stealth = 77;
+SteamEngine = 78;
+Steel = 79;
+Superconductors = 80;
+Tactics = 81;
+TheCorporation = 82;
+TheRepublic = 83;
+TheWheel = 84;
+Theology = 85;
+TheoryofGravity = 86;
+Trade = 87;
+University = 88;
+WarriorCode = 89;
+Writing = 90;
+MaxTech = Writing;
 Tech[AdvancedFlight] = {name: 'Advanced Flight', prereq1: Radio, prereq2: MachineTools, playerOwned: false, AIOwned: false, code: ""};
 Tech[Alphabet] = {name: 'Alphabet', prereq1: CityBuilding, prereq2: CityBuilding, playerOwned: false, AIOwned: false, code: ""};
 Tech[AmphibiousWarfare] = {name: 'Amphibious Warfare', prereq1: Navigation, prereq2: Tactics, playerOwned: false, AIOwned: false, code: ""};
@@ -182,6 +183,7 @@ Tech[Explosives] = {name: 'Explosives', prereq1: Gunpowder, prereq2: Chemistry, 
 Tech[Feudalism] = {name: 'Feudalism', prereq1: WarriorCode, prereq2: Monarchy, playerOwned: false, AIOwned: false, code: "HealingRate=2;"};
 Tech[Flight] = {name: 'Flight', prereq1: Combustion, prereq2: TheoryofGravity, playerOwned: false, AIOwned: false, code: ""};
 Tech[Fundamentalism] = {name: 'Fundamentalism', prereq1: Theology, prereq2: Conscription, playerOwned: false, AIOwned: false, code: ""};
+Tech[FutureTech] = {name: 'Future Tech', prereq1: Stealth, prereq2: Plastics, playerOwned: false, AIOwned: false, code: "Tech[FutureTech].playerOwned = false; Tech[FutureTech].AIOwned= false;"};
 Tech[FusionPower] = {name: 'Fusion Power', prereq1: NuclearPower, prereq2: Superconductors, playerOwned: false, AIOwned: false, code: ""};
 Tech[GeneticEngineering] = {name: 'Genetic Engineering', prereq1: Medicine, prereq2: TheCorporation, playerOwned: false, AIOwned: false, code: ""};
 Tech[GuerillaWarfare] = {name: 'Guerilla Warfare', prereq1: Communism, prereq2: Tactics, playerOwned: false, AIOwned: false, code: ""};
@@ -244,42 +246,43 @@ CurrentTech = CityBuilding;
 CurrentTechCost = 0;
 TechReserve = 0;
 TechCount = 0;
+TradeReserve = 0;
 
 var Product = new Array();
 /* Units */
-Settler = 1; Product[Settler] = {type: 'unit', name: 'Settler', imgStub: 'settler', prereq: CityBuilding, cost: 40, upkeep: 1, kind: 'land', class: 'EI', mobility: 1, attack: 0, defense: 1, health: 10, firepower: 1, obsolete: false};
-Warrior = 2; Product[Warrior] = {type: 'unit', name: 'Warrior', imgStub: 'warrior', prereq: CityBuilding, cost: 10, upkeep: 1, kind: 'land', class: 'EI', mobility: 1, attack: 1, defense: 1, health: 10, firepower: 1, obsolete: false};
-Horseman = 3; Product[Horseman] = {type: 'unit', name: 'Horseman', imgStub: 'horseman', prereq: HorsebackRiding, cost: 20, upkeep: 1, kind: 'land', class: 'EC', mobility: 2, attack: 2, defense: 1, health: 10, firepower: 1, obsolete: false};
-Archer = 4; Product[Archer] = {type: 'unit', name: 'Archer', imgStub: 'archer', prereq: WarriorCode, cost: 30, upkeep: 1, kind: 'land', class: 'EI', mobility: 1, attack: 3, defense: 2, health: 10, firepower: 1, obsolete: false};
-Phalanx = 5; Product[Phalanx] = {type: 'unit', name: 'Phalanx', imgStub: 'phalanx', prereq: BronzeWorking, cost: 20, upkeep: 1, kind: 'land', class: 'HI', mobility: 1, attack: 1, defense: 2, health: 10, firepower: 1, obsolete: false};
-Chariot = 6; Product[Chariot] = {type: 'unit', name: 'Chariot', imgStub: 'chariot', prereq: TheWheel, cost: 30, upkeep: 1, kind: 'land', class: 'EC', mobility: 2, attack: 3, defense: 1, health: 10, firepower: 1, obsolete: false};
-Catapult = 7; Product[Catapult] = {type: 'unit', name: 'Catapult', imgStub: 'catapult', prereq: Mathematics, cost: 40, upkeep: 1, kind: 'land', class: 'SE', mobility: 1, attack: 6, defense: 1, health: 10, firepower: 1, obsolete: false};
-Legion = 8; Product[Legion] = {type: 'unit', name: 'Legion', imgStub: 'legion', prereq: IronWorking, cost: 40, upkeep: 1, kind: 'land', class: 'HI', mobility: 1, attack: 4, defense: 2, health: 10, firepower: 1, obsolete: false};
-Pikeman = 9; Product[Pikeman] = {type: 'unit', name: 'Pikeman', imgStub: 'pikeman', prereq: Feudalism, cost: 20, upkeep: 1, kind: 'land', class: 'HI', mobility: 1, attack: 1, defense: 2, health: 10, firepower: 1, obsolete: false};
-Knight = 10; Product[Knight] = {type: 'unit', name: 'Knight', imgStub: 'knight', prereq: Chivalry, cost: 40, upkeep: 1, kind: 'land', class: 'EC', mobility: 2, attack: 4, defense: 2, health: 10, firepower: 1, obsolete: false};
-Frigate = 11; Product[Frigate] = {type: 'unit', name: 'Frigate', imgStub: 'frigate', prereq: Magnetism, cost: 50, upkeep: 1, kind: 'sea', class: 'N', mobility: 4, attack: 4, defense: 2, health: 20, firepower: 1, obsolete: false};
-Ironclad = 12; Product[Ironclad] = {type: 'unit', name: 'Ironclad', imgStub: 'ironclad', prereq: SteamEngine, cost: 60, upkeep: 1, kind: 'sea', class: 'N', mobility: 4, attack: 4, defense: 4, health: 30, firepower: 1, obsolete: false};
-Musketeer = 13; Product[Musketeer] = {type: 'unit', name: 'Musketeer', imgStub: 'musketeer', prereq: Gunpowder, cost: 30, upkeep: 1, kind: 'land', class: 'LI', mobility: 1, attack: 3, defense: 3, health: 20, firepower: 1, obsolete: false};
-Dragoon = 14; Product[Dragoon] = {type: 'unit', name: 'Dragoon', imgStub: 'dragoon', prereq: Leadership, cost: 50, upkeep: 1, kind: 'land', class: 'EC', mobility: 2, attack: 5, defense: 2, health: 20, firepower: 1, obsolete: false};
-Cannon = 15; Product[Cannon] = {type: 'unit', name: 'Cannon', imgStub: 'cannon', prereq: Metallurgy, cost: 40, upkeep: 1, kind: 'sea', class: 'SE', mobility: 1, attack: 8, defense: 1, health: 20, firepower: 1, obsolete: false};
-Destroyer = 16; Product[Destroyer] = {type: 'unit', name: 'Destroyer', imgStub: 'destroyer', prereq: Electricity, cost: 60, upkeep: 1, kind: 'sea', class: 'N', mobility: 6, attack: 4, defense: 4, health: 30, firepower: 1, obsolete: false};
-Rifleman = 17; Product[Rifleman] = {type: 'unit', name: 'Rifleman', imgStub: 'rifleman', prereq: Conscription, cost: 40, upkeep: 1, kind: 'land', class: 'LI', mobility: 1, attack: 4, defense: 4, health: 20, firepower: 1, obsolete: false};
-Cavalry = 18; Product[Cavalry] = {type: 'unit', name: 'Cavalry', imgStub: 'cavalry', prereq: Tactics, cost: 60, upkeep: 1, kind: 'land', class: 'LC', mobility: 2, attack: 8, defense: 3, health: 20, firepower: 1, obsolete: false};
-Cruiser = 19; Product[Cruiser] = {type: 'unit', name: 'Cruiser', imgStub: 'cruiser', prereq: Steel, cost: 80, upkeep: 1, kind: 'sea', class: 'N', mobility: 5, attack: 6, defense: 6, health: 30, firepower: 2, obsolete: false};
-Battleship = 20; Product[Battleship] = {type: 'unit', name: 'Battleship', imgStub: 'battleship', prereq: Automobile, cost: 160, upkeep: 1, kind: 'sea', class: 'N', mobility: 4, attack: 12, defense: 12, health: 40, firepower: 2, obsolete: false};
-Submarine = 21; Product[Submarine] = {type: 'unit', name: 'Submarine', imgStub: 'submarine', prereq: Combustion, cost: 50, upkeep: 1, kind: 'sea', class: 'N', mobility: 5, attack: 15, defense: 2, health: 30, firepower: 2, obsolete: false};
-Artillery = 22; Product[Artillery] = {type: 'unit', name: 'Artillery', imgStub: 'artillery', prereq: MachineTools, cost: 50, upkeep: 1, kind: 'land', class: 'SE', mobility: 1, attack: 10, defense: 1, health: 20, firepower: 2, obsolete: false};
-Fighter = 23; Product[Fighter] = {type: 'unit', name: 'Fighter', imgStub: 'fighter', prereq: Flight, cost: 60, upkeep: 1, kind: 'air', class: 'AF', mobility: 10, attack: 4, defense: 3, health: 20, firepower: 2, obsolete: false};
-Carrier = 24; Product[Carrier] = {type: 'unit', name: 'Carrier', imgStub: 'carrier', prereq: AdvancedFlight, cost: 160, upkeep: 1, kind: 'sea', class: 'N', mobility: 5, attack: 1, defense: 9, health: 40, firepower: 2, obsolete: false};
-Armor = 25; Product[Armor] = {type: 'unit', name: 'Armor', imgStub: 'armor', prereq: MobileWarfare, cost: 80, upkeep: 1, kind: 'land', class: 'LC', mobility: 3, attack: 10, defense: 5, health: 30, firepower: 1, obsolete: false};
-MechInf = 26; Product[MechInf] = {type: 'unit', name: 'Mech. Inf.', imgStub: 'mech.inf.', prereq: LaborUnion, cost: 50, upkeep: 1, kind: 'land', class: 'LI', mobility: 3, attack: 6, defense: 6, health: 30, firepower: 1, obsolete: false};
-Howitzer = 27; Product[Howitzer] = {type: 'unit', name: 'Howitzer', imgStub: 'howitzer', prereq: Robotics, cost: 70, upkeep: 1, kind: 'land', class: 'SE', mobility: 2, attack: 12, defense: 2, health: 30, firepower: 2, obsolete: false};
-Bomber = 28; Product[Bomber] = {type: 'unit', name: 'Bomber', imgStub: 'bomber', prereq: AdvancedFlight, cost: 120, upkeep: 1, kind: 'air', class: 'AF', mobility: 8, attack: 12, defense: 1, health: 20, firepower: 2, obsolete: false};
-SpyPlane = 29; Product[SpyPlane] = {type: 'unit', name: 'Spy Plane', imgStub: 'spyplane', prereq: AdvancedFlight, cost: 140, upkeep: 1, kind: 'air', class: 'AF', mobility: 16, attack: 0, defense: 1, health: 20, firepower: 1, obsolete: false};
-NuclearMissile = 30; Product[NuclearMissile] = {type: 'unit', name: 'Nuclear Missile', imgStub: 'nuclearmissile', prereq: Rocketry, cost: 160, upkeep: 1, kind: 'missile', class: 'M', mobility: 16, attack: 99, defense: 0, health: 10, firepower: 1, obsolete: false};
-CruiseMissile = 31; Product[CruiseMissile] = {type: 'unit', name: 'Cruise Missile', imgStub: 'cruisemissile', prereq: Rocketry, cost: 60, upkeep: 1, kind: 'missile', class: 'M', mobility: 12, attack: 18, defense: 0, health: 10, firepower: 1, obsolete: false};
-StealthBomber = 32; Product[StealthBomber] = {type: 'unit', name: 'Stealth Bomber', imgStub: 'stealthbomber', prereq: Stealth, cost: 160, upkeep: 1, kind: 'air', class: 'AF', mobility: 12, attack: 18, defense: 5, health: 20, firepower: 2, obsolete: false};
-StealthFighter = 33; Product[StealthFighter] = {type: 'unit', name: 'Stealth Fighter', imgStub: 'stealthfighter', prereq: Stealth, cost: 80, upkeep: 1, kind: 'air', class: 'AF', mobility: 14, attack: 8, defense: 4, health: 20, firepower: 2, obsolete: false};
+Settler = 1; Product[Settler] = {type: 'unit', name: 'Settler', imgStub: 'settler', prereq: CityBuilding, cost: 40, upkeep: 1, kind: 'land', class: 'EI', mobility: 1, attack: 0, defense: 1, health: 10, firepower: 1, help: 'Attack: 0, defense: 1, mobility: 1, 10 hp, 1 fp', obsolete: false};
+Warrior = 2; Product[Warrior] = {type: 'unit', name: 'Warrior', imgStub: 'warrior', prereq: CityBuilding, cost: 10, upkeep: 1, kind: 'land', class: 'EI', mobility: 1, attack: 1, defense: 1, health: 10, firepower: 1, help: 'Attack: 1, defense: 1, mobility: 1, 10 hp, 1 fp', obsolete: false};
+Horseman = 3; Product[Horseman] = {type: 'unit', name: 'Horseman', imgStub: 'horseman', prereq: HorsebackRiding, cost: 20, upkeep: 1, kind: 'land', class: 'EC', mobility: 2, attack: 2, defense: 1, health: 10, firepower: 1, help: 'Attack: 2, defense: 1, mobility: 2, 10 hp, 1 fp', obsolete: false};
+Archer = 4; Product[Archer] = {type: 'unit', name: 'Archer', imgStub: 'archer', prereq: WarriorCode, cost: 30, upkeep: 1, kind: 'land', class: 'EI', mobility: 1, attack: 3, defense: 2, health: 10, firepower: 1, help: 'Attack: 3, defense: 2, mobility: 1, 10 hp, 1 fp', obsolete: false};
+Phalanx = 5; Product[Phalanx] = {type: 'unit', name: 'Phalanx', imgStub: 'phalanx', prereq: BronzeWorking, cost: 20, upkeep: 1, kind: 'land', class: 'HI', mobility: 1, attack: 1, defense: 2, health: 10, firepower: 1, help: 'Attack: 1, defense: 2, mobility: 1, 10 hp, 1 fp', obsolete: false};
+Chariot = 6; Product[Chariot] = {type: 'unit', name: 'Chariot', imgStub: 'chariot', prereq: TheWheel, cost: 30, upkeep: 1, kind: 'land', class: 'EC', mobility: 2, attack: 3, defense: 1, health: 10, firepower: 1, help: 'Attack: 3, defense: 1, mobility: 2, 10 hp, 1 fp', obsolete: false};
+Catapult = 7; Product[Catapult] = {type: 'unit', name: 'Catapult', imgStub: 'catapult', prereq: Mathematics, cost: 40, upkeep: 1, kind: 'land', class: 'SE', mobility: 1, attack: 6, defense: 1, health: 10, firepower: 1, help: 'Attack: 6, defense: 1, mobility: 1, 10 hp, 1 fp', obsolete: false};
+Legion = 8; Product[Legion] = {type: 'unit', name: 'Legion', imgStub: 'legion', prereq: IronWorking, cost: 40, upkeep: 1, kind: 'land', class: 'HI', mobility: 1, attack: 4, defense: 2, health: 10, firepower: 1, help: 'Attack: 4, defense: 2, mobility: 1, 10 hp, 1 fp', obsolete: false};
+Pikeman = 9; Product[Pikeman] = {type: 'unit', name: 'Pikeman', imgStub: 'pikeman', prereq: Feudalism, cost: 20, upkeep: 1, kind: 'land', class: 'HI', mobility: 1, attack: 1, defense: 2, health: 10, firepower: 1, help: 'Attack: 1, defense: 2, mobility: 1, 10 hp, 1 fp', obsolete: false};
+Knight = 10; Product[Knight] = {type: 'unit', name: 'Knight', imgStub: 'knight', prereq: Chivalry, cost: 40, upkeep: 1, kind: 'land', class: 'EC', mobility: 2, attack: 4, defense: 2, health: 10, firepower: 1, help: 'Attack: 4, defense: 2, mobility: 2, 10 hp, 1 fp', obsolete: false};
+Frigate = 11; Product[Frigate] = {type: 'unit', name: 'Frigate', imgStub: 'frigate', prereq: Magnetism, cost: 50, upkeep: 1, kind: 'sea', class: 'N', mobility: 4, attack: 4, defense: 2, health: 20, firepower: 1, help: 'Attack: 4, defense: 2, mobility: 4, 20 hp, 1 fp', obsolete: false};
+Ironclad = 12; Product[Ironclad] = {type: 'unit', name: 'Ironclad', imgStub: 'ironclad', prereq: SteamEngine, cost: 60, upkeep: 1, kind: 'sea', class: 'N', mobility: 4, attack: 4, defense: 4, health: 30, firepower: 1, help: 'Attack: 4, defense: 4, mobility: 4, 30 hp, 1 fp', obsolete: false};
+Musketeer = 13; Product[Musketeer] = {type: 'unit', name: 'Musketeer', imgStub: 'musketeer', prereq: Gunpowder, cost: 30, upkeep: 1, kind: 'land', class: 'LI', mobility: 1, attack: 3, defense: 3, health: 20, firepower: 1, help: 'Attack: 3, defense: 3, mobility: 1, 20 hp, 1 fp', obsolete: false};
+Dragoon = 14; Product[Dragoon] = {type: 'unit', name: 'Dragoon', imgStub: 'dragoon', prereq: Leadership, cost: 50, upkeep: 1, kind: 'land', class: 'EC', mobility: 2, attack: 5, defense: 2, health: 20, firepower: 1, help: 'Attack: 5, defense: 2, mobility: 2, 20 hp, 1 fp', obsolete: false};
+Cannon = 15; Product[Cannon] = {type: 'unit', name: 'Cannon', imgStub: 'cannon', prereq: Metallurgy, cost: 40, upkeep: 1, kind: 'sea', class: 'SE', mobility: 1, attack: 8, defense: 1, health: 20, firepower: 1, help: 'Attack: 8, defense: 1, mobility: 1, 20 hp, 1 fp', obsolete: false};
+Destroyer = 16; Product[Destroyer] = {type: 'unit', name: 'Destroyer', imgStub: 'destroyer', prereq: Electricity, cost: 60, upkeep: 1, kind: 'sea', class: 'N', mobility: 6, attack: 4, defense: 4, health: 30, firepower: 1, help: 'Attack: 4, defense: 4, mobility: 6, 30 hp, 1 fp', obsolete: false};
+Rifleman = 17; Product[Rifleman] = {type: 'unit', name: 'Rifleman', imgStub: 'rifleman', prereq: Conscription, cost: 40, upkeep: 1, kind: 'land', class: 'LI', mobility: 1, attack: 4, defense: 4, health: 20, firepower: 1, help: 'Attack: 4, defense: 4, mobility: 1, 20 hp, 1 fp', obsolete: false};
+Cavalry = 18; Product[Cavalry] = {type: 'unit', name: 'Cavalry', imgStub: 'cavalry', prereq: Tactics, cost: 60, upkeep: 1, kind: 'land', class: 'LC', mobility: 2, attack: 8, defense: 3, health: 20, firepower: 1, help: 'Attack: 8, defense: 3, mobility: 2, 20 hp, 1 fp', obsolete: false};
+Cruiser = 19; Product[Cruiser] = {type: 'unit', name: 'Cruiser', imgStub: 'cruiser', prereq: Steel, cost: 80, upkeep: 1, kind: 'sea', class: 'N', mobility: 5, attack: 6, defense: 6, health: 30, firepower: 2, help: 'Attack: 6, defense: 6, mobility: 5, 30 hp, 2 fp', obsolete: false};
+Battleship = 20; Product[Battleship] = {type: 'unit', name: 'Battleship', imgStub: 'battleship', prereq: Automobile, cost: 160, upkeep: 1, kind: 'sea', class: 'N', mobility: 4, attack: 12, defense: 12, health: 40, firepower: 2, help: 'Attack: 12, defense: 12, mobility: 4, 40 hp, 2 fp', obsolete: false};
+Submarine = 21; Product[Submarine] = {type: 'unit', name: 'Submarine', imgStub: 'submarine', prereq: Combustion, cost: 50, upkeep: 1, kind: 'sea', class: 'N', mobility: 5, attack: 15, defense: 2, health: 30, firepower: 2, help: 'Attack: 15, defense: 2, mobility: 5, 30 hp, 2 fp', obsolete: false};
+Artillery = 22; Product[Artillery] = {type: 'unit', name: 'Artillery', imgStub: 'artillery', prereq: MachineTools, cost: 50, upkeep: 1, kind: 'land', class: 'SE', mobility: 1, attack: 10, defense: 1, health: 20, firepower: 2, help: 'Attack: 10, defense: 1, mobility: 1, 20 hp, 2 fp', obsolete: false};
+Fighter = 23; Product[Fighter] = {type: 'unit', name: 'Fighter', imgStub: 'fighter', prereq: Flight, cost: 60, upkeep: 1, kind: 'air', class: 'AF', mobility: 10, attack: 4, defense: 3, health: 20, firepower: 2, help: 'Attack: 4, defense: 3, mobility: 10, 20 hp, 2 fp', obsolete: false};
+Carrier = 24; Product[Carrier] = {type: 'unit', name: 'Carrier', imgStub: 'carrier', prereq: AdvancedFlight, cost: 160, upkeep: 1, kind: 'sea', class: 'N', mobility: 5, attack: 1, defense: 9, health: 40, firepower: 2, help: 'Attack: 1, defense: 9, mobility: 5, 40 hp, 2 fp', obsolete: false};
+Armor = 25; Product[Armor] = {type: 'unit', name: 'Armor', imgStub: 'armor', prereq: MobileWarfare, cost: 80, upkeep: 1, kind: 'land', class: 'LC', mobility: 3, attack: 10, defense: 5, health: 30, firepower: 1, help: 'Attack: 10, defense: 5, mobility: 3, 30 hp, 1 fp', obsolete: false};
+MechInf = 26; Product[MechInf] = {type: 'unit', name: 'Mech. Inf.', imgStub: 'mech.inf.', prereq: LaborUnion, cost: 50, upkeep: 1, kind: 'land', class: 'LI', mobility: 3, attack: 6, defense: 6, health: 30, firepower: 1, help: 'Attack: 6, defense: 6, mobility: 3, 30 hp, 1 fp', obsolete: false};
+Howitzer = 27; Product[Howitzer] = {type: 'unit', name: 'Howitzer', imgStub: 'howitzer', prereq: Robotics, cost: 70, upkeep: 1, kind: 'land', class: 'SE', mobility: 2, attack: 12, defense: 2, health: 30, firepower: 2, help: 'Attack: 12, defense: 2, mobility: 2, 30 hp, 2 fp', obsolete: false};
+Bomber = 28; Product[Bomber] = {type: 'unit', name: 'Bomber', imgStub: 'bomber', prereq: AdvancedFlight, cost: 120, upkeep: 1, kind: 'air', class: 'AF', mobility: 8, attack: 12, defense: 1, health: 20, firepower: 2, help: 'Attack: 12, defense: 1, mobility: 8, 20 hp, 2 fp', obsolete: false};
+SpyPlane = 29; Product[SpyPlane] = {type: 'unit', name: 'Spy Plane', imgStub: 'spyplane', prereq: AdvancedFlight, cost: 140, upkeep: 1, kind: 'air', class: 'AF', mobility: 16, attack: 0, defense: 1, health: 20, firepower: 1, help: 'Attack: 0, defense: 1, mobility: 16, 20 hp, 1 fp', obsolete: false};
+NuclearMissile = 30; Product[NuclearMissile] = {type: 'unit', name: 'Nuclear Missile', imgStub: 'nuclearmissile', prereq: Rocketry, cost: 160, upkeep: 1, kind: 'missile', class: 'M', mobility: 16, attack: 99, defense: 0, health: 10, firepower: 1, help: 'Attack: 99, defense: 0, mobility: 16, 10 hp, 1 fp', obsolete: false};
+CruiseMissile = 31; Product[CruiseMissile] = {type: 'unit', name: 'Cruise Missile', imgStub: 'cruisemissile', prereq: Rocketry, cost: 60, upkeep: 1, kind: 'missile', class: 'M', mobility: 12, attack: 18, defense: 0, health: 10, firepower: 1, help: 'Attack: 18, defense: 0, mobility: 12, 10 hp, 1 fp', obsolete: false};
+StealthBomber = 32; Product[StealthBomber] = {type: 'unit', name: 'Stealth Bomber', imgStub: 'stealthbomber', prereq: Stealth, cost: 160, upkeep: 1, kind: 'air', class: 'AF', mobility: 12, attack: 18, defense: 5, health: 20, firepower: 2, help: 'Attack: 18, defense: 5, mobility: 12, 20 hp, 2 fp', obsolete: false};
+StealthFighter = 33; Product[StealthFighter] = {type: 'unit', name: 'Stealth Fighter', imgStub: 'stealthfighter', prereq: Stealth, cost: 80, upkeep: 1, kind: 'air', class: 'AF', mobility: 14, attack: 8, defense: 4, health: 20, firepower: 2, help: 'Attack: 8, defense: 4, mobility: 14, 20 hp, 2 fp', obsolete: false};
 var MaxUnit = StealthFighter;
 /* Buildings */
 Airport = 34;
@@ -378,6 +381,44 @@ Caravel = 3; Troopship[Caravel] = {type: 'unit', name: 'Caravel', imgStub: 'cara
 Galleon = 4; Troopship[Galleon] = {type: 'unit', name: 'Galleon', imgStub: 'galleon', prereq: Magnetism, cost: 40, class: 'N', mobility: 4, attack: 2, defense: 2, health: 20, firepower: 1, TroopshipCapacity: 4, obsolete: false};
 Transport = 5; Troopship[Transport] = {type: 'unit', name: 'Transport', imgStub: 'Transport', prereq: Industrialization, cost: 50, class: 'N', mobility: 5, attack: 2, defense: 3, health: 30, firepower: 1, TroopshipCapacity: 8, obsolete: false};
 TroopshipClass = Boat;
+var MaxTroopship = Transport;
+
+/* Wonders */
+var Wonder = new Array();
+AdamSmithsTradingCo = 1; Wonder[AdamSmithsTradingCo] = {name: "Adam Smith's Trading Co.", prereq: Economics, obsoleteBy: FutureTech, cost: 400, code: 'BuildInEveryCity(Marketplace); BuildInEveryCity(Bank);', help: "Builds a Marketplace and a Bank in each of your cities that lacks one."};
+ApolloProgram = 2; Wonder[ApolloProgram] = {name: "Apollo Program", prereq: SpaceFlight, obsoleteBy: FutureTech, cost: 600, code: 'UpdateEntireMap();', help: "Reveals the entire world in its current state to the player."};
+Colossus = 3; Wonder[Colossus] = {name: "Colossus", prereq: BronzeWorking, obsoleteBy: Flight, cost: 100, code: 'ForCitiesWith(Wharf,"City[C].production *= 1.33;")', help: "Boosts trade in each seaside city by 33%."};
+CopernicusObservatory = 4; Wonder[CopernicusObservatory] = {name: "Copernicus' Observatory", prereq: Astronomy, obsoleteBy: SpaceFlight, cost: 200, code: 'ForCitiesWith(Temple,"City[C].science *= 1.33;")', help: "Boosts science in each city with a Temple by 33%."};
+CureForCancer = 5; Wonder[CureForCancer] = {name: "Cure For Cancer", prereq: GeneticEngineering, obsoleteBy: FutureTech, cost: 600, code: 'ForCitiesWith(Houses,"City[C].happyCitizens++; City[C].healthyCitizens++;")', help: "This stunning technological achievement makes one unhealthy citizen healthy in each city and makes one unhappy citizen happy."};
+DarwinsVoyage = 6; Wonder[DarwinsVoyage] = {name: "Darwin's Voyage", prereq: Magnetism, obsoleteBy: Flight, cost: 300, code: 'BuildInEveryCity(University);', help: "Builds a University in each of your cities that lacks one."};
+EiffelTower = 7; Wonder[EiffelTower] = {name: "Eiffel Tower", prereq: Radio, obsoleteBy: FutureTech, cost: 100, code: 'ForCitiesWith(Houses,"City[C].happyCitizens++;")', help: "Makes one unhappy citizen happy in every city."};
+GreatLibrary = 8; Wonder[GreatLibrary] = {name: "Great Library", prereq: Literacy, obsoleteBy: Electricity, cost: 300, code: 'BuildInEveryCity(Library);', help: "Build a Library in each of your cities that lacks one."};
+GreatWall = 9; Wonder[GreatWall] = {name: "Great Wall", prereq: Masonry, obsoleteBy: Metallurgy, cost: 300, code: 'BuildInEveryCity(CityWalls); PeaceInOurTime();', help: "Builds a City Wall in each of your cities that lacks one. All enemy units cease attacks and become inactive."};
+HangingGardens = 10; Wonder[HangingGardens] = {name: "Hanging Gardens", prereq: Pottery, obsoleteBy: Railroad, cost: 200, code: 'ForCitiesWith(Houses,"City[C].happyCitizens++; City[C].healthyCitizens++;")', help: "Makes one unhappy citizen happy in every city. Makes up to one unhealthy citizen healthy in each city."};
+HooverDam = 11; Wonder[HooverDam] = {name: "Hoover Dam", prereq: Electronics, obsoleteBy: FutureTech, cost: 600, code: 'BuildInEveryCity(HydroPlant);', help: "Builds a Hydro Plant in each of your cities that lacks one."};
+IsaacNewtonsCollege = 12; Wonder[IsaacNewtonsCollege] = {name: "Isaac Newton's College", prereq: TheoryofGravity, obsoleteBy: NuclearFission, cost: 300, code: 'ForCitiesWith(University,"City[C].science *= 2;")', help: "Boosts science in each city with a University by 100%."};
+KingRichardsCrusade = 13; Wonder[KingRichardsCrusade] = {name: "King Richard's Crusade", prereq: Engineering, obsoleteBy: Communism, cost: 150, code: 'ForCitiesWith(Cathedral,"City[C].production *= 1.25;")', help: "Boosts production points by 25% for each city with a Cathedral."};
+LeonardosWorkshop = 14; Wonder[LeonardosWorkshop] = {name: "Leonardo's Workshop", prereq: Invention, obsoleteBy: Automobile, cost: 400, code: 'ForCitiesWith(ResearchLab,"City[C].science *= 1.5;")', help: "Boosts science in each city with a Library by 50%."};
+GreatLighthouse = 15; Wonder[GreatLighthouse] = {name: "Great Lighthouse", prereq: MapMaking, obsoleteBy: Magnetism, cost: 200, code: 'LostAtSeaLikelihood = LostAtSeaLikelihood*2/3;', help: "Reduces the likelihood of getting lost at sea."};
+MagellansExpedition = 16; Wonder[MagellansExpedition] = {name: "Magellan's Expedition", prereq: Navigation, obsoleteBy: FutureTech, cost: 400, code: 'UpdateEntireMap(); LostAtSeaLikelihood = LostAtSeaLikelihood*2/3;', help: "Reduces the likelihood of getting lost at sea. Reveals the entire world in its current state to the player."};
+ManhattanProject = 17; Wonder[ManhattanProject] = {name: "Manhattan Project", prereq: NuclearFission, obsoleteBy: FutureTech, cost: 600, code: 'ManhattanProjectBuilt = true;', help: "Allows all players with knowledge of Rocketry to build Nuclear units."};
+MarcoPolosTravels = 18; Wonder[MarcoPolosTravels] = {name: "Marco Polo's Travels", prereq: Trade, obsoleteBy: Railroad, cost: 200, code: 'ForCitiesWith(Houses,"City[C].trade *= 1.333;")', help: "Boosts trade in each city by 33%."};
+MichelangelosChapel = 19; Wonder[MichelangelosChapel] = {name: "Michelangelo's Chapel", prereq: Monotheism, obsoleteBy: FutureTech, cost: 400, code: 'BuildInEveryCity(Cathedral);', help: "Builds a Cathedral in each of your cities that lacks one."};
+Oracle = 20; Wonder[Oracle] = {name: "Oracle", prereq: Mysticism, obsoleteBy: Theology, cost: 100, code: 'ForCitiesWith(Temple,"City[C].happyCitizens += 2;")', help: "Makes two of your unhappy citizens content in every city with a Temple."};
+OrbitalColony = 21; Wonder[OrbitalColony] = {name: "Orbital Colony", prereq: Superconductors, obsoleteBy: FutureTech, cost: 800, code: 'alert("You won the game in "+Year+" turns. Congratulations! You can keep playing for the fun of it.");', help: "The first player to build the Orbital Colony wonder wins the game!"};
+Pyramids = 22; Wonder[Pyramids] = {name: "Pyramids", prereq: Masonry, obsoleteBy: Engineering, cost: 200, code: 'BuildInEveryCity(Granary);', help: "Builds a Granary in each of your cities that lacks one."};
+SETIProgram = 23; Wonder[SETIProgram] = {name: "SETI Program", prereq: Computers, obsoleteBy: FutureTech, cost: 600, code: 'ForCitiesWith(ResearchLab,"City[C].science *= 2;")', help: "Boosts science in each city with a Research Lab by 100%."};
+ShakespearesTheatre = 24; Wonder[ShakespearesTheatre] = {name: "Shakespeare's Theatre", prereq: Medicine, obsoleteBy: Radio, cost: 200, code: 'ForCitiesWith(Library,"City[C].happyCitizens++;")', help: "Makes one unhappy citizen happy in each city with a Library."};
+StatueofLiberty = 25; Wonder[StatueofLiberty] = {name: "Statue of Liberty", prereq: Democracy, obsoleteBy: FutureTech, cost: 400, code: 'ForCitiesWith(Houses,"City[C].citizens++;")', help: "Adds one citizen to each of your cities."};
+SunTzusWarAcademy = 26; Wonder[SunTzusWarAcademy] = {name: "Sun Tzu's War Academy", prereq: Feudalism, obsoleteBy: Gunpowder, cost: 300, code: 'BuildInEveryCity(Barracks); BuildInEveryCity(Garrison);', help: "Builds a Barracks and Garrison in each of your cities that lacks one."};
+UnitedNations = 27; Wonder[UnitedNations] = {name: "United Nations", prereq: Communism, obsoleteBy: FutureTech, cost: 600, code: 'PeaceInOurTime();', help: "All enemy units cease attacks and become inactive."};
+WomensSuffrage = 28; Wonder[WomensSuffrage] = {name: "Women's Suffrage", prereq: Industrialization, obsoleteBy: FutureTech, cost: 600, code: 'ForCitiesWith(Houses,"City[C].production *= 1.25;")', help: "Boosts production points by 25% for each city."};
+MaxWonder = WomensSuffrage;
+for (W=1; W<MaxWonder; W++){
+   Wonder[W].player = false;
+}
+CurrentWonder = 0;
+CurrentWonderCost = 1;
 
 MaxRow = 24;
 MaxCol = 30; //prompt("How wide a world is it?","30");
@@ -390,6 +431,49 @@ TerrainProbability = new Array("ttc","ttttc", "tppp", "pppgfs", "gfs", "jjsgg", 
 var City = new Array();
 
 var Unit = new Array();
+
+
+/* Techs */
+
+function SetTechHelp(){
+   for (T=1; T<MaxTech; T++){
+      Tech[T].help = "Enables ";
+   }
+   for (U=1; U<MaxUnit; U++){
+      Tech[Product[U].prereq].help += Product[U].name + ", ";
+   }
+   for (U=Troopship; U<MaxTroopship; U++){
+      Tech[Troopship[U].prereq].help += Troopship[U].name + ", ";
+   }
+   for (B=MaxUnit+1; B<MaxProduct; B++){
+      Tech[Product[B].prereq].help += Product[B].name + ", ";
+   }
+   for (W=1; W<MaxWonder; W++){
+      Tech[Wonder[W].prereq].help += Wonder[W].name + ", ";
+   }
+   for (T=1; T<MaxTech; T++){
+      Tech[Tech[T].prereq1].help += Tech[T].name + ", ";
+      Tech[Tech[T].prereq2].help += Tech[T].name + ", ";
+   }
+   for (T=1; T<MaxTech; T++){
+      S = String(Tech[T].code);
+      if (S.indexOf("HealingRate")!=-1){
+         Tech[T].help += "faster healing, ";
+      }
+      if (S.indexOf("LostAtSeaLikelihood")!=-1){
+         Tech[T].help += "safer sailing, ";
+      }
+      if (Tech[T].help=="Enables "){
+         Tech[T].help = "No benefits";
+      }else{
+         Tech[T].help = Tech[T].help.substr(0,Tech[T].help.length-2);
+      }
+      //document.writeln(Tech[T].name, " - ", Tech[T].help, "<br>");
+   }
+}
+
+
+/* Regions */
 
 function TerrainAtLatitude(Row){
    switch (Rand(20)){
@@ -798,6 +882,23 @@ function NextCitizen(C){
    RegionImage(City[C].row,City[C].col,false);
 }
 
+function ChangeProduct(C, Prompt){
+      var Menu = new Array();
+      for (X=MaxUnit; X>=Settler; X--){
+         if (Tech[Product[X].prereq].playerOwned){
+            Menu.push({name: Product[X].name, value: X});
+         }
+      }
+      for (X=MaxBuilding-1; X>MaxUnit; X--){
+         //if ((Tech[Product[X].prereq].playerOwned)&&(City[C].building[(Product[X].prebuilding)])&&(!City[C].building[X])){
+         if ((Tech[Product[X].prereq].playerOwned)&&(!City[C].building[X])){
+            Menu.push({name: Product[X].name, value: X});
+         }
+      }
+      X = MenuPrompt(Prompt+"  What should they build next? ", Menu);
+      City[C].product = X;
+}
+
 function NextProduct(C){
    var P=City[C].product;
    City[C].productionReserve += Math.max(City[C].production*WorkingCitizenOutput(C),1);
@@ -813,24 +914,35 @@ function NextProduct(C){
             eval(Product[P].code);
          }
       }
-      var Menu = new Array();
-      for (X=MaxUnit; X>=Settler; X--){
-         if (Tech[Product[X].prereq].playerOwned){
-            Menu.push({name: Product[X].name, value: X});
-         }
-      }
-      for (X=MaxBuilding-1; X>MaxUnit; X--){
-         //if ((Tech[Product[X].prereq].playerOwned)&&(City[C].building[(Product[X].prebuilding)])&&(!City[C].building[X])){
-         if ((Tech[Product[X].prereq].playerOwned)&&(!City[C].building[X])){
-            Menu.push({name: Product[X].name, value: X});
-         }
-      }
-      X = MenuPrompt(CityDescription(C,false)+", has built "+Product[P].name+". What should they build next? ", Menu);
-      City[C].product = X;
-   };
+      ChangeProduct(C, CityDescription(C,false)+", has built "+Product[P].name+". ");
+   }
    RegionImage(City[C].row,City[C].col,false);
 }
 
+
+function BuildInEveryCity(Building){
+   for (C=0; C<City.length; C++){
+      if (City[C].player){
+         if(!City[C].building[Building]){
+           City[C].building[Building] = true;
+           eval(Product[Building].code);
+         }
+         if (City[C].product==Building){
+            ChangeProduct(C, CityDescription(C,false)+", has built "+Product[P].name+". ");
+         }
+      }
+   }
+}
+
+function ForCitiesWith(Building, Code){
+   for (C=0; C<City.length; C++){
+      if (City[C].player){
+         if(City[C].building[Building]){
+           eval(Code);
+         }
+      }
+   }
+}
 
 
 /* UI */
@@ -868,6 +980,7 @@ Toolbar = {
         //alert(Toolbar.element.style.maxWidth);
         this.element.style.maxWidth =  Math.floor(GetWidth(this.body) - GetWidth(this.resumeButton) - GetWidth(this.resumeButton)) + "px";
         //alert(Toolbar.element.style.maxWidth);
+	alert(GetHeight(this.body));
         if (540 < GetHeight(this.body)) {
             this.toolbar.style["bottom"] = (this.body.getBoundingClientRect().bottom + this.body.getBoundingClientRect().top) - 540;
         } else {
@@ -907,6 +1020,8 @@ function KeyPressHandler(event) {
     }
 }
 
+
+
 function MenuPrompt(Message, Menu){
    for (X=0; X<Menu.length; X++){
       Message += (X+1)+". "+Menu[X].name+", ";
@@ -939,6 +1054,7 @@ function NextTech(){
 	    Controlbar.techOptions.options.add(new Option(Tech[X].name, X))
          }
       }
+      ChangeTech(0);
       Controlbar.HighlightTechOptions(true);
    }
    CurrentTechCost = 5*TechCount;
@@ -949,6 +1065,37 @@ function ChangeTech(index) {
     Controlbar.HighlightTechOptions(false);
     Controlbar.techOptions.focus();
 }
+
+
+function NextWonder(){
+   for(C=0; C<City.length; C++){
+      if(City[C].player){
+         TradeReserve += Math.floor(City[C].science*City[C].trade*WorkingCitizenOutput(C)*(1-.3*City[C].corruptionRate));
+      }
+   }
+   if (TradeReserve>=CurrentWonderCost){
+      if (CurrentWonder!=0){
+         TradeReserve -= CurrentWonderCost;
+         Wonder[CurrentWonder].player = true;
+   	     if (Wonder[CurrentWonder].code!="") eval(Tech[CurrentWonder].code);
+   	     S = "Your civilization has built "+Wonder[CurrentWonder].name+".";
+   	  }else{
+   	     S = "Your civilization is generating surplus trade, which can be invested in Wonders.";
+   	  }
+      var Menu = new Array();
+      for (W=1; W<MaxWonder; W++){
+         if (!Wonder[W].player && Tech[Wonder[W].prereq].playerOwned && !Tech[Wonder[W].obsoleteBy].player){
+            Menu.push({name: Wonder[W].name, value: W});
+         }
+      }
+      if ((Menu.length>1)||(CurrentWonder==0)){
+         X = MenuPrompt(S + " Which Wonder do you want to build next? ", Menu);
+         CurrentWonder = X;
+         CurrentWonderCost = Wonder[CurrentWonder].cost;
+      }
+   }
+}
+
 
 
 function Turn(){
@@ -978,6 +1125,7 @@ do{
       }
       Year++;
       NextTech();
+      NextWonder();
       for (C=0; C<City.length; C++){
          NextCitizen(C);
          NextProduct(C);
@@ -1061,6 +1209,7 @@ for (Row=0; Row<MaxRow; Row++){
    document.writeln("<br>");
 }
 GenerateMap(Region);
+SetTechHelp();
 
 /* Preload images */
 for (X=Ocean; X<=Mountains; X++){
