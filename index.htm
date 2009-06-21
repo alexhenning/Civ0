@@ -1,11 +1,9 @@
 <html><title>Civ 0--Civilization: Year 0, a JavaScript open-source implementation of a civilization-style game</title>
-<body id="body" onload="Toolbar.OnResize()" onresize="Toolbar.OnResize()" onkeypress="KeyPressHandler(event)" style="min-width: 600px; min-height: 510px; height: 100%;  margin: 0px;">
-
+<body id="body" onload="MessageBox.OnResize()" onresize="MessageBox.OnResize()" style="min-width: 600px; min-height: 510px; height: 100%;  margin: 0px;">
 <div id="toolbar" style="font-size: 16px; color: black; background-color: white; padding 2px; position: fixed; left: 0px; right: 0px; bottom: 0px; height: 30px; vertical-align: middle; max-width: 600px;">
-<div id="message" style="float: left; max-height: 25px; max-width:12px; overflow-x: auto; overflow-y: hidden;"></div>
+<div id="message" style="float: left;"></div>
 <form><input id="resumeButton" type="button" style="float: right" value="Resume" onClick="ActiveUnit=0; for (U=0; U<Unit.length; U++){Unit[U].active=true;Unit[U].destinationRow=-1}; Turn();"></form>
 </div>
-
 <script type="text/javascript">
 
 var Debug = 1;
@@ -87,63 +85,65 @@ Explosives = 29;
 Feudalism = 30;
 Flight = 31;
 Fundamentalism = 32;
-FusionPower = 33;
-GeneticEngineering = 34;
-GuerillaWarfare = 35;
-Gunpowder = 36;
-HorsebackRiding = 37;
-Industrialization = 38;
-Invention = 39;
-IronWorking = 40;
-LaborUnion = 41;
-Laser = 42;
-Leadership = 43;
-Literacy = 44;
-MachineTools = 45;
-Magnetism = 46;
-MapMaking = 47;
-Masonry = 48;
-MassProduction = 49;
-Mathematics = 50;
-Medicine = 51;
-Metallurgy = 52;
-Miniaturization = 53;
-MobileWarfare = 54;
-Monarchy = 55;
-Monotheism = 56;
-Mysticism = 57;
-Navigation = 58;
-NuclearFission = 59;
-NuclearPower = 60;
-Philosophy = 61;
-Physics = 62;
-Plastics = 63;
-Polytheism = 64;
-Pottery = 65;
-Radio = 66;
-Railroad = 67;
-Recycling = 68;
-Refining = 69;
-Refrigeration = 70;
-Robotics = 71;
-Rocketry = 72;
-Sanitation = 73;
-Seafaring = 74;
-SpaceFlight = 75;
-Stealth = 76;
-SteamEngine = 77;
-Steel = 78;
-Superconductors = 79;
-Tactics = 80;
-TheCorporation = 81;
-TheRepublic = 82;
-TheWheel = 83;
-Theology = 84;
-TheoryofGravity = 85;
-Trade = 86;
-University = 87;
-WarriorCode = 88;
-Writing = 89;
+FutureTech = 33;
+FusionPower = 34;
+GeneticEngineering = 35;
+GuerillaWarfare = 36;
+Gunpowder = 37;
+HorsebackRiding = 38;
+Industrialization = 39;
+Invention = 40;
+IronWorking = 41;
+LaborUnion = 42;
+Laser = 43;
+Leadership = 44;
+Literacy = 45;
+MachineTools = 46;
+Magnetism = 47;
+MapMaking = 48;
+Masonry = 49;
+MassProduction = 50;
+Mathematics = 51;
+Medicine = 52;
+Metallurgy = 53;
+Miniaturization = 54;
+MobileWarfare = 55;
+Monarchy = 56;
+Monotheism = 57;
+Mysticism = 58;
+Navigation = 59;
+NuclearFission = 60;
+NuclearPower = 61;
+Philosophy = 62;
+Physics = 63;
+Plastics = 64;
+Polytheism = 65;
+Pottery = 66;
+Radio = 67;
+Railroad = 68;
+Recycling = 69;
+Refining = 70;
+Refrigeration = 71;
+Robotics = 72;
+Rocketry = 73;
+Sanitation = 74;
+Seafaring = 75;
+SpaceFlight = 76;
+Stealth = 77;
+SteamEngine = 78;
+Steel = 79;
+Superconductors = 80;
+Tactics = 81;
+TheCorporation = 82;
+TheRepublic = 83;
+TheWheel = 84;
+Theology = 85;
+TheoryofGravity = 86;
+Trade = 87;
+University = 88;
+WarriorCode = 89;
+Writing = 90;
+MaxTech = Writing;
 Tech[AdvancedFlight] = {name: 'Advanced Flight', prereq1: Radio, prereq2: MachineTools, playerOwned: false, AIOwned: false, code: ""};
 Tech[Alphabet] = {name: 'Alphabet', prereq1: CityBuilding, prereq2: CityBuilding, playerOwned: false, AIOwned: false, code: ""};
 Tech[AmphibiousWarfare] = {name: 'Amphibious Warfare', prereq1: Navigation, prereq2: Tactics, playerOwned: false, AIOwned: false, code: ""};
@@ -176,6 +176,7 @@ Tech[Explosives] = {name: 'Explosives', prereq1: Gunpowder, prereq2: Chemistry, 
 Tech[Feudalism] = {name: 'Feudalism', prereq1: WarriorCode, prereq2: Monarchy, playerOwned: false, AIOwned: false, code: "HealingRate=2;"};
 Tech[Flight] = {name: 'Flight', prereq1: Combustion, prereq2: TheoryofGravity, playerOwned: false, AIOwned: false, code: ""};
 Tech[Fundamentalism] = {name: 'Fundamentalism', prereq1: Theology, prereq2: Conscription, playerOwned: false, AIOwned: false, code: ""};
+Tech[FutureTech] = {name: 'Future Tech', prereq1: Stealth, prereq2: Plastics, playerOwned: false, AIOwned: false, code: "Tech[FutureTech].playerOwned = false; Tech[FutureTech].AIOwned= false;"};
 Tech[FusionPower] = {name: 'Fusion Power', prereq1: NuclearPower, prereq2: Superconductors, playerOwned: false, AIOwned: false, code: ""};
 Tech[GeneticEngineering] = {name: 'Genetic Engineering', prereq1: Medicine, prereq2: TheCorporation, playerOwned: false, AIOwned: false, code: ""};
 Tech[GuerillaWarfare] = {name: 'Guerilla Warfare', prereq1: Communism, prereq2: Tactics, playerOwned: false, AIOwned: false, code: ""};
@@ -238,6 +239,7 @@ CurrentTech = CityBuilding;
 CurrentTechCost = 0;
 TechReserve = 0;
 TechCount = 0;
+TradeReserve = 0;
 
 var Product = new Array();
 /* Units */
@@ -372,6 +374,44 @@ Caravel = 3; Troopship[Caravel] = {type: 'unit', name: 'Caravel', imgStub: 'cara
 Galleon = 4; Troopship[Galleon] = {type: 'unit', name: 'Galleon', imgStub: 'galleon', prereq: Magnetism, cost: 40, class: 'N', mobility: 4, attack: 2, defense: 2, health: 20, firepower: 1, TroopshipCapacity: 4, obsolete: false};
 Transport = 5; Troopship[Transport] = {type: 'unit', name: 'Transport', imgStub: 'Transport', prereq: Industrialization, cost: 50, class: 'N', mobility: 5, attack: 2, defense: 3, health: 30, firepower: 1, TroopshipCapacity: 8, obsolete: false};
 TroopshipClass = Boat;
+var MaxTroopship = Transport;
+
+/* Wonders */
+var Wonder = new Array();
+AdamSmithsTradingCo = 1; Wonder[AdamSmithsTradingCo] = {name: "Adam Smith's Trading Co.", prereq: Economics, obsoleteBy: FutureTech, cost: 400, code: 'BuildInEveryCity(Marketplace); BuildInEveryCity(Bank);', help: "Builds a Marketplace and a Bank in each of your cities that lacks one."};
+ApolloProgram = 2; Wonder[ApolloProgram] = {name: "Apollo Program", prereq: SpaceFlight, obsoleteBy: FutureTech, cost: 600, code: 'UpdateEntireMap();', help: "Reveals the entire world in its current state to the player."};
+Colossus = 3; Wonder[Colossus] = {name: "Colossus", prereq: BronzeWorking, obsoleteBy: Flight, cost: 100, code: 'ForCitiesWith(Wharf,"City[C].production *= 1.33;")', help: "Boosts trade in each seaside city by 33%."};
+CopernicusObservatory = 4; Wonder[CopernicusObservatory] = {name: "Copernicus' Observatory", prereq: Astronomy, obsoleteBy: SpaceFlight, cost: 200, code: 'ForCitiesWith(Temple,"City[C].science *= 1.33;")', help: "Boosts science in each city with a Temple by 33%."};
+CureForCancer = 5; Wonder[CureForCancer] = {name: "Cure For Cancer", prereq: GeneticEngineering, obsoleteBy: FutureTech, cost: 600, code: 'ForCitiesWith(Houses,"City[C].happyCitizens++; City[C].healthyCitizens++;")', help: "This stunning technological achievement makes one unhealthy citizen healthy in each city and makes one unhappy citizen happy."};
+DarwinsVoyage = 6; Wonder[DarwinsVoyage] = {name: "Darwin's Voyage", prereq: Magnetism, obsoleteBy: Flight, cost: 300, code: 'BuildInEveryCity(University);', help: "Builds a University in each of your cities that lacks one."};
+EiffelTower = 7; Wonder[EiffelTower] = {name: "Eiffel Tower", prereq: Radio, obsoleteBy: FutureTech, cost: 100, code: 'ForCitiesWith(Houses,"City[C].happyCitizens++;")', help: "Makes one unhappy citizen happy in every city."};
+GreatLibrary = 8; Wonder[GreatLibrary] = {name: "Great Library", prereq: Literacy, obsoleteBy: Electricity, cost: 300, code: 'BuildInEveryCity(Library);', help: "Build a Library in each of your cities that lacks one."};
+GreatWall = 9; Wonder[GreatWall] = {name: "Great Wall", prereq: Masonry, obsoleteBy: Metallurgy, cost: 300, code: 'BuildInEveryCity(CityWalls); PeaceInOurTime();', help: "Builds a City Wall in each of your cities that lacks one. All enemy units cease attacks and become inactive."};
+HangingGardens = 10; Wonder[HangingGardens] = {name: "Hanging Gardens", prereq: Pottery, obsoleteBy: Railroad, cost: 200, code: 'ForCitiesWith(Houses,"City[C].happyCitizens++; City[C].healthyCitizens++;")', help: "Makes one unhappy citizen happy in every city. Makes up to one unhealthy citizen healthy in each city."};
+HooverDam = 11; Wonder[HooverDam] = {name: "Hoover Dam", prereq: Electronics, obsoleteBy: FutureTech, cost: 600, code: 'BuildInEveryCity(HydroPlant);', help: "Builds a Hydro Plant in each of your cities that lacks one."};
+IsaacNewtonsCollege = 12; Wonder[IsaacNewtonsCollege] = {name: "Isaac Newton's College", prereq: TheoryofGravity, obsoleteBy: NuclearFission, cost: 300, code: 'ForCitiesWith(University,"City[C].science *= 2;")', help: "Boosts science in each city with a University by 100%."};
+KingRichardsCrusade = 13; Wonder[KingRichardsCrusade] = {name: "King Richard's Crusade", prereq: Engineering, obsoleteBy: Communism, cost: 150, code: 'ForCitiesWith(Cathedral,"City[C].production *= 1.25;")', help: "Boosts production points by 25% for each city with a Cathedral."};
+LeonardosWorkshop = 14; Wonder[LeonardosWorkshop] = {name: "Leonardo's Workshop", prereq: Invention, obsoleteBy: Automobile, cost: 400, code: 'ForCitiesWith(ResearchLab,"City[C].science *= 1.5;")', help: "Boosts science in each city with a Library by 50%."};
+GreatLighthouse = 15; Wonder[GreatLighthouse] = {name: "Great Lighthouse", prereq: MapMaking, obsoleteBy: Magnetism, cost: 200, code: 'LostAtSeaLikelihood = LostAtSeaLikelihood*2/3;', help: "Reduces the likelihood of getting lost at sea."};
+MagellansExpedition = 16; Wonder[MagellansExpedition] = {name: "Magellan's Expedition", prereq: Navigation, obsoleteBy: FutureTech, cost: 400, code: 'UpdateEntireMap(); LostAtSeaLikelihood = LostAtSeaLikelihood*2/3;', help: "Reduces the likelihood of getting lost at sea. Reveals the entire world in its current state to the player."};
+ManhattanProject = 17; Wonder[ManhattanProject] = {name: "Manhattan Project", prereq: NuclearFission, obsoleteBy: FutureTech, cost: 600, code: 'ManhattanProjectBuilt = true;', help: "Allows all players with knowledge of Rocketry to build Nuclear units."};
+MarcoPolosTravels = 18; Wonder[MarcoPolosTravels] = {name: "Marco Polo's Travels", prereq: Trade, obsoleteBy: Railroad, cost: 200, code: 'ForCitiesWith(Houses,"City[C].trade *= 1.333;")', help: "Boosts trade in each city by 33%."};
+MichelangelosChapel = 19; Wonder[MichelangelosChapel] = {name: "Michelangelo's Chapel", prereq: Monotheism, obsoleteBy: FutureTech, cost: 400, code: 'BuildInEveryCity(Cathedral);', help: "Builds a Cathedral in each of your cities that lacks one."};
+Oracle = 20; Wonder[Oracle] = {name: "Oracle", prereq: Mysticism, obsoleteBy: Theology, cost: 100, code: 'ForCitiesWith(Temple,"City[C].happyCitizens += 2;")', help: "Makes two of your unhappy citizens content in every city with a Temple."};
+OrbitalColony = 21; Wonder[OrbitalColony] = {name: "Orbital Colony", prereq: Superconductors, obsoleteBy: FutureTech, cost: 800, code: 'alert("You won the game in "+Year+" turns. Congratulations! You can keep playing for the fun of it.");', help: "The first player to build the Orbital Colony wonder wins the game!"};
+Pyramids = 22; Wonder[Pyramids] = {name: "Pyramids", prereq: Masonry, obsoleteBy: Engineering, cost: 200, code: 'BuildInEveryCity(Granary);', help: "Builds a Granary in each of your cities that lacks one."};
+SETIProgram = 23; Wonder[SETIProgram] = {name: "SETI Program", prereq: Computers, obsoleteBy: FutureTech, cost: 600, code: 'ForCitiesWith(ResearchLab,"City[C].science *= 2;")', help: "Boosts science in each city with a Research Lab by 100%."};
+ShakespearesTheatre = 24; Wonder[ShakespearesTheatre] = {name: "Shakespeare's Theatre", prereq: Medicine, obsoleteBy: Radio, cost: 200, code: 'ForCitiesWith(Library,"City[C].happyCitizens++;")', help: "Makes one unhappy citizen happy in each city with a Library."};
+StatueofLiberty = 25; Wonder[StatueofLiberty] = {name: "Statue of Liberty", prereq: Democracy, obsoleteBy: FutureTech, cost: 400, code: 'ForCitiesWith(Houses,"City[C].citizens++;")', help: "Adds one citizen to each of your cities."};
+SunTzusWarAcademy = 26; Wonder[SunTzusWarAcademy] = {name: "Sun Tzu's War Academy", prereq: Feudalism, obsoleteBy: Gunpowder, cost: 300, code: 'BuildInEveryCity(Barracks); BuildInEveryCity(Garrison);', help: "Builds a Barracks and Garrison in each of your cities that lacks one."};
+UnitedNations = 27; Wonder[UnitedNations] = {name: "United Nations", prereq: Communism, obsoleteBy: FutureTech, cost: 600, code: 'PeaceInOurTime();', help: "All enemy units cease attacks and become inactive."};
+WomensSuffrage = 28; Wonder[WomensSuffrage] = {name: "Women's Suffrage", prereq: Industrialization, obsoleteBy: FutureTech, cost: 600, code: 'ForCitiesWith(Houses,"City[C].production *= 1.25;")', help: "Boosts production points by 25% for each city."};
+MaxWonder = WomensSuffrage;
+for (W=1; W<MaxWonder; W++){
+   Wonder[W].player = false;
+}
+CurrentWonder = 0;
+CurrentWonderCost = 1;
 
 MaxRow = 24;
 MaxCol = 30; //prompt("How wide a world is it?","30");
@@ -384,6 +424,49 @@ TerrainProbability = new Array("ttc","ttttc", "tppp", "pppgfs", "gfs", "jjsgg", 
 var City = new Array();
 
 var Unit = new Array();
+
+
+/* Techs */
+
+function SetTechHelp(){
+   for (T=1; T<MaxTech; T++){
+      Tech[T].help = "Enables ";
+   }
+   for (U=1; U<MaxUnit; U++){
+      Tech[Product[U].prereq].help += Product[U].name + ", ";
+   }
+   for (U=Troopship; U<MaxTroopship; U++){
+      Tech[Troopship[U].prereq].help += Troopship[U].name + ", ";
+   }
+   for (B=MaxUnit+1; B<MaxProduct; B++){
+      Tech[Product[B].prereq].help += Product[B].name + ", ";
+   }
+   for (W=1; W<MaxWonder; W++){
+      Tech[Wonder[W].prereq].help += Wonder[W].name + ", ";
+   }
+   for (T=1; T<MaxTech; T++){
+      Tech[Tech[T].prereq1].help += Tech[T].name + ", ";
+      Tech[Tech[T].prereq2].help += Tech[T].name + ", ";
+   }
+   for (T=1; T<MaxTech; T++){
+      S = String(Tech[T].code);
+      if (S.indexOf("HealingRate")!=-1){
+         Tech[T].help += "faster healing, ";
+      }
+      if (S.indexOf("LostAtSeaLikelihood")!=-1){
+         Tech[T].help += "safer sailing, ";
+      }
+      if (Tech[T].help=="Enables "){
+         Tech[T].help = "No benefits";
+      }else{
+         Tech[T].help = Tech[T].help.substr(0,Tech[T].help.length-2);
+      }
+      //document.writeln(Tech[T].name, " - ", Tech[T].help, "<br>");
+   }
+}
+
+
+/* Regions */
 
 function TerrainAtLatitude(Row){
    switch (Rand(20)){
@@ -829,6 +912,7 @@ function NextProduct(C){
    RegionImage(City[C].row,City[C].col,false);
 }
 
+
 function BuildInEveryCity(Building){
    for (C=0; C<City.length; C++){
       if (City[C].player){
@@ -843,26 +927,28 @@ function BuildInEveryCity(Building){
    }
 }
 
+function ForCitiesWith(Building, Code){
+   for (C=0; C<City.length; C++){
+      if (City[C].player){
+         if(City[C].building[Building]){
+           eval(Code);
+         }
+      }
+   }
+}
+
+
 /* UI */
 
 var ActiveUnit = 0;
-OnPhone = true;
 
-function GetWidth(elem) {
-    return elem.getBoundingClientRect().right - elem.getBoundingClientRect().left;
-}
-
-function GetHeight(elem) {
-    return elem.getBoundingClientRect().bottom - elem.getBoundingClientRect().top;
-}
-
-Toolbar = {
+MessageBox = {
     toolbar: document.getElementById("toolbar"),
     element: document.getElementById("message"),
     resumeButton: document.getElementById("resumeButton"),
     body: document.getElementById("body"),
     SetText: function(text) {
-        Toolbar.element.innerHTML = text;
+        MessageBox.element.innerHTML = text;
     },
     OnHover: function(element) {
         var text; // below is a hack to disable title text in addition a to the custom one on hover
@@ -870,41 +956,18 @@ Toolbar = {
         else if (element.stored_text == null) {text = "";}
         else {text = element.stored_text;}
 
-       Toolbar.SetText(text);
+       MessageBox.SetText(text);
+       //MessageBox.SetLocation(row, col);
        element.stored_text = text;
        element.title = "";
     },
     OnResize: function() {
-        //alert(Toolbar.element.style.maxWidth);
-        Toolbar.element.style.maxWidth =  Math.floor(GetWidth(Toolbar.body) - GetWidth(Toolbar.resumeButton) - GetWidth(Toolbar.resumeButton)) + "px"
-        //alert(Toolbar.element.style.maxWidth);
-        if (510 < (Toolbar.body.getBoundingClientRect().bottom - Toolbar.body.getBoundingClientRect().top)) {
-            Toolbar.toolbar.style["bottom"] = (Toolbar.body.getBoundingClientRect().bottom) - 510;
+        MessageBox.element.style["max-width"] =  (MessageBox.body.getBoundingClientRect().right - MessageBox.body.getBoundingClientRect().left) - (MessageBox.resumeButton.getBoundingClientRect().right - MessageBox.resumeButton.getBoundingClientRect().left + 10)
+        if (510 < (MessageBox.body.getBoundingClientRect().bottom - MessageBox.body.getBoundingClientRect().top)) {
+            MessageBox.toolbar.style["bottom"] = (MessageBox.body.getBoundingClientRect().bottom + MessageBox.body.getBoundingClientRect().top) - 510;
         } else {
-            Toolbar.toolbar.style["bottom"] = 0;
+            MessageBox.toolbar.style["bottom"] = 0;
         }
-    }
-}
-
-function KeyPressHandler(event) {
-    var key = String.fromCharCode(event.which ? event.which : event.keyCode);
-    var unit = Unit[ActiveUnit];
-    switch (key) {
-    case "*": case "r": ActiveUnit=0; for (U=0; U<Unit.length; U++){Unit[U].active=true;Unit[U].destinationRow=-1}; Turn(); break;
-    case "t": OnPhone = !OnPhone; break;
-
-    //movement OnPhone true = 123\n456\n789\n0 phone set up | OnPhone false = 789\n456\n123\n0 keyboard setup
-    case "1": if (OnPhone) {i(unit.row-1, unit.col-1);} else {i(unit.row+1, unit.col-1);} break;
-    case "2": if (OnPhone) {i(unit.row-1, unit.col);} else {i(unit.row+1, unit.col);} break;
-    case "3": if (OnPhone) {i(unit.row-1, unit.col+1);} else {i(unit.row+1, unit.col+1);} break;
-    case "4": i(unit.row, unit.col-1); break;
-    case "5": i(unit.row, unit.col); break;
-    case "6": i(unit.row, unit.col+1); break;
-    case "7": if (OnPhone) {i(unit.row+1, unit.col-1);} else {i(unit.row-1, unit.col-1);} break;
-    case "8": if (OnPhone) {i(unit.row+1, unit.col);} else {i(unit.row-1, unit.col);} break;
-    case "9": if (OnPhone) {i(unit.row+1, unit.col+1);} else {i(unit.row-1, unit.col+1);} break;
-    
-    //default: alert(key);
     }
 }
 
@@ -945,6 +1008,37 @@ function NextTech(){
 }
 
 
+function NextWonder(){
+   for(C=0; C<City.length; C++){
+      if(City[C].player){
+         TradeReserve += Math.floor(City[C].science*City[C].trade*WorkingCitizenOutput(C)*(1-.3*City[C].corruptionRate));
+      }
+   }
+   if (TradeReserve>=CurrentWonderCost){
+      if (CurrentWonder!=0){
+         TradeReserve -= CurrentWonderCost;
+         Wonder[CurrentWonder].player = true;
+   	     if (Wonder[CurrentWonder].code!="") eval(Tech[CurrentWonder].code);
+   	     S = "Your civilization has built "+Wonder[CurrentWonder].name+".";
+   	  }else{
+   	     S = "Your civilization is generating surplus trade, which can be invested in Wonders.";
+   	  }
+      var Menu = new Array();
+      for (W=1; W<MaxWonder; W++){
+         if (!Wonder[W].player && Tech[Wonder[W].prereq].playerOwned && !Tech[Wonder[W].obsoleteBy].player){
+            Menu.push({name: Wonder[W].name, value: W});
+         }
+      }
+      if ((Menu.length>1)||(CurrentWonder==0)){
+         X = MenuPrompt(S + " Which Wonder do you want to build next? ", Menu);
+         CurrentWonder = X;
+         CurrentWonderCost = Wonder[CurrentWonder].cost;
+      }
+   }
+}
+
+
+
 function Turn(){
    //alert("starting loop with "+ActiveUnit+" and Unit.length of "+Unit.length);
 do{
@@ -972,6 +1066,7 @@ do{
       }
       Year++;
       NextTech();
+      NextWonder();
       for (C=0; C<City.length; C++){
          NextCitizen(C);
          NextProduct(C);
@@ -1050,11 +1145,12 @@ function i(Row, Col){
 
 for (Row=0; Row<MaxRow; Row++){
    for (Col=0; Col<MaxCol; Col++){
-   	  document.write('<img src=u.png id=p', Row,'_', Col,' onclick="i(', Row, ',', Col, ')" onmouseover="Toolbar.OnHover(this);" />');
+   	  document.write('<img src=u.png id=p', Row,'_', Col,' onclick="i(', Row, ',', Col, ')" onmouseover="MessageBox.OnHover(this);" />');
    }
    document.writeln("<br>");
 }
 GenerateMap(Region);
+SetTechHelp();
 
 /* Preload images */
 for (X=Ocean; X<=Mountains; X++){
