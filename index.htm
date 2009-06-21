@@ -664,7 +664,7 @@ function DefenseStrength(Attacker,Defender) {
     var DefenseStr=Product[Unit[Defender].type].defense*Unit[Defender].veterancy*Terrain[Region[Unit[Defender].row][Unit[Defender].col].terrain].defense;
     var C=Region[Unit[Defender].row][Unit[Defender].col].city;
     if (C>=0) {
-	DefenseStr *= City[C].defenseAgainst[Unit[Attacker].kind];
+	    DefenseStr *= City[C].defenseAgainst[Unit[Attacker].kind];
     }
     return(DefenseStr);
 }
@@ -674,7 +674,7 @@ function Combat(Attacker,Defender) {
     var AttackStrength = Product[Unit[Attacker].type].attack*Unit[Attacker].veterancy;
     var DefenseStr = DefenseStrength(Attacker,Defender);
     for (var Round=1; Round<10; Round++) {
-	if (Rand(100)<100*AttackStrength/(AttackStrength+DefenseStrength)) {
+	if (Rand(100)<100*AttackStrength/(AttackStrength+DefenseStr)) {
 	    Unit[Defender].health-=2*Product[Unit[Attacker].type].firepower;
 	} else {
 	    Unit[Attacker].health-=2*Product[Unit[Defender].type].firepower;
