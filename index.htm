@@ -8,8 +8,8 @@
 <span id="cities" style="float: left; padding-left: 5px;"></span>
 </div>
 
-<div id="toolbar" style="font-size: 16px; color: black; background-color: white; padding 2px; position: fixed; left: 0px; right: 0px; bottom: 0px; height: 30px; max-width: 600px;">
-<div id="message" style="float: left; max-height: 25px; max-width:12px; overflow-x: auto; overflow-y: hidden;"></div>
+<div id="toolbar" style="font-size: 16px; color: black; background-color: white; padding 2px; position: fixed; left: 0px; right: 0px; bottom: 0px; height: 40px; max-width: 600px;">
+<div id="message" style="float: left; max-width: 100%; overflow-y: auto;"></div>
 <form><input id="resumeButton" type="button" style="float: right" value="Resume" onClick="ActiveUnit=0; for (U=0; U<Unit.length; U++) {Unit[U].active=true;Unit[U].destinationRow=-1}; Turn();"></form>
 </div>
 <script type="text/javascript">;
@@ -1013,6 +1013,7 @@ function ChangeProduct(C) {
     }
     City[C].product = initial;
     City[C].quequeImage.src = Product[initial].imgStub + "_player.png"; 
+    City[C].quequeImage.focus();
 }
 
 function NextProduct(C) {
@@ -1094,7 +1095,7 @@ var Toolbar = {
     },
     OnResize: function() {
         //alert(Toolbar.element.style.maxWidth);
-        this.element.style.maxWidth =  Math.floor(GetWidth(this.body) - GetWidth(this.resumeButton) - GetWidth(this.resumeButton)) + "px";
+        //this.element.style.maxWidth =  Math.floor(GetWidth(this.body) - GetWidth(this.resumeButton) - GetWidth(this.resumeButton)) + "px";
         //alert(Toolbar.element.style.maxWidth);
 	//alert(GetHeight(this.body));
         if (540 < GetHeight(this.body)) {
