@@ -993,7 +993,7 @@ function ChangeProduct(C) {
 	    Toolbar.SetText("");
 	    image.src = image.unit.imgStub+"_enemy.png";
 	}
-	image.onmouseup = function() {
+	image.onclick = function() {
 	    Toolbar.SetText("");
 	    image.src = image.unit.imgStub+"_enemy.png";
 	    City[C].canBuild.style.display = "none";
