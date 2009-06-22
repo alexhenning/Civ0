@@ -1066,6 +1066,7 @@ function ForCitiesWith(Building, Code) {
 
 var ActiveUnit = 0;
 OnPhone = true;
+FocusOnTech = true;
 
 function GetWidth(elem) {
     return elem.getBoundingClientRect().right - elem.getBoundingClientRect().left;
@@ -1093,12 +1094,7 @@ var Toolbar = {
 	element.stored_text = text;
 	element.title = "";
     },
-    OnResize: function() {
-        //alert(Toolbar.element.style.maxWidth);
-        //this.element.style.maxWidth =  Math.floor(GetWidth(this.body) - GetWidth(this.resumeButton) - GetWidth(this.resumeButton)) + "px";
-        //alert(Toolbar.element.style.maxWidth);
-	//alert(GetHeight(this.body));
-        if (540 < GetHeight(this.body)) {
+    OnResize: function() {        if (540 < GetHeight(this.body)) {
             this.toolbar.style["bottom"] = (this.body.getBoundingClientRect().bottom + this.body.getBoundingClientRect().top) - 540;
         } else {
             this.toolbar.style["bottom"] = 0;
@@ -1128,7 +1124,12 @@ function KeyPressHandler(event) {
     switch (key) {
     //case "#": toggleToControlBar
     case "*": case "r": ActiveUnit=0; for (U=0; U<Unit.length; U++) {Unit[U].active=true;Unit[U].destinationRow=-1}; Turn(); break;
-    case "t": OnPhone = !OnPhone; break;
+    case "k": OnPhone = !OnPhone; break;
+    case "#": case "t":
+	if (FocusOnTech) {Controlbar.techOptions.focus();}
+	else {var unit = Unit[ActiveUnit]; document.getElementById('p'+unit.row+"_"+unit.col).focus();}
+	FocusOnTech = !FocusOnTech;
+	break;
 
     //movement OnPhone true = 123\n456\n789\n0 phone set up | OnPhone false = 789\n456\n123\n0 keyboard setup
     //case "0": pass
