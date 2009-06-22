@@ -3,8 +3,8 @@
 
 <div id="controlbar" style="font-size: 16px; color: black; background-color: white; padding 2px; position: fixed; left: 0px; right: 0px; top: 0px; height: 30px; max-width: 600px;">
 <span style="float: left;">
-<select id="techOptions" onchange="ChangeTech(this.selectedIndex,true)"><option>City Building</option></select>
-<select id="wonderOptions" onchange="ChangeWonder(this.selectedIndex)"><option>Nothing</option></select></span>
+<select id="techOptions"><option>City Building</option></select>
+<select id="wonderOptions"><option>Nothing</option></select></span>
 <span id="cities" style="float: left; padding-left: 5px;"></span>
 </div>
 
@@ -1176,20 +1176,22 @@ function NextTech() {
 	Controlbar.ClearOptions(Controlbar.techOptions);
 	for (X=AdvancedFlight; X<=Writing; X++) {
 	    if (!Tech[X].playerOwned & Tech[Tech[X].prereq1].playerOwned & Tech[Tech[X].prereq2].playerOwned) {
-		Controlbar.techOptions.options.add(new Option(Tech[X].name, X));
+		var o = new Option(Tech[X].name, X);
+		o.onclick = function() {ChangeTech(parseInt(this.value));}
+		o.onmouseover = function() {Toolbar.SetText(Tech[parseInt(this.value)].name+" "+Tech[parseInt(this.value)].help);};
+		Controlbar.techOptions.options.add(o);
 	    }
 	}
-	ChangeTech(0,false);
+	ChangeTech(parseInt(Controlbar.techOptions.options[0].value));
 	Controlbar.HighlightTechOptions(true);
     }
     CurrentTechCost = 5*TechCount;
 }
 
-function ChangeTech(index,alertFlag) {
-    CurrentTech = Controlbar.techOptions.options[index].value;
+function ChangeTech(value) {
+    CurrentTech = value;
     Controlbar.HighlightTechOptions(false);
     Controlbar.techOptions.focus();
-    if (alertFlag) alert(Tech[CurrentTech].name+" "+Tech[CurrentTech].help);
 }
 
 
@@ -1208,21 +1210,22 @@ function NextWonder() {
 	Controlbar.ClearOptions(Controlbar.wonderOptions);
 	for (W=1; W<MaxWonder; W++) {
 	    if (!Wonder[W].player && Tech[Wonder[W].prereq].playerOwned && !Tech[Wonder[W].obsoleteBy].player) {
-		Controlbar.wonderOptions.options.add(new Option(Wonder[W].name, W));
+		var o = new Option(Wonder[W].name, W);
+		o.onclick = function() {ChangeWonder(parseInt(this.value));}
+		o.onmouseover = function() {Toolbar.SetText(Wonder[parseInt(this.value)].name+" "+Wonder[parseInt(this.value)].help);};
+		Controlbar.wonderOptions.options.add(o);
 	    }
 	}
-	ChangeWonder(0);
+	if (Controlbar.wonderOptions.length) {ChangeWonder(parseInt(Controlbar.wonderOptions.options[0].value));}
 	Controlbar.HighlightWonderOptions(true);
     }
 }
 
-function ChangeWonder(index) {
-    if (index < Controlbar.wonderOptions.length) {
-	CurrentWonder = Controlbar.wonderOptions.options[index].value;
-	CurrentWonderCost = Wonder[CurrentWonder].cost;
-	Controlbar.HighlightWonderOptions(false);
-	Controlbar.wonderOptions.focus();
-    }
+function ChangeWonder(value) {
+    CurrentWonder = value;
+    CurrentWonderCost = Wonder[CurrentWonder].cost;
+    Controlbar.HighlightWonderOptions(false);
+    Controlbar.wonderOptions.focus();
 }
 
 
