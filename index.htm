@@ -6,11 +6,11 @@
 <select id="techOptions"><option>City Building</option></select>
 <select id="wonderOptions"><option>Nothing</option></select></span>
 <span id="cities" style="float: left; padding-left: 5px;"></span>
+<form><input id="resumeButton" type="button" style="float: right" value="Resume" onClick="ActiveUnit=0; for (U=0; U<Unit.length; U++) {Unit[U].active=true;Unit[U].destinationRow=-1}; Turn();"></form>
 </div>
 
-<div id="toolbar" style="font-size: 16px; color: black; background-color: white; padding 2px; position: fixed; left: 0px; right: 0px; bottom: 0px; height: 40px; max-width: 600px;">
-<div id="message" style="float: left; max-width: 100%; overflow-y: auto;"></div>
-<form><input id="resumeButton" type="button" style="float: right" value="Resume" onClick="ActiveUnit=0; for (U=0; U<Unit.length; U++) {Unit[U].active=true;Unit[U].destinationRow=-1}; Turn();"></form>
+<div id="toolbar" style="font-size: 16px; color: black; background-color: white; padding 2px; position: fixed; left: 0px; right: 0px; bottom: 0px; max-width: 600px;">
+<span id="message" style="float: left; max-width: 100%; overflow-y: auto;"></span>
 </div>
 <script type="text/javascript">;
 
