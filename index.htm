@@ -3,7 +3,7 @@
 
 <div id="controlbar" style="font-size: 16px; color: black; background-color: white; padding 2px; position: fixed; left: 0px; right: 0px; top: 0px; height: 30px; max-width: 600px;">
 <span style="float: left;">
-<select id="techOptions" onchange="ChangeTech(this.selectedIndex)"><option>City Building</option></select>
+<select id="techOptions" onchange="ChangeTech(this.selectedIndex,true)"><option>City Building</option></select>
 <select id="wonderOptions" onchange="ChangeWonder(this.selectedIndex)"><option>Nothing</option></select></span>
 <span id="cities" style="float: left; padding-left: 5px;"></span>
 </div>
@@ -686,29 +686,29 @@ function Combat(Attacker,Defender) {
     var S = ""
 	/* Careful: Deletions can change the order of the Unit array and invalidate subsequent indices */
 	if ((Unit[Attacker].health==0) && (Unit[Defender].health==0)) {
+	    S="Both units were killed in combat.";
 	    DeleteUnit(Attacker);
 	    DeleteUnit(Defender);
-	    S="Both units were killed in combat.";
 	} else {
 	    if (Unit[Attacker].health==0) {
 		RegionImage(Unit[Defender].row,Unit[Defender].col,false);
 		IncreaseUnitVeterancy(Defender);
-		S = "The attacker was killed in combat. Defender's health is "+Unit[Defender].health+".";
+		S = "The attacking "+Product[Unit[Attacker].type].name+" was killed in combat. The defending "+Product[Unit[Defender].type].name+"'s health is "+Unit[Defender].health+".";
 		DeleteUnit(Attacker);
 	    } else {
 		if (Unit[Defender].health==0) {
 		    RegionImage(Unit[Attacker].row,Unit[Attacker].col,false);
 		    IncreaseUnitVeterancy(Attacker);
-		    S="The defender was killed in combat. Attacker's health is "+Unit[Attacker].health+".";
+			S = "The defending "+Product[Unit[Defender].type].name+" was killed in combat. The attacking "+Product[Unit[Attacker].type].name+"'s health is "+Unit[Attacker].health+".";
 		    DeleteUnit(Defender);
 		} else {
 		    RegionImage(Unit[Defender].row,Unit[Defender].col,false);
 		    RegionImage(Unit[Attacker].row,Unit[Attacker].col,false);
-		    S="Combat was a draw. The attacker's health is "+Unit[Attacker].health+"; the defender's health is "+Unit[Defender].health+".";
+		    S="Combat was a draw. The attacking "+Product[Unit[Attacker].type].name+"'s health is "+Unit[Attacker].health+"; the defending "+Product[Unit[Defender].type].name+"'s health is "+Unit[Defender].health+".";
 		}
 	    }
 	}
-    return(S);
+	return(S);
 }
 
 
@@ -986,7 +986,7 @@ function ChangeProduct(C) {
 	City[C].canBuild.appendChild(image);
 
 	image.onmouseover = function() {
-	    Toolbar.SetText(image.unit.help);
+	    Toolbar.SetText(image.unit.name+" (costs "+image.unit.cost+"): "+image.unit.help);
 	    image.src = image.unit.imgStub+"_focus.png";
 	}
 	image.onmouseout = function() {
@@ -1178,16 +1178,17 @@ function NextTech() {
 		Controlbar.techOptions.options.add(new Option(Tech[X].name, X));
 	    }
 	}
-	ChangeTech(0);
+	ChangeTech(0,false);
 	Controlbar.HighlightTechOptions(true);
     }
     CurrentTechCost = 5*TechCount;
 }
 
-function ChangeTech(index) {
+function ChangeTech(index,alertFlag) {
     CurrentTech = Controlbar.techOptions.options[index].value;
     Controlbar.HighlightTechOptions(false);
     Controlbar.techOptions.focus();
+    if (alertFlag) alert(Tech[CurrentTech].name+" "+Tech[CurrentTech].help);
 }
 
 
