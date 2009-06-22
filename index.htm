@@ -260,7 +260,7 @@ Phalanx = 5; Product[Phalanx] = {type: 'unit', name: 'Phalanx', imgStub: 'phalan
 Chariot = 6; Product[Chariot] = {type: 'unit', name: 'Chariot', imgStub: 'chariot', prereq: TheWheel, cost: 30, upkeep: 1, kind: 'land', class: 'EC', mobility: 2, attack: 3, defense: 1, health: 10, firepower: 1, help: 'Attack: 3, defense: 1, mobility: 2, 10 hp, 1 fp', obsolete: false};
 Catapult = 7; Product[Catapult] = {type: 'unit', name: 'Catapult', imgStub: 'catapult', prereq: Mathematics, cost: 40, upkeep: 1, kind: 'land', class: 'SE', mobility: 1, attack: 6, defense: 1, health: 10, firepower: 1, help: 'Attack: 6, defense: 1, mobility: 1, 10 hp, 1 fp', obsolete: false};
 Legion = 8; Product[Legion] = {type: 'unit', name: 'Legion', imgStub: 'legion', prereq: IronWorking, cost: 40, upkeep: 1, kind: 'land', class: 'HI', mobility: 1, attack: 4, defense: 2, health: 10, firepower: 1, help: 'Attack: 4, defense: 2, mobility: 1, 10 hp, 1 fp', obsolete: false};
-Pikeman = 9; Product[Pikeman] = {type: 'unit', name: 'Pikeman', imgStub: 'pikeman', prereq: Feudalism, cost: 20, upkeep: 1, kind: 'land', class: 'HI', mobility: 1, attack: 1, defense: 2, health: 10, firepower: 1, help: 'Attack: 1, defense: 2, mobility: 1, 10 hp, 1 fp', obsolete: false};
+Pikeman = 9; Product[Pikeman] = {type: 'unit', name: 'Pikeman', imgStub: 'pikeman', prereq: Feudalism, cost: 20, upkeep: 1, kind: 'land', class: 'HI', mobility: 1, attack: 1, defense: 3, health: 10, firepower: 1, help: 'Attack: 1, defense: 3, mobility: 1, 10 hp, 1 fp', obsolete: false};
 Knight = 10; Product[Knight] = {type: 'unit', name: 'Knight', imgStub: 'knight', prereq: Chivalry, cost: 40, upkeep: 1, kind: 'land', class: 'EC', mobility: 2, attack: 4, defense: 2, health: 10, firepower: 1, help: 'Attack: 4, defense: 2, mobility: 2, 10 hp, 1 fp', obsolete: false};
 Frigate = 11; Product[Frigate] = {type: 'unit', name: 'Frigate', imgStub: 'frigate', prereq: Magnetism, cost: 50, upkeep: 1, kind: 'sea', class: 'N', mobility: 4, attack: 4, defense: 2, health: 20, firepower: 1, help: 'Attack: 4, defense: 2, mobility: 4, 20 hp, 1 fp', obsolete: false};
 Ironclad = 12; Product[Ironclad] = {type: 'unit', name: 'Ironclad', imgStub: 'ironclad', prereq: SteamEngine, cost: 60, upkeep: 1, kind: 'sea', class: 'N', mobility: 4, attack: 4, defense: 4, health: 30, firepower: 1, help: 'Attack: 4, defense: 4, mobility: 4, 30 hp, 1 fp', obsolete: false};
@@ -986,15 +986,15 @@ function ChangeProduct(C) {
 	City[C].canBuild.appendChild(image);
 
 	image.onmouseover = function() {
-	    Toolbar.SetText(image.unit.help); 
+	    Toolbar.SetText(image.unit.help);
 	    image.src = image.unit.imgStub+"_focus.png";
 	}
 	image.onmouseout = function() {
-	    Toolbar.SetText(""); 
+	    Toolbar.SetText("");
 	    image.src = image.unit.imgStub+"_enemy.png";
 	}
 	image.onmouseup = function() {
-	    Toolbar.SetText(""); 
+	    Toolbar.SetText("");
 	    image.src = image.unit.imgStub+"_enemy.png";
 	    City[C].canBuild.style.display = "none";
 	    City[C].product = image.value;
@@ -1012,7 +1012,7 @@ function ChangeProduct(C) {
 	if ((Tech[Product[X].prereq].playerOwned)&&(!City[C].building[X])) { Product[X].imgStub = "dne"; AddX(X); }
     }
     City[C].product = initial;
-    City[C].quequeImage.src = Product[initial].imgStub + "_player.png"; 
+    City[C].quequeImage.src = Product[initial].imgStub + "_player.png";
     City[C].quequeImage.focus();
 }
 
@@ -1131,7 +1131,7 @@ function KeyPressHandler(event) {
     case "t": OnPhone = !OnPhone; break;
 
     //movement OnPhone true = 123\n456\n789\n0 phone set up | OnPhone false = 789\n456\n123\n0 keyboard setup
-    //case "0": pass 
+    //case "0": pass
     case "1": if (OnPhone) {i(unit.row-1, unit.col-1);} else {i(unit.row+1, unit.col-1);} break;
     case "2": if (OnPhone) {i(unit.row-1, unit.col);} else {i(unit.row+1, unit.col);} break;
     case "3": if (OnPhone) {i(unit.row-1, unit.col+1);} else {i(unit.row+1, unit.col+1);} break;
