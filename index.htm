@@ -949,17 +949,6 @@ function CreateCityBuildQueque(C, Row, Col) {
     City[C].canBuild.style.display = "none";
     City[C].queque.appendChild(City[C].canBuild);
 
-    City[C].quequeImage.onmouseover = function() {
-	City[C].canBuild.style.display = "";
-	Toolbar.SetText(CityDescription(C, true));
-    };
-    City[C].quequeImage.onmouseout = function() {
-	City[C].canBuild.style.display = "none";
-	Toolbar.SetText("");
-    };
-    City[C].canBuild.onmouseover = function() {City[C].canBuild.style.display = "";};
-    City[C].canBuild.onmouseout = function() {City[C].canBuild.style.display = "none";};
-
     var tile = document.getElementById('p'+Row+"_"+Col);
     tile.oldOnMouseOver = tile.onmouseover;
     tile.onmouseover = function() {
@@ -976,6 +965,23 @@ function CreateCityBuildQueque(C, Row, Col) {
 	this.oldOnClick();
 	City[C].quequeImage.focus();
 	City[C].canBuild.style.display = "";
+    };
+
+    City[C].quequeImage.onmouseover = function() {
+	City[C].canBuild.style.display = "";
+	tile.src = "city_focus.png";
+    };
+    City[C].quequeImage.onmouseout = function() {
+	City[C].canBuild.style.display = "none";
+	RegionImage(Row, Col, false)
+    };
+    City[C].canBuild.onmouseover = function() {
+	City[C].canBuild.style.display = "";
+	tile.src = "city_focus.png";
+    };
+    City[C].canBuild.onmouseout = function() {
+	City[C].canBuild.style.display = "none";
+	RegionImage(Row, Col, false)
     };
 }
 
