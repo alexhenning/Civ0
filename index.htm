@@ -811,10 +811,10 @@ function MoveUnitToDestination(U) {
 
 
 function PeaceInOurTime() {
-    for (U=0; U<Units.length; U++) {
-	if (!Units[U].player) {
-	    Units[U].destinationRow=-1;
-	    Units[U].active = false;
+    for (U=0; U<Unit.length; U++) {
+	if (!Unit[U].player) {
+	    Unit[U].destinationRow=-1;
+	    Unit[U].active = false;
 	}
     }
 }
