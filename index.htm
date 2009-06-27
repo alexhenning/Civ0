@@ -427,6 +427,55 @@ MaxCol = 30; //prompt("How wide a world is it?","30");
 StartRow = 0;
 StartCol = 0;
 
+function CreateImage(src, row, col, layer, z) {
+    var img = document.createElement("img");
+    img.src = src;
+    img.id = "p"+row+"_"+col+"_"+layer;
+    img.style.position = "absolute";
+    img.style.left = 20 * col + "px";
+    img.style.top = 20 * row + 30 +"px";
+    img.style.height = "20px";
+    img.style.width = "20px";
+    img.style.zIndex = z;
+    document.getElementById("body").appendChild(img);
+    return img;
+}
+
+function Territory(terrain, row, col) {
+    this.terrain = terrain;
+    this.row = row;
+    this.col = col;
+    this.unit = -1;
+    this.city = -1;
+
+    this.regionImg = CreateImage(Terrain[terrain].symbol+".png", row, col, "region", 101);
+    this.nationalityImg = CreateImage("visible.png", row, col, "nationality", 102);
+    this.unitImg = CreateImage("visible.png", row, col, "unit", 103);
+    this.fogImg = CreateImage("unexplored.png", row, col, "fog", 104);
+    this.fogImg.onmouseover = function() {Toolbar.OnHover(this);};
+    this.fogImg.onclick = function() {i(row, col);};
+    //this.SetTitle("FAIL");
+}
+Territory.prototype.SetVisibility = function(visible) {
+    if (visible) {this.fogImg.src = "visible.png";}
+    else {this.fogImg.src = "fog.png";}
+};
+Territory.prototype.SetUnit = function(unit, focus) {
+    if (focus) {this.nationalityImg.src = "active.png";}
+    else if (unit.player) {this.nationalityImg.src = "player.png";}
+    else {this.nationalityImg.src = "enemy.png";}
+
+    if (this.terrain != Ocean) {this.unitImg.src = Product[unit.type].imgStub + ".png";}
+    else {this.unitImg.src = Troopship[unit.TroopshipClass].imgStub + ".png";}
+};
+Territory.prototype.SetCity = function(focus, player) {
+    if (focus) {this.nationalityImg.src = "active.png";}
+    else if (player) {this.nationalityImg.src = "player.png";}
+    else {this.nationalityImg.src = "enemy.png";}
+    this.unitImg.src = "city.png";
+};
+Territory.prototype.IsExplored = function() {return this.fogImg.src.indexOf('unexplored.png') == -1};
+
 var Region = new Array();
 TerrainProbability = new Array("ttc","ttttc", "tppp", "pppgfs", "gfs", "jjsgg", "jjjssg", "gggd", "dddgg");
 
@@ -493,63 +542,43 @@ function TerrainAtLatitude(Row) {
 
 function RegionImage(Row, Col, focus) {
     var R;
-    var S = 'p'+Row+'_'+Col;
     var U = Region[Row][Col].unit;
     if ((U!=-1)&&(Unit[U] !== undefined)) {
-	var T;
-	if (Unit[U].player) {
-	    if (focus) {
-		T = "focus";
-		document.getElementById(S).focus();
-	    } else {
-		T = "player";
-	    }
-	} else {
-	    T = "enemy";
-	}
-	if (Region[Row][Col].terrain!=Ocean) {
-	    document.getElementById(S).src=Product[Unit[U].type].imgStub+"_"+T+".png";
-	    R = Product[Unit[U].type].name;
-	} else {
-	    document.getElementById(S).src=Troopship[Unit[U].TroopshipClass].imgStub+"_"+T+".png";
-	    R = Troopship[Unit[U].TroopshipClass].name+" (carrying "+Product[Unit[U].type].name+")";
-	}
+	if (Unit[U].player && focus) {Region[Row][Col].fogImg.focus();}
+	R = Region[Row][Col].terrain!=Ocean ? Product[Unit[U].type].name : 
+	    Troopship[Unit[U].TroopshipClass].name+" (carrying "+Product[Unit[U].type].name+")";
 	R += ", health "+Unit[U].health+", "+(Math.floor(100*Terrain[Region[Unit[U].row][Unit[U].col].terrain].defense))+"% defense";
 	R += ", "+Math.floor(100*Unit[U].veterancy-100)+"% veterancy";
-	document.getElementById(S).title = R;
+	Region[Row][Col].SetUnit(Unit[U], focus);
     } else {
 	if(Region[Row][Col].city!=-1) {
-	    document.getElementById(S).src="city_player.png";
-	    document.getElementById(S).title = CityDescription(Region[Row][Col].city,true);
+	    Region[Row][Col].SetCity(focus, true);
+	    R = CityDescription(Region[Row][Col].city,true);
 	} else {
 	    var T=Region[Row][Col].terrain;
-	    document.getElementById(S).src=Terrain[T].symbol+".png";
-	    document.getElementById(S).title = Terrain[T].name+", "+Math.floor(100*Terrain[T].defense)+"% defense";
+	    Region[Row][Col].nationalityImg.src = "visible.png";
+	    Region[Row][Col].unitImg.src = "visible.png";
+	    R = Terrain[T].name+", "+Math.floor(100*Terrain[T].defense)+"% defense";
 	}
     }
-    return(document.getElementById(S).title);
-}
-
-
-function RegionTitle(Row, Col, Title) {
-    var S = 'p'+Row+'_'+Col;
-    document.getElementById(S).title = Title;
+    Region[Row][Col].fogImg.title = R;
+    return Region[Row][Col].fogImg.title;
 }
 
 function GenerateMap(Region) {
 
-    for (Row=-1; Row<=MaxRow+1; Row++) {
+    for (Row=0; Row<MaxRow; Row++) {
 	Region[Row] = new Array();
     }
 
     // sea by default
-    for (Row=-1; Row<=MaxRow+1; Row++) {
-	for (Col=-1; Col<=MaxCol+1; Col++) {
-	    Region[Row][Col] = {terrain: Ocean, unit: -1, city: -1};
+    for (Row=0; Row<MaxRow; Row++) {
+	for (Col=0; Col<MaxCol; Col++) {
+	    Region[Row][Col] = new Territory(Ocean, Row, Col); // {terrain: Ocean, unit: -1, city: -1};
 	}
     }
     // glaciers
-    for (Col=-1; Col<MaxCol+1; Col++) {
+    for (Col=0; Col<MaxCol; Col++) {
 	Region[0][Col].terrain = Glacier;
 	if (Rand(3)==1) {
 	    Region[1][Col].terrain = Glacier;
@@ -571,11 +600,11 @@ function GenerateMap(Region) {
     NarrowestRow = MaxRow;
     for (Row=1; Row<MaxRow-3; Row++) {
 	for (Col=Land1; Col<=LandEnd1; Col++) {
-	    Region[Row][Col].terrain = TerrainAtLatitude(Row);
+	    if (Col < MaxCol) {Region[Row][Col].terrain = TerrainAtLatitude(Row);}
 	}
 	if (Row>Rand(4)) {
 	    for (Col=Land2; Col<=LandEnd2; Col++) {
-		Region[Row][Col].terrain = TerrainAtLatitude(Row);
+		if (Col < MaxCol) {Region[Row][Col].terrain = TerrainAtLatitude(Row);}
 	    }
 	    if ((Row>4) & (LandEnd1-Land1>=2) & (StartRow==0)) {
 		StartRow = Row;
@@ -597,6 +626,12 @@ function GenerateMap(Region) {
     }
     for (Col=0; Col<MaxCol/2; Col++) {
 	Region[NarrowestRow][Col].terrain = Ocean;
+    }
+
+    for (Row=0; Row<MaxRow; Row++) {
+	for (Col=0; Col<MaxCol; Col++) {
+	    Region[Row][Col].regionImg.src = Terrain[Region[Row][Col].terrain].symbol+".png";
+	}
     }
 
 }
@@ -729,8 +764,7 @@ function MoveUnit(U,Row,Col) {
     for (A=-1; A<=1; A++) {
 	for (B=-1; B<=1; B++) {
 	    //alert(Region[X+A][Y+B].terrain);
-	    var S = 'p'+(Row+A)+'_'+(Col+B);
-	    if (((A!=0)||(B!=0)) && (document.getElementById(S).src.indexOf('u.png')!=-1) && ((Region[Row+A][Col+B].terrain!=Ocean)||(Rand(10)==1)) && (Rand(Math.abs(Row-StartRow))+Rand(3)>5)) {
+	    if (((A!=0)||(B!=0)) && !Region[Row+A][Col+B].IsExplored() && ((Region[Row+A][Col+B].terrain!=Ocean)||(Rand(10)==1)) && (Rand(Math.abs(Row-StartRow))+Rand(3)>5)) {
 		// Barbarians
 		Unit.push({type: Rand(4)+1, row: Row+A, col: Col+B, movement: 0, active: false, player: false, city: -1, health: 10, TroopshipClass: Math.min(Transport,TroopshipClass+Rand(2)-1), veterancy: 1+(Rand(2)-1)/10});
 		Region[Row+A][Col+B].unit = Unit.length-1;
@@ -745,8 +779,9 @@ function MoveUnit(U,Row,Col) {
 		}
 	    }
 	    RegionImage(Row+A, Col+B, false);
+	    Region[Row+A][Col+B].SetVisibility(true);
 	    if(!LostAtSea && (Unit[U].type==Settler)) {
-		document.getElementById(S).title = CitySiteString(Row+A,Col+B);
+		Region[Row+A][Col+B].SetTitle = CitySiteString(Row+A,Col+B);
 	    }
 	}
     }
@@ -949,7 +984,7 @@ function CreateCityBuildQueque(C, Row, Col) {
     City[C].canBuild.style.display = "none";
     City[C].queque.appendChild(City[C].canBuild);
 
-    var tile = document.getElementById('p'+Row+"_"+Col);
+    var tile = Region[Row][Col].fogImg;
     tile.oldOnMouseOver = tile.onmouseover;
     tile.onmouseover = function() {
 	tile.oldOnMouseOver();
@@ -1116,6 +1151,7 @@ var Toolbar = {
         else if (element.stored_text == null) {text = "";}
         else {text = element.stored_text;}
 
+	//if (Boolean(text)) {alert(text);}
 	this.SetText(text);
 	element.stored_text = text;
 	element.title = "";
@@ -1349,13 +1385,13 @@ function i(Row, Col) {
 	}
     }
 }
-
+/*
 for (Row=0; Row<MaxRow; Row++) {
     for (Col=0; Col<MaxCol; Col++) {
 	document.write('<img src=u.png id=p', Row,'_', Col,' onclick="i(', Row, ',', Col, ')" onmouseover="Toolbar.OnHover(this);" />');
     }
     document.writeln("<br>");
-}
+}*/
 GenerateMap(Region);
 SetTechHelp();
 
@@ -1371,22 +1407,24 @@ for (Col=0; Col<MaxUnit-1; Col++) {
     document.write("<img style='display:none' src="+Product[Col+1].imgStub+"_enemy.png />");
 }
 
-for (Row=0; Row<7; Row++) {
+/*for (Row=0; Row<7; Row++) {
     for (Col=0; Col<MaxCol; Col++) {
 	document.getElementById('p'+Row+"_"+Col).src = "u.png";
     }
-}
+}*/
 
 for (Row=StartRow-1; Row<=StartRow+1; Row++) {
     for (Col=StartCol-1; Col<=StartCol+2; Col++) {
-	document.getElementById('p'+Row+"_"+Col).src = Terrain[Region[Row][Col].terrain].symbol+".png";
+	Region[Row][Col].SetVisibility(true);
     }
 }
 
-document.getElementById('p'+StartRow+"_"+StartCol).src = "settler_player.png";
-document.getElementById('p'+StartRow+"_"+(StartCol+1)).src = "warrior_player.png";
+//document.getElementById('p'+StartRow+"_"+StartCol).src = "settler_player.png";
+//document.getElementById('p'+StartRow+"_"+(StartCol+1)).src = "warrior_player.png";
 Unit[0] = {type: Settler, row: StartRow, col: StartCol, movement: 1, active: true, player: true, city: -1, health: 10, TroopshipClass: Boat, veterancy:1};
 Unit[1] = {type: Warrior, row: StartRow, col: StartCol+1, movement: 1, active: true, player: true, city: -1, health: 10, TroopshipClass: Boat, veterancy:1};
+Region[StartRow][StartCol].SetUnit(Unit[0], true);
+Region[StartRow][StartCol+1].SetUnit(Unit[1], false);
 Region[StartRow][StartCol].unit = 0;
 Region[StartRow][StartCol+1].unit = 1;
 
