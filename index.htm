@@ -1013,7 +1013,7 @@ function FoundCity(Row,Col,Player) {
     /* Initialize buildings */
     City[C].building = new Array();
     for (X=MaxUnit+1; X<MaxBuilding; X++) {
-	City[C].building[X] = false;
+		City[C].building[X] = false;
     }
     City[C].building[Houses] = true;
     City[C].building[Wharf] = (NeighboringRegions(Row,Col,".terrain==Ocean")>0);
@@ -1030,22 +1030,34 @@ function FoundCity(Row,Col,Player) {
     City[C].defenseAgainst["air"] = 1;
     City[C].defenseAgainst["missile"] = 1;
     /* Name the city */
+    City[City.length-1].name = "City #"+(City.length);
     if (Player) {
-	if (PlayerCity<=PlayerCityName.length-1) {
-	    City[City.length-1].name = PlayerCityName[PlayerCity];
-	} else {
-	    City[City.length-1].name = "City #"+(PlayerCity+1);
+		if (PlayerCity<=PlayerCityName.length-1) {
+		    City[City.length-1].name = PlayerCityName[PlayerCity];
+		}
+		PlayerCity++;
+		if (Unit[1].city=-1) {
+		    Unit[1].city=City.length-1;
+		    RegionImage(Unit[1].row, Unit[1].col, false);
+	    } else {
+			RegionImage(Row, Col, false);
+	    }
+	    CreateCityBuildQueque(C);
+        ChangeProduct(C);
 	}
-	PlayerCity++;
-	if (Unit[1].city=-1) {
-	    Unit[1].city=City.length-1;
-	    RegionImage(Unit[1].row, Unit[1].col, false);
-	}
-    } else {
-	RegionImage(Row, Col, false);
+    if (Player) {
+        X = 1;
+    	do{
+			Row = Rand(MaxRow);
+			Col = Rand(MaxCol);
+			X++;
+		}while ((X<10) && !TooCloseToCity(Row,Col) && (Region[Row][Col].terrain != Ocean) && (NeighboringRegions(Row,Col,".unit!=-1")>0));
+		if (X<10){
+		    alert("Enemy city founded at "+Row+", "+Col+" (attempt #"+X+").");
+			FoundCity(Row,Col,false);
+			UpdateView(-1,City.length-1);
+		}
     }
-    CreateCityBuildQueque(C);
-    ChangeProduct(C);
 }
 
 function CreateCityBuildQueque(C) {
@@ -1159,9 +1171,11 @@ function NextProduct(C) {
     if (City[C].productionReserve>=Product[P].cost/2) {
 	City[C].productionReserve -= Product[P].cost/2;
 	if (Product[P].type=='unit') {
-	    Unit.push({type: P, row: City[C].row, col: City[C].col, movement: Product[City[C].product].mobility, health: Product[P].health, active: true, player: true, city: C, TroopshipClass: TroopshipClass, veterancy: Rand(City[C].veterancy[Product[City[C].product].kind])/10+0.9});
-	    Region[City[C].row][City[C].col].unit = Unit.length-1;
-	    RegionImage(City[C].row, City[C].col, false);
+	    Unit.push({type: P, row: City[C].row, col: City[C].col, movement: Product[City[C].product].mobility, health: Product[P].health, active: true, player: City[C].player, city: C, TroopshipClass: TroopshipClass, veterancy: Rand(City[C].veterancy[Product[City[C].product].kind])/10+0.9});
+	    if (City[C].player){
+		    Region[City[C].row][City[C].col].unit = Unit.length-1;
+		    RegionImage(City[C].row, City[C].col, false);
+		}
 	} else {
 	    if (Product[P].type=='building') {
 		City[C].building[P] = true;
@@ -1392,11 +1406,11 @@ function Turn() {
 	    NextTech();
 	    NextWonder();
 	    for (C=0; C<City.length; C++) {
+		NextCitizen(C);
             if (City[C].player){
                 UpdateView(-1,C);
-            }
-		NextCitizen(C);
 		NextProduct(C);
+            }
 	    }
 	    ActiveUnit = Unit.length-1;
 	    while (ActiveUnit && ((!Unit[ActiveUnit].active) || (!Unit[ActiveUnit].movement) || (!Unit[ActiveUnit].player))) {
