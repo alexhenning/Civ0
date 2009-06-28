@@ -505,7 +505,11 @@ function RegionImage(Row, Col, focus) {
 		T = "player";
 	    }
 	} else {
-	    T = "enemy";
+	    if (focus) {
+		T = "focus";
+	    } else {
+      	T = "enemy";
+	    }
 	}
 	if (Region[Row][Col].terrain!=Ocean) {
 	    document.getElementById(S).src=Product[Unit[U].type].imgStub+"_"+T+".png";
@@ -624,6 +628,31 @@ function UpdateEntireMap() {
 }
 
 
+function UpdateView(U,C) {
+    //alert(U+","+C+","+Row+","+Col);
+    if (U!=-1){
+        Row = Unit[U].row;
+        Col = Unit[U].col;
+    }else{
+        Row = City[C].row;
+        Col = City[C].col;
+    }
+    for (A=-1; A<=1; A++) {
+        for (B=-1; B<=1; B++) {
+            RegionImage(Row+A, Col+B, false);
+            if ((U!=-1) && (Region[Row+A][Col+B].unit!=-1) && (!Unit[Region[Row+A][Col+B].unit].player)) {
+                Unit[U].active = true;
+                Unit[U].movement = Product[Unit[U].type].mobility;
+                return(true);
+            }
+        }
+    }
+    //if (U==-1) alert("Updated city view.");
+    return(false);
+}
+
+
+
 /* Units */
 function UnitString() {
     var S=Product[Unit[0].type].name;
@@ -638,16 +667,16 @@ function DeleteUnit(U) {
     Region[Unit[U].row][Unit[U].col].unit = -1;
     RegionImage(Unit[U].row,Unit[U].col,false);
     //alert(UnitString());
-    if(U<Unit.length-1) {
+    if(U==Unit.length-1) {
+	Unit.pop();
+	ActiveUnit = Unit.length-1;
+    } else {
 	if (ActiveUnit==U) {ActiveUnit = Unit.length-2};
 	Unit[U] = Unit[Unit.length-1];
 	Region[Unit[U].row][Unit[U].col].unit = U;
 	//RegionImage(Unit[U].row,Unit[U].col,false);
 	//alert("["+Unit[U].row+","+Unit[U].col+"].unit="+Region[Unit[U].row][Unit[U].col].unit);
 	Unit.pop();
-    } else {
-	Unit.pop();
-	ActiveUnit = Unit.length-1;
     }
     //alert(UnitString());
 }
@@ -669,10 +698,20 @@ function DefenseStrength(Attacker,Defender) {
     return(DefenseStr);
 }
 
-function Combat(Attacker,Defender) {
+function CombatPronoun(U) {
+    if(Unit[U].player) {
+        return("Your");
+    }else{
+        return("The");
+    }
+}
+
+function Combat(Attacker,Defender,Message) {
     //alert("Combat! "+Attacker+" vs. "+Defender);
     var AttackStrength = Product[Unit[Attacker].type].attack*Unit[Attacker].veterancy;
     var DefenseStr = DefenseStrength(Attacker,Defender);
+    RegionImage(Unit[Attacker].row,Unit[Attacker].col,true);
+    RegionImage(Unit[Defender].row,Unit[Defender].col,true);
     for (var Round=1; Round<10; Round++) {
 	if (Rand(100)<100*AttackStrength/(AttackStrength+DefenseStr)) {
 	    Unit[Defender].health-=2*Product[Unit[Attacker].type].firepower;
@@ -683,32 +722,30 @@ function Combat(Attacker,Defender) {
     //alert("Combat! "+Unit[Attacker].health+" vs. "+Unit[Defender].health);
     Unit[Defender].health=Math.max(Unit[Defender].health,0);
     Unit[Attacker].health=Math.max(Unit[Attacker].health,0);
-    var S = ""
 	/* Careful: Deletions can change the order of the Unit array and invalidate subsequent indices */
 	if ((Unit[Attacker].health==0) && (Unit[Defender].health==0)) {
-	    S="Both units were killed in combat.";
+	    alert(Message+"Both units were killed in combat.");
 	    DeleteUnit(Attacker);
 	    DeleteUnit(Defender);
 	} else {
 	    if (Unit[Attacker].health==0) {
-		RegionImage(Unit[Defender].row,Unit[Defender].col,false);
+		alert(Message+CombatPronoun(Attacker)+" attacking "+Product[Unit[Attacker].type].name+" was killed in combat. "+CombatPronoun(Defender)+" defending "+Product[Unit[Defender].type].name+"'s health is "+Unit[Defender].health+".");
 		IncreaseUnitVeterancy(Defender);
-		S = "The attacking "+Product[Unit[Attacker].type].name+" was killed in combat. The defending "+Product[Unit[Defender].type].name+"'s health is "+Unit[Defender].health+".";
+		RegionImage(Unit[Defender].row,Unit[Defender].col,false);
 		DeleteUnit(Attacker);
 	    } else {
 		if (Unit[Defender].health==0) {
+		    alert(Message+CombatPronoun(Defender)+" defending "+Product[Unit[Defender].type].name+" was killed in combat. "+CombatPronoun(Attacker)+" attacking "+Product[Unit[Attacker].type].name+"'s health is "+Unit[Attacker].health+".");
 		    RegionImage(Unit[Attacker].row,Unit[Attacker].col,false);
 		    IncreaseUnitVeterancy(Attacker);
-			S = "The defending "+Product[Unit[Defender].type].name+" was killed in combat. The attacking "+Product[Unit[Attacker].type].name+"'s health is "+Unit[Attacker].health+".";
 		    DeleteUnit(Defender);
 		} else {
+		    alert(Message+"Combat was a draw. "+CombatPronoun(Attacker)+" attacking "+Product[Unit[Attacker].type].name+"'s health is "+Unit[Attacker].health+". "+CombatPronoun(Defender)+" defending "+Product[Unit[Defender].type].name+"'s health is "+Unit[Defender].health+".");
 		    RegionImage(Unit[Defender].row,Unit[Defender].col,false);
 		    RegionImage(Unit[Attacker].row,Unit[Attacker].col,false);
-		    S="Combat was a draw. The attacking "+Product[Unit[Attacker].type].name+"'s health is "+Unit[Attacker].health+"; the defending "+Product[Unit[Defender].type].name+"'s health is "+Unit[Defender].health+".";
 		}
 	    }
 	}
-	return(S);
 }
 
 
@@ -730,12 +767,12 @@ function MoveUnit(U,Row,Col) {
 	for (B=-1; B<=1; B++) {
 	    //alert(Region[X+A][Y+B].terrain);
 	    var S = 'p'+(Row+A)+'_'+(Col+B);
-	    if (((A!=0)||(B!=0)) && (document.getElementById(S).src.indexOf('u.png')!=-1) && ((Region[Row+A][Col+B].terrain!=Ocean)||(Rand(10)==1)) && (Rand(Math.abs(Row-StartRow))+Rand(3)>5)) {
+	    if (((A!=0)||(B!=0)) && (Unit[U].player) && (document.getElementById(S).src.indexOf('u.png')!=-1) && ((Region[Row+A][Col+B].terrain!=Ocean)||(Rand(10)==1)) && (Rand(Math.abs(Row-StartRow))+Rand(3)>5)) {
 		// Barbarians
 		Unit.push({type: Rand(4)+1, row: Row+A, col: Col+B, movement: 0, active: false, player: false, city: -1, health: 10, TroopshipClass: Math.min(Transport,TroopshipClass+Rand(2)-1), veterancy: 1+(Rand(2)-1)/10});
 		Region[Row+A][Col+B].unit = Unit.length-1;
 	    } else {
-		if ((Region[Row+A][Col+B].unit!=-1) && !Unit[Region[Row+A][Col+B].unit].player) {
+		if ((Unit[U].player) && (Region[Row+A][Col+B].unit!=-1) && !Unit[Region[Row+A][Col+B].unit].player) {
 		    Barbarian=Region[Row+A][Col+B].unit;
 		    if(Rand(25)<=5+City.length) {
 			Unit[Barbarian].destinationRow = StartRow;
@@ -744,15 +781,17 @@ function MoveUnit(U,Row,Col) {
 		    }
 		}
 	    }
-	    RegionImage(Row+A, Col+B, false);
+          if (Unit[U].player){
+		    RegionImage(Row+A, Col+B, false);
+          }
 	    if(!LostAtSea && (Unit[U].type==Settler)) {
 		document.getElementById(S).title = CitySiteString(Row+A,Col+B);
 	    }
 	}
     }
-    if ((Unit[U].player) && (Barbarian!=-1) && (Math.abs(Row-StartRow)>Math.abs(OldRow-StartRow))) {
+    if ((Unit[U].player) && (Barbarian!=-1) && (Unit[Barbarian].health>=10) && (Math.abs(Row-StartRow)>Math.abs(OldRow-StartRow))) {
 	RegionImage(Row, Col, true);
-	alert("Ambushed by a barbarian "+Product[Unit[Barbarian].type].name+"! "+Combat(Barbarian,U));
+	Combat(Barbarian,U,"Ambushed by a barbarian "+Product[Unit[Barbarian].type].name+"! ");
     }
 }
 
@@ -771,7 +810,7 @@ function CombatNeighboringUnit(Attacker) {
 	}
     }
     if((Unit[Attacker].row!=GoalRow)||(Unit[Attacker].col!=GoalCol)) {
-	CombatUnit(Attacker, Region[GoalRow][GoalCol].unit);
+	CombatUnit(Attacker, Region[GoalRow][GoalCol].unit, "Enemy assault!  ");
 	return(true);
     } else {
 	return(false);
@@ -781,6 +820,10 @@ function CombatNeighboringUnit(Attacker) {
 function MoveUnitToDestination(U) {
     if((Unit[U].destinationRow==undefined)||(Unit[U].destinationRow==-1)) {
 	return(false);
+    }
+    if((!Unit[U].player)&&(Unit[U].health<Product[Unit[U].type].health)) {
+      RestoreUnitHealth(U);
+	return(true);
     }
     var GoalRow=Unit[U].row;
     var GoalCol=Unit[U].col;
@@ -819,10 +862,7 @@ function PeaceInOurTime() {
     }
 }
 
-function RestoreUnitHealth() {
-    for (U=0; U<Unit.length; U++) {
-	// restore health to standby units
-	if (!Unit[U].active) {
+function RestoreUnitHealth(U) {
 	    if(Unit[U].health!=Product[Unit[U].type].health) {
 		Unit[U].health += HealingRate;
 		if(Unit[U].health>=Product[Unit[U].type].health) {
@@ -830,6 +870,13 @@ function RestoreUnitHealth() {
 		    Unit[U].active = Unit[U].player;
 		}
 	    }
+}
+
+function RestoreAllUnitsHealth() {
+    for (U=0; U<Unit.length; U++) {
+	// restore health to standby units
+	if (!Unit[U].active) {
+		RestoreUnitHealth(U);
 	}
 	if (Unit[U].active) {
 	    Unit[U].movement = Product[Unit[U].type].mobility;
@@ -925,11 +972,11 @@ function FoundCity(Row,Col,Player) {
     } else {
 	RegionImage(Row, Col, false);
     }
-    CreateCityBuildQueque(C, Row, Col);
+    CreateCityBuildQueque(C);
     ChangeProduct(C);
 }
 
-function CreateCityBuildQueque(C, Row, Col) {
+function CreateCityBuildQueque(C) {
     var cities = document.getElementById("cities");
     City[C].queque = document.createElement('div');
     City[C].queque.id = City[C].name+"_queque";
@@ -949,40 +996,16 @@ function CreateCityBuildQueque(C, Row, Col) {
     City[C].canBuild.style.display = "none";
     City[C].queque.appendChild(City[C].canBuild);
 
-    var tile = document.getElementById('p'+Row+"_"+Col);
-    tile.oldOnMouseOver = tile.onmouseover;
-    tile.onmouseover = function() {
-	tile.oldOnMouseOver();
-	City[C].quequeImage.src = Product[City[C].product].imgStub + "_focus.png";
-    };
-    tile.onmouseout = function() {
-	if (City[C].productChosen) {City[C].quequeImage.src = Product[City[C].product].imgStub + "_enemy.png";}
-	else {City[C].quequeImage.src = Product[City[C].product].imgStub + "_player.png";}
-	City[C].canBuild.style.display = "none";
-    };
-    tile.oldOnClick = tile.onclick
-    tile.onclick = function() {
-	this.oldOnClick();
-	City[C].quequeImage.focus();
-	City[C].canBuild.style.display = "";
-    };
-
     City[C].quequeImage.onmouseover = function() {
 	City[C].canBuild.style.display = "";
-	tile.src = "city_focus.png";
+	Toolbar.SetText(CityDescription(C, true));
     };
     City[C].quequeImage.onmouseout = function() {
 	City[C].canBuild.style.display = "none";
-	RegionImage(Row, Col, false)
+	Toolbar.SetText("");
     };
-    City[C].canBuild.onmouseover = function() {
-	City[C].canBuild.style.display = "";
-	tile.src = "city_focus.png";
-    };
-    City[C].canBuild.onmouseout = function() {
-	City[C].canBuild.style.display = "none";
-	RegionImage(Row, Col, false)
-    };
+    City[C].canBuild.onmouseover = function() {City[C].canBuild.style.display = "";};
+    City[C].canBuild.onmouseout = function() {City[C].canBuild.style.display = "none";};
 }
 
 function WorkingCitizenOutput(C) {
@@ -1002,7 +1025,6 @@ function NextCitizen(C) {
 function ChangeProduct(C) {
     City[C].canBuild.innerHTML = "";
     var initial = -1;
-    City[C].productChosen = false;
     var AddX = function(X) {
 	var image = document.createElement('img');
 	image.unit = Product[X];
@@ -1023,7 +1045,6 @@ function ChangeProduct(C) {
 	    image.src = image.unit.imgStub+"_enemy.png";
 	    City[C].canBuild.style.display = "none";
 	    City[C].product = image.value;
-	    City[C].productChosen = true;
 	    City[C].quequeImage.src = image.unit.imgStub+"_enemy.png";
 	}
     }
@@ -1260,6 +1281,11 @@ function ChangeWonder(value) {
 function Turn() {
     //alert("starting loop with "+ActiveUnit+" and Unit.length of "+Unit.length);
     do{
+	while ((ActiveUnit>0) && (!Unit[ActiveUnit].active) && (Unit[ActiveUnit].player)) {
+          if (!UpdateView(ActiveUnit)){
+              ActiveUnit--;
+          }
+      }
 	while ((ActiveUnit>0) && ((!Unit[ActiveUnit].active) || (Unit[ActiveUnit].movement==0) || (!Unit[ActiveUnit].player))) {
 	    while ((Unit[ActiveUnit].active) && (Unit[ActiveUnit].movement) && (!Unit[ActiveUnit].player)) {
 		Unit[ActiveUnit].active=MoveUnitToDestination(ActiveUnit);
@@ -1271,10 +1297,13 @@ function Turn() {
 	    RegionImage(Unit[ActiveUnit].row, Unit[ActiveUnit].col, true);
 	} else {
 	    Year++;
-	    RestoreUnitHealth();
+	    RestoreAllUnitsHealth();
 	    NextTech();
 	    NextWonder();
 	    for (C=0; C<City.length; C++) {
+            if (City[C].player){
+                UpdateView(-1,C);
+            }
 		NextCitizen(C);
 		NextProduct(C);
 	    }
@@ -1330,7 +1359,7 @@ function i(Row, Col) {
     } else {
 	if (Distance(Row, Col, Unit[ActiveUnit].row, Unit[ActiveUnit].col)<=Math.min(Unit[ActiveUnit].movement,1.5)) {
 	    if (Region[Row][Col].unit!=-1) {
-		alert(Combat(ActiveUnit,Region[Row][Col].unit));
+		Combat(ActiveUnit,Region[Row][Col].unit,"");
 	    } else {
 		MoveUnit(ActiveUnit,Row,Col);
 	    }
