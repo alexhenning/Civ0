@@ -1,4 +1,24 @@
 <html><title>Civ 0--Civilization: Year 0, a JavaScript open-source implementation of a civilization-style game</title>
+<style>
+    .img {
+         position: absolute;
+         height: 20px;
+         width: 20px;
+    }
+    .viewport {
+         overflow: hidden;
+         #position: relative;
+         position: absolute;
+         height: 20px;
+         width: 20px;
+    }
+    .clipped {
+         display: block;
+         position: relative;
+         height: 60px;
+         width: 400px;
+    }
+</style>
 <body id="body" onload="Toolbar.OnResize()" onresize="Toolbar.OnResize()" onkeypress="KeyPressHandler(event)" style="min-width: 600px; min-height: 510px; height: 100%; padding-top: 30px; margin: 0px;">
 
 <div id="controlbar" style="font-size: 16px; color: black; background-color: white; padding 2px; position: fixed; left: 0px; right: 0px; top: 0px; height: 30px; max-width: 600px;">
@@ -252,39 +272,39 @@ TradeReserve = 0;
 
 var Product = new Array();
 /* Units */
-Settler = 1; Product[Settler] = {type: 'unit', name: 'Settler', imgStub: 'settler', prereq: CityBuilding, cost: 40, upkeep: 1, kind: 'land', class: 'EI', mobility: 1, attack: 0, defense: 1, health: 10, firepower: 1, help: 'Attack: 0, defense: 1, mobility: 1, 10 hp, 1 fp', obsolete: false};
-Warrior = 2; Product[Warrior] = {type: 'unit', name: 'Warrior', imgStub: 'warrior', prereq: CityBuilding, cost: 10, upkeep: 1, kind: 'land', class: 'EI', mobility: 1, attack: 1, defense: 1, health: 10, firepower: 1, help: 'Attack: 1, defense: 1, mobility: 1, 10 hp, 1 fp', obsolete: false};
-Horseman = 3; Product[Horseman] = {type: 'unit', name: 'Horseman', imgStub: 'horseman', prereq: HorsebackRiding, cost: 20, upkeep: 1, kind: 'land', class: 'EC', mobility: 2, attack: 2, defense: 1, health: 10, firepower: 1, help: 'Attack: 2, defense: 1, mobility: 2, 10 hp, 1 fp', obsolete: false};
-Archer = 4; Product[Archer] = {type: 'unit', name: 'Archer', imgStub: 'archer', prereq: WarriorCode, cost: 30, upkeep: 1, kind: 'land', class: 'EI', mobility: 1, attack: 3, defense: 2, health: 10, firepower: 1, help: 'Attack: 3, defense: 2, mobility: 1, 10 hp, 1 fp', obsolete: false};
-Phalanx = 5; Product[Phalanx] = {type: 'unit', name: 'Phalanx', imgStub: 'phalanx', prereq: BronzeWorking, cost: 20, upkeep: 1, kind: 'land', class: 'HI', mobility: 1, attack: 1, defense: 2, health: 10, firepower: 1, help: 'Attack: 1, defense: 2, mobility: 1, 10 hp, 1 fp', obsolete: false};
-Chariot = 6; Product[Chariot] = {type: 'unit', name: 'Chariot', imgStub: 'chariot', prereq: TheWheel, cost: 30, upkeep: 1, kind: 'land', class: 'EC', mobility: 2, attack: 3, defense: 1, health: 10, firepower: 1, help: 'Attack: 3, defense: 1, mobility: 2, 10 hp, 1 fp', obsolete: false};
-Catapult = 7; Product[Catapult] = {type: 'unit', name: 'Catapult', imgStub: 'catapult', prereq: Mathematics, cost: 40, upkeep: 1, kind: 'land', class: 'SE', mobility: 1, attack: 6, defense: 1, health: 10, firepower: 1, help: 'Attack: 6, defense: 1, mobility: 1, 10 hp, 1 fp', obsolete: false};
-Legion = 8; Product[Legion] = {type: 'unit', name: 'Legion', imgStub: 'legion', prereq: IronWorking, cost: 40, upkeep: 1, kind: 'land', class: 'HI', mobility: 1, attack: 4, defense: 2, health: 10, firepower: 1, help: 'Attack: 4, defense: 2, mobility: 1, 10 hp, 1 fp', obsolete: false};
-Pikeman = 9; Product[Pikeman] = {type: 'unit', name: 'Pikeman', imgStub: 'pikeman', prereq: Feudalism, cost: 20, upkeep: 1, kind: 'land', class: 'HI', mobility: 1, attack: 1, defense: 3, health: 10, firepower: 1, help: 'Attack: 1, defense: 3, mobility: 1, 10 hp, 1 fp', obsolete: false};
-Knight = 10; Product[Knight] = {type: 'unit', name: 'Knight', imgStub: 'knight', prereq: Chivalry, cost: 40, upkeep: 1, kind: 'land', class: 'EC', mobility: 2, attack: 4, defense: 2, health: 10, firepower: 1, help: 'Attack: 4, defense: 2, mobility: 2, 10 hp, 1 fp', obsolete: false};
-Frigate = 11; Product[Frigate] = {type: 'unit', name: 'Frigate', imgStub: 'frigate', prereq: Magnetism, cost: 50, upkeep: 1, kind: 'sea', class: 'N', mobility: 4, attack: 4, defense: 2, health: 20, firepower: 1, help: 'Attack: 4, defense: 2, mobility: 4, 20 hp, 1 fp', obsolete: false};
-Ironclad = 12; Product[Ironclad] = {type: 'unit', name: 'Ironclad', imgStub: 'ironclad', prereq: SteamEngine, cost: 60, upkeep: 1, kind: 'sea', class: 'N', mobility: 4, attack: 4, defense: 4, health: 30, firepower: 1, help: 'Attack: 4, defense: 4, mobility: 4, 30 hp, 1 fp', obsolete: false};
-Musketeer = 13; Product[Musketeer] = {type: 'unit', name: 'Musketeer', imgStub: 'musketeer', prereq: Gunpowder, cost: 30, upkeep: 1, kind: 'land', class: 'LI', mobility: 1, attack: 3, defense: 3, health: 20, firepower: 1, help: 'Attack: 3, defense: 3, mobility: 1, 20 hp, 1 fp', obsolete: false};
-Dragoon = 14; Product[Dragoon] = {type: 'unit', name: 'Dragoon', imgStub: 'dragoon', prereq: Leadership, cost: 50, upkeep: 1, kind: 'land', class: 'EC', mobility: 2, attack: 5, defense: 2, health: 20, firepower: 1, help: 'Attack: 5, defense: 2, mobility: 2, 20 hp, 1 fp', obsolete: false};
-Cannon = 15; Product[Cannon] = {type: 'unit', name: 'Cannon', imgStub: 'cannon', prereq: Metallurgy, cost: 40, upkeep: 1, kind: 'sea', class: 'SE', mobility: 1, attack: 8, defense: 1, health: 20, firepower: 1, help: 'Attack: 8, defense: 1, mobility: 1, 20 hp, 1 fp', obsolete: false};
-Destroyer = 16; Product[Destroyer] = {type: 'unit', name: 'Destroyer', imgStub: 'destroyer', prereq: Electricity, cost: 60, upkeep: 1, kind: 'sea', class: 'N', mobility: 6, attack: 4, defense: 4, health: 30, firepower: 1, help: 'Attack: 4, defense: 4, mobility: 6, 30 hp, 1 fp', obsolete: false};
-Rifleman = 17; Product[Rifleman] = {type: 'unit', name: 'Rifleman', imgStub: 'rifleman', prereq: Conscription, cost: 40, upkeep: 1, kind: 'land', class: 'LI', mobility: 1, attack: 4, defense: 4, health: 20, firepower: 1, help: 'Attack: 4, defense: 4, mobility: 1, 20 hp, 1 fp', obsolete: false};
-Cavalry = 18; Product[Cavalry] = {type: 'unit', name: 'Cavalry', imgStub: 'cavalry', prereq: Tactics, cost: 60, upkeep: 1, kind: 'land', class: 'LC', mobility: 2, attack: 8, defense: 3, health: 20, firepower: 1, help: 'Attack: 8, defense: 3, mobility: 2, 20 hp, 1 fp', obsolete: false};
-Cruiser = 19; Product[Cruiser] = {type: 'unit', name: 'Cruiser', imgStub: 'cruiser', prereq: Steel, cost: 80, upkeep: 1, kind: 'sea', class: 'N', mobility: 5, attack: 6, defense: 6, health: 30, firepower: 2, help: 'Attack: 6, defense: 6, mobility: 5, 30 hp, 2 fp', obsolete: false};
-Battleship = 20; Product[Battleship] = {type: 'unit', name: 'Battleship', imgStub: 'battleship', prereq: Automobile, cost: 160, upkeep: 1, kind: 'sea', class: 'N', mobility: 4, attack: 12, defense: 12, health: 40, firepower: 2, help: 'Attack: 12, defense: 12, mobility: 4, 40 hp, 2 fp', obsolete: false};
-Submarine = 21; Product[Submarine] = {type: 'unit', name: 'Submarine', imgStub: 'submarine', prereq: Combustion, cost: 50, upkeep: 1, kind: 'sea', class: 'N', mobility: 5, attack: 15, defense: 2, health: 30, firepower: 2, help: 'Attack: 15, defense: 2, mobility: 5, 30 hp, 2 fp', obsolete: false};
-Artillery = 22; Product[Artillery] = {type: 'unit', name: 'Artillery', imgStub: 'artillery', prereq: MachineTools, cost: 50, upkeep: 1, kind: 'land', class: 'SE', mobility: 1, attack: 10, defense: 1, health: 20, firepower: 2, help: 'Attack: 10, defense: 1, mobility: 1, 20 hp, 2 fp', obsolete: false};
-Fighter = 23; Product[Fighter] = {type: 'unit', name: 'Fighter', imgStub: 'fighter', prereq: Flight, cost: 60, upkeep: 1, kind: 'air', class: 'AF', mobility: 10, attack: 4, defense: 3, health: 20, firepower: 2, help: 'Attack: 4, defense: 3, mobility: 10, 20 hp, 2 fp', obsolete: false};
-Carrier = 24; Product[Carrier] = {type: 'unit', name: 'Carrier', imgStub: 'carrier', prereq: AdvancedFlight, cost: 160, upkeep: 1, kind: 'sea', class: 'N', mobility: 5, attack: 1, defense: 9, health: 40, firepower: 2, help: 'Attack: 1, defense: 9, mobility: 5, 40 hp, 2 fp', obsolete: false};
-Armor = 25; Product[Armor] = {type: 'unit', name: 'Armor', imgStub: 'armor', prereq: MobileWarfare, cost: 80, upkeep: 1, kind: 'land', class: 'LC', mobility: 3, attack: 10, defense: 5, health: 30, firepower: 1, help: 'Attack: 10, defense: 5, mobility: 3, 30 hp, 1 fp', obsolete: false};
-MechInf = 26; Product[MechInf] = {type: 'unit', name: 'Mech. Inf.', imgStub: 'mech.inf.', prereq: LaborUnion, cost: 50, upkeep: 1, kind: 'land', class: 'LI', mobility: 3, attack: 6, defense: 6, health: 30, firepower: 1, help: 'Attack: 6, defense: 6, mobility: 3, 30 hp, 1 fp', obsolete: false};
-Howitzer = 27; Product[Howitzer] = {type: 'unit', name: 'Howitzer', imgStub: 'howitzer', prereq: Robotics, cost: 70, upkeep: 1, kind: 'land', class: 'SE', mobility: 2, attack: 12, defense: 2, health: 30, firepower: 2, help: 'Attack: 12, defense: 2, mobility: 2, 30 hp, 2 fp', obsolete: false};
-Bomber = 28; Product[Bomber] = {type: 'unit', name: 'Bomber', imgStub: 'bomber', prereq: AdvancedFlight, cost: 120, upkeep: 1, kind: 'air', class: 'AF', mobility: 8, attack: 12, defense: 1, health: 20, firepower: 2, help: 'Attack: 12, defense: 1, mobility: 8, 20 hp, 2 fp', obsolete: false};
-SpyPlane = 29; Product[SpyPlane] = {type: 'unit', name: 'Spy Plane', imgStub: 'spyplane', prereq: AdvancedFlight, cost: 140, upkeep: 1, kind: 'air', class: 'AF', mobility: 16, attack: 0, defense: 1, health: 20, firepower: 1, help: 'Attack: 0, defense: 1, mobility: 16, 20 hp, 1 fp', obsolete: false};
-NuclearMissile = 30; Product[NuclearMissile] = {type: 'unit', name: 'Nuclear Missile', imgStub: 'nuclearmissile', prereq: Rocketry, cost: 160, upkeep: 1, kind: 'missile', class: 'M', mobility: 16, attack: 99, defense: 0, health: 10, firepower: 1, help: 'Attack: 99, defense: 0, mobility: 16, 10 hp, 1 fp', obsolete: false};
-CruiseMissile = 31; Product[CruiseMissile] = {type: 'unit', name: 'Cruise Missile', imgStub: 'cruisemissile', prereq: Rocketry, cost: 60, upkeep: 1, kind: 'missile', class: 'M', mobility: 12, attack: 18, defense: 0, health: 10, firepower: 1, help: 'Attack: 18, defense: 0, mobility: 12, 10 hp, 1 fp', obsolete: false};
-StealthBomber = 32; Product[StealthBomber] = {type: 'unit', name: 'Stealth Bomber', imgStub: 'stealthbomber', prereq: Stealth, cost: 160, upkeep: 1, kind: 'air', class: 'AF', mobility: 12, attack: 18, defense: 5, health: 20, firepower: 2, help: 'Attack: 18, defense: 5, mobility: 12, 20 hp, 2 fp', obsolete: false};
-StealthFighter = 33; Product[StealthFighter] = {type: 'unit', name: 'Stealth Fighter', imgStub: 'stealthfighter', prereq: Stealth, cost: 80, upkeep: 1, kind: 'air', class: 'AF', mobility: 14, attack: 8, defense: 4, health: 20, firepower: 2, help: 'Attack: 8, defense: 4, mobility: 14, 20 hp, 2 fp', obsolete: false};
+Settler = 1; Product[Settler] = {type: 'unit', name: 'Settler', img: {row: 1, col: 4}, prereq: CityBuilding, cost: 40, upkeep: 1, kind: 'land', class: 'EI', mobility: 1, attack: 0, defense: 1, health: 10, firepower: 1, help: 'Attack: 0, defense: 1, mobility: 1, 10 hp, 1 fp', obsolete: false};
+Warrior = 2; Product[Warrior] = {type: 'unit', name: 'Warrior', img: {row: 0, col: 18}, prereq: CityBuilding, cost: 10, upkeep: 1, kind: 'land', class: 'EI', mobility: 1, attack: 1, defense: 1, health: 10, firepower: 1, help: 'Attack: 1, defense: 1, mobility: 1, 10 hp, 1 fp', obsolete: false};
+Horseman = 3; Product[Horseman] = {type: 'unit', name: 'Horseman', img: {row: 0, col: 8}, prereq: HorsebackRiding, cost: 20, upkeep: 1, kind: 'land', class: 'EC', mobility: 2, attack: 2, defense: 1, health: 10, firepower: 1, help: 'Attack: 2, defense: 1, mobility: 2, 10 hp, 1 fp', obsolete: false};
+Archer = 4; Product[Archer] = {type: 'unit', name: 'Archer', img: {row: 1, col: 8}, prereq: WarriorCode, cost: 30, upkeep: 1, kind: 'land', class: 'EI', mobility: 1, attack: 3, defense: 2, health: 10, firepower: 1, help: 'Attack: 3, defense: 2, mobility: 1, 10 hp, 1 fp', obsolete: false};
+Phalanx = 5; Product[Phalanx] = {type: 'unit', name: 'Phalanx', img: {row: 1, col: 1}, prereq: BronzeWorking, cost: 20, upkeep: 1, kind: 'land', class: 'HI', mobility: 1, attack: 1, defense: 2, health: 10, firepower: 1, help: 'Attack: 1, defense: 2, mobility: 1, 10 hp, 1 fp', obsolete: false};
+Chariot = 6; Product[Chariot] = {type: 'unit', name: 'Chariot', img: {row: 0, col: 9}, prereq: TheWheel, cost: 30, upkeep: 1, kind: 'land', class: 'EC', mobility: 2, attack: 3, defense: 1, health: 10, firepower: 1, help: 'Attack: 3, defense: 1, mobility: 2, 10 hp, 1 fp', obsolete: false};
+Catapult = 7; Product[Catapult] = {type: 'unit', name: 'Catapult', img: {row: 0, col: 7}, prereq: Mathematics, cost: 40, upkeep: 1, kind: 'land', class: 'SE', mobility: 1, attack: 6, defense: 1, health: 10, firepower: 1, help: 'Attack: 6, defense: 1, mobility: 1, 10 hp, 1 fp', obsolete: false};
+Legion = 8; Product[Legion] = {type: 'unit', name: 'Legion', img: {row: 0, col: 16}, prereq: IronWorking, cost: 40, upkeep: 1, kind: 'land', class: 'HI', mobility: 1, attack: 4, defense: 2, health: 10, firepower: 1, help: 'Attack: 4, defense: 2, mobility: 1, 10 hp, 1 fp', obsolete: false};
+Pikeman = 9; Product[Pikeman] = {type: 'unit', name: 'Pikeman', img: {row: 1, col: 17}, prereq: Feudalism, cost: 20, upkeep: 1, kind: 'land', class: 'HI', mobility: 1, attack: 1, defense: 3, health: 10, firepower: 1, help: 'Attack: 1, defense: 3, mobility: 1, 10 hp, 1 fp', obsolete: false};
+Knight = 10; Product[Knight] = {type: 'unit', name: 'Knight', img: {row: 0, col: 15}, prereq: Chivalry, cost: 40, upkeep: 1, kind: 'land', class: 'EC', mobility: 2, attack: 4, defense: 2, health: 10, firepower: 1, help: 'Attack: 4, defense: 2, mobility: 2, 10 hp, 1 fp', obsolete: false};
+Frigate = 11; Product[Frigate] = {type: 'unit', name: 'Frigate', img: {row: 0, col: 13}, prereq: Magnetism, cost: 50, upkeep: 1, kind: 'sea', class: 'N', mobility: 4, attack: 4, defense: 2, health: 20, firepower: 1, help: 'Attack: 4, defense: 2, mobility: 4, 20 hp, 1 fp', obsolete: false};
+Ironclad = 12; Product[Ironclad] = {type: 'unit', name: 'Ironclad', img: {row: 0, col: 14}, prereq: SteamEngine, cost: 60, upkeep: 1, kind: 'sea', class: 'N', mobility: 4, attack: 4, defense: 4, health: 30, firepower: 1, help: 'Attack: 4, defense: 4, mobility: 4, 30 hp, 1 fp', obsolete: false};
+Musketeer = 13; Product[Musketeer] = {type: 'unit', name: 'Musketeer', img: {row: 0, col: 19}, prereq: Gunpowder, cost: 30, upkeep: 1, kind: 'land', class: 'LI', mobility: 1, attack: 3, defense: 3, health: 20, firepower: 1, help: 'Attack: 3, defense: 3, mobility: 1, 20 hp, 1 fp', obsolete: false};
+Dragoon = 14; Product[Dragoon] = {type: 'unit', name: 'Dragoon', img: {row: 1, col: 12}, prereq: Leadership, cost: 50, upkeep: 1, kind: 'land', class: 'EC', mobility: 2, attack: 5, defense: 2, health: 20, firepower: 1, help: 'Attack: 5, defense: 2, mobility: 2, 20 hp, 1 fp', obsolete: false};
+Cannon = 15; Product[Cannon] = {type: 'unit', name: 'Cannon', img: {row: 0, col: 4}, prereq: Metallurgy, cost: 40, upkeep: 1, kind: 'sea', class: 'SE', mobility: 1, attack: 8, defense: 1, health: 20, firepower: 1, help: 'Attack: 8, defense: 1, mobility: 1, 20 hp, 1 fp', obsolete: false};
+Destroyer = 16; Product[Destroyer] = {type: 'unit', name: 'Destroyer', img: {row: 1, col: 11}, prereq: Electricity, cost: 60, upkeep: 1, kind: 'sea', class: 'N', mobility: 6, attack: 4, defense: 4, health: 30, firepower: 1, help: 'Attack: 4, defense: 4, mobility: 6, 30 hp, 1 fp', obsolete: false};
+Rifleman = 17; Product[Rifleman] = {type: 'unit', name: 'Rifleman', img: {row: 1, col: 2}, prereq: Conscription, cost: 40, upkeep: 1, kind: 'land', class: 'LI', mobility: 1, attack: 4, defense: 4, health: 20, firepower: 1, help: 'Attack: 4, defense: 4, mobility: 1, 20 hp, 1 fp', obsolete: false};
+Cavalry = 18; Product[Cavalry] = {type: 'unit', name: 'Cavalry', img: {row: 1, col: 9}, prereq: Tactics, cost: 60, upkeep: 1, kind: 'land', class: 'LC', mobility: 2, attack: 8, defense: 3, health: 20, firepower: 1, help: 'Attack: 8, defense: 3, mobility: 2, 20 hp, 1 fp', obsolete: false};
+Cruiser = 19; Product[Cruiser] = {type: 'unit', name: 'Cruiser', img: {row: 1, col: 11}, prereq: Steel, cost: 80, upkeep: 1, kind: 'sea', class: 'N', mobility: 5, attack: 6, defense: 6, health: 30, firepower: 2, help: 'Attack: 6, defense: 6, mobility: 5, 30 hp, 2 fp', obsolete: false};
+Battleship = 20; Product[Battleship] = {type: 'unit', name: 'Battleship', img: {row: 0, col: 10}, prereq: Automobile, cost: 160, upkeep: 1, kind: 'sea', class: 'N', mobility: 4, attack: 12, defense: 12, health: 40, firepower: 2, help: 'Attack: 12, defense: 12, mobility: 4, 40 hp, 2 fp', obsolete: false};
+Submarine = 21; Product[Submarine] = {type: 'unit', name: 'Submarine', img: {row: 1, col: 5}, prereq: Combustion, cost: 50, upkeep: 1, kind: 'sea', class: 'N', mobility: 5, attack: 15, defense: 2, health: 30, firepower: 2, help: 'Attack: 15, defense: 2, mobility: 5, 30 hp, 2 fp', obsolete: false};
+Artillery = 22; Product[Artillery] = {type: 'unit', name: 'Artillery', img: {row: 2,  col: 3}, prereq: MachineTools, cost: 50, upkeep: 1, kind: 'land', class: 'SE', mobility: 1, attack: 10, defense: 1, health: 20, firepower: 2, help: 'Attack: 10, defense: 1, mobility: 1, 20 hp, 2 fp', obsolete: false};
+Fighter = 23; Product[Fighter] = {type: 'unit', name: 'Fighter', img: {row: 0, col: 3}, prereq: Flight, cost: 60, upkeep: 1, kind: 'air', class: 'AF', mobility: 10, attack: 4, defense: 3, health: 20, firepower: 2, help: 'Attack: 4, defense: 3, mobility: 10, 20 hp, 2 fp', obsolete: false};
+Carrier = 24; Product[Carrier] = {type: 'unit', name: 'Carrier', img: {row: 0, col: 6}, prereq: AdvancedFlight, cost: 160, upkeep: 1, kind: 'sea', class: 'N', mobility: 5, attack: 1, defense: 9, health: 40, firepower: 2, help: 'Attack: 1, defense: 9, mobility: 5, 40 hp, 2 fp', obsolete: false};
+Armor = 25; Product[Armor] = {type: 'unit', name: 'Armor', img: {row: 0, col: 0}, prereq: MobileWarfare, cost: 80, upkeep: 1, kind: 'land', class: 'LC', mobility: 3, attack: 10, defense: 5, health: 30, firepower: 1, help: 'Attack: 10, defense: 5, mobility: 3, 30 hp, 1 fp', obsolete: false};
+MechInf = 26; Product[MechInf] = {type: 'unit', name: 'Mech. Inf.', img: {row: 0, col: 17}, prereq: LaborUnion, cost: 50, upkeep: 1, kind: 'land', class: 'LI', mobility: 3, attack: 6, defense: 6, health: 30, firepower: 1, help: 'Attack: 6, defense: 6, mobility: 3, 30 hp, 1 fp', obsolete: false};
+Howitzer = 27; Product[Howitzer] = {type: 'unit', name: 'Howitzer', img: {row: 0, col: 1}, prereq: Robotics, cost: 70, upkeep: 1, kind: 'land', class: 'SE', mobility: 2, attack: 12, defense: 2, health: 30, firepower: 2, help: 'Attack: 12, defense: 2, mobility: 2, 30 hp, 2 fp', obsolete: false};
+Bomber = 28; Product[Bomber] = {type: 'unit', name: 'Bomber', img: {row: 0, col: 3}, prereq: AdvancedFlight, cost: 120, upkeep: 1, kind: 'air', class: 'AF', mobility: 8, attack: 12, defense: 1, health: 20, firepower: 2, help: 'Attack: 12, defense: 1, mobility: 8, 20 hp, 2 fp', obsolete: false};
+SpyPlane = 29; Product[SpyPlane] = {type: 'unit', name: 'Spy Plane', img: {row: 2, col: 13}, prereq: AdvancedFlight, cost: 140, upkeep: 1, kind: 'air', class: 'AF', mobility: 16, attack: 0, defense: 1, health: 20, firepower: 1, help: 'Attack: 0, defense: 1, mobility: 16, 20 hp, 1 fp', obsolete: false};
+NuclearMissile = 30; Product[NuclearMissile] = {type: 'unit', name: 'Nuclear Missile', img: {row: 1, col: 0}, prereq: Rocketry, cost: 160, upkeep: 1, kind: 'missile', class: 'M', mobility: 16, attack: 99, defense: 0, health: 10, firepower: 1, help: 'Attack: 99, defense: 0, mobility: 16, 10 hp, 1 fp', obsolete: false};
+CruiseMissile = 31; Product[CruiseMissile] = {type: 'unit', name: 'Cruise Missile', img: {row: 1, col: 10}, prereq: Rocketry, cost: 60, upkeep: 1, kind: 'missile', class: 'M', mobility: 12, attack: 18, defense: 0, health: 10, firepower: 1, help: 'Attack: 18, defense: 0, mobility: 12, 10 hp, 1 fp', obsolete: false};
+StealthBomber = 32; Product[StealthBomber] = {type: 'unit', name: 'Stealth Bomber', img: {row: 2, col: 6}, prereq: Stealth, cost: 160, upkeep: 1, kind: 'air', class: 'AF', mobility: 12, attack: 18, defense: 5, health: 20, firepower: 2, help: 'Attack: 18, defense: 5, mobility: 12, 20 hp, 2 fp', obsolete: false};
+StealthFighter = 33; Product[StealthFighter] = {type: 'unit', name: 'Stealth Fighter', img: {row: 2, col: 7}, prereq: Stealth, cost: 80, upkeep: 1, kind: 'air', class: 'AF', mobility: 14, attack: 8, defense: 4, health: 20, firepower: 2, help: 'Attack: 8, defense: 4, mobility: 14, 20 hp, 2 fp', obsolete: false};
 var MaxUnit = StealthFighter;
 /* Buildings */
 Airport = 34;
@@ -377,11 +397,11 @@ var MaxBuilding = Wharf;
 var MaxProduct = Wharf;
 
 var Troopship = new Array();
-Boat = 1; Troopship[Boat] = {type: 'unit', name: 'Boat', imgStub: 'boat', prereq: CityBuilding, cost: 40, class: 'N', mobility: 1, attack: 0, defense: 1, health: 10, firepower: 1, TroopshipCapacity: 2, obsolete: false};
-Trireme = 2; Troopship[Trireme] = {type: 'unit', name: 'Trireme', imgStub: 'trireme', prereq: MapMaking, cost: 40, class: 'N', mobility: 2, attack: 1, defense: 1, health: 10, firepower: 1, TroopshipCapacity: 2, obsolete: false};
-Caravel = 3; Troopship[Caravel] = {type: 'unit', name: 'Caravel', imgStub: 'caravel', prereq: Navigation, cost: 40, class: 'N', mobility: 3, attack: 2, defense: 1, health: 10, firepower: 1, TroopshipCapacity: 3, obsolete: false};
-Galleon = 4; Troopship[Galleon] = {type: 'unit', name: 'Galleon', imgStub: 'galleon', prereq: Magnetism, cost: 40, class: 'N', mobility: 4, attack: 2, defense: 2, health: 20, firepower: 1, TroopshipCapacity: 4, obsolete: false};
-Transport = 5; Troopship[Transport] = {type: 'unit', name: 'Transport', imgStub: 'Transport', prereq: Industrialization, cost: 50, class: 'N', mobility: 5, attack: 2, defense: 3, health: 30, firepower: 1, TroopshipCapacity: 8, obsolete: false};
+Boat = 1; Troopship[Boat] = {type: 'unit', name: 'Boat', img: {row: 2, col: 4}, prereq: CityBuilding, cost: 40, class: 'N', mobility: 1, attack: 0, defense: 1, health: 10, firepower: 1, TroopshipCapacity: 2, obsolete: false};
+Trireme = 2; Troopship[Trireme] = {type: 'unit', name: 'Trireme', img: {row: 1, col: 7}, prereq: MapMaking, cost: 40, class: 'N', mobility: 2, attack: 1, defense: 1, health: 10, firepower: 1, TroopshipCapacity: 2, obsolete: false};
+Caravel = 3; Troopship[Caravel] = {type: 'unit', name: 'Caravel', img: {row: 1, col: 3}, prereq: Navigation, cost: 40, class: 'N', mobility: 3, attack: 2, defense: 1, health: 10, firepower: 1, TroopshipCapacity: 3, obsolete: false};
+Galleon = 4; Troopship[Galleon] = {type: 'unit', name: 'Galleon', img: {row: 1, col: 15}, prereq: Magnetism, cost: 40, class: 'N', mobility: 4, attack: 2, defense: 2, health: 20, firepower: 1, TroopshipCapacity: 4, obsolete: false};
+Transport = 5; Troopship[Transport] = {type: 'unit', name: 'Transport', img: {row: 1, col: 6}, prereq: Industrialization, cost: 50, class: 'N', mobility: 5, attack: 2, defense: 3, health: 30, firepower: 1, TroopshipCapacity: 8, obsolete: false};
 TroopshipClass = Boat;
 var MaxTroopship = Transport;
 
@@ -426,6 +446,75 @@ MaxRow = 24;
 MaxCol = 30; //prompt("How wide a world is it?","30");
 StartRow = 0;
 StartCol = 0;
+
+function SetImgToUnit(Img, Vp, Row, Col) {
+    Img.src = "units.png";
+    var top = 20 * Row, left = 20 * Col;
+    var bottom = top + 20, right = left + 20;
+    /*Img.left = Img.left ? Img.left : parseInt(Img.style.left);
+    Img.top = Img.top ? Img.top : parseInt(Img.style.top);
+    Img.style.clip = "rect(" + top + "px," + right + "px," + bottom + "px," + left + "px)";
+    Img.style.left = Img.left - left + "px";
+    Img.style.top = Img.top - top + "px";*/
+    Img.style.left = "-" + left + "px";
+    Img.style.top = "-" + top + "px";
+}
+
+function CreateImage(src, row, col, layer, attach, z) {
+    var img = document.createElement("img");
+    img.src = src;
+    img.id = "p"+row+"_"+col+"_"+layer;
+    img.className = "img";
+    img.style.left = 20 * col + "px";
+    img.style.top = 20 * row + 30 +"px";
+    img.style.zIndex = z;
+    attach.appendChild(img);
+    return img;
+}
+
+function Territory(terrain, row, col) {
+    this.terrain = terrain;
+    this.row = row;
+    this.col = col;
+    this.unit = -1;
+    this.city = -1;
+
+    this.viewport = document.createElement("div");
+    this.viewport.className = "viewport";
+    this.viewport.style.left = 20 * col + "px";
+    this.viewport.style.top = 20 * row + 30 +"px";
+    document.getElementById("body").appendChild(this.viewport);
+
+    this.regionImg = CreateImage(Terrain[terrain].symbol+".png", row, col, "region", document.getElementById("body"), 101);
+    this.nationalityImg = CreateImage("visible.png", row, col, "nationality", document.getElementById("body"), 102);
+    this.unitImg = CreateImage("visible.png", row, col, "unit", this.viewport, 103);
+    this.unitImg.className = "clipped";
+    this.fogImg = CreateImage("unexplored.png", row, col, "fog", document.getElementById("body"), 104);
+    this.fogImg.onmouseover = function() {Toolbar.OnHover(this);};
+    this.fogImg.onclick = function() {i(row, col);};
+    //this.SetTitle("FAIL");
+}
+Territory.prototype.SetVisibility = function(visible) {
+    if (visible) {this.fogImg.src = "visible.png";}
+    else {this.fogImg.src = "fog.png";}
+};
+Territory.prototype.SetUnit = function(unit, focus) {
+    if (focus) {this.nationalityImg.src = "active.png";}
+    else if (unit.player) {this.nationalityImg.src = "player.png";}
+    else {this.nationalityImg.src = "enemy.png";}
+
+    var UnitProps;
+    if (this.terrain != Ocean) {UnitProps = Product[unit.type];}
+    else {UnitProps = Troopship[unit.TroopshipClass];}
+    SetImgToUnit(this.unitImg, this.viewport, UnitProps.img.row, UnitProps.img.col);
+};
+Territory.prototype.SetCity = function(focus, player) {
+    if (focus) {this.nationalityImg.src = "active.png";}
+    else if (player) {this.nationalityImg.src = "player.png";}
+    else {this.nationalityImg.src = "enemy.png";}
+    this.unitImg.src = "city.png";
+};
+Territory.prototype.IsExplored = function() {return this.fogImg.src.indexOf('unexplored.png') == -1};
 
 var Region = new Array();
 TerrainProbability = new Array("ttc","ttttc", "tppp", "pppgfs", "gfs", "jjsgg", "jjjssg", "gggd", "dddgg");
@@ -493,67 +582,43 @@ function TerrainAtLatitude(Row) {
 
 function RegionImage(Row, Col, focus) {
     var R;
-    var S = 'p'+Row+'_'+Col;
     var U = Region[Row][Col].unit;
     if ((U!=-1)&&(Unit[U] !== undefined)) {
-	var T;
-	if (Unit[U].player) {
-	    if (focus) {
-		T = "focus";
-		document.getElementById(S).focus();
-	    } else {
-		T = "player";
-	    }
-	} else {
-	    if (focus) {
-		T = "focus";
-	    } else {
-      	T = "enemy";
-	    }
-	}
-	if (Region[Row][Col].terrain!=Ocean) {
-	    document.getElementById(S).src=Product[Unit[U].type].imgStub+"_"+T+".png";
-	    R = Product[Unit[U].type].name;
-	} else {
-	    document.getElementById(S).src=Troopship[Unit[U].TroopshipClass].imgStub+"_"+T+".png";
-	    R = Troopship[Unit[U].TroopshipClass].name+" (carrying "+Product[Unit[U].type].name+")";
-	}
+	if (Unit[U].player && focus) {Region[Row][Col].fogImg.focus();}
+	R = Region[Row][Col].terrain!=Ocean ? Product[Unit[U].type].name :
+	    Troopship[Unit[U].TroopshipClass].name+" (carrying "+Product[Unit[U].type].name+")";
 	R += ", health "+Unit[U].health+", "+(Math.floor(100*Terrain[Region[Unit[U].row][Unit[U].col].terrain].defense))+"% defense";
 	R += ", "+Math.floor(100*Unit[U].veterancy-100)+"% veterancy";
-	document.getElementById(S).title = R;
+	Region[Row][Col].SetUnit(Unit[U], focus);
     } else {
 	if(Region[Row][Col].city!=-1) {
-	    document.getElementById(S).src="city_player.png";
-	    document.getElementById(S).title = CityDescription(Region[Row][Col].city,true);
+	    Region[Row][Col].SetCity(focus, true);
+	    R = CityDescription(Region[Row][Col].city,true);
 	} else {
 	    var T=Region[Row][Col].terrain;
-	    document.getElementById(S).src=Terrain[T].symbol+".png";
-	    document.getElementById(S).title = Terrain[T].name+", "+Math.floor(100*Terrain[T].defense)+"% defense";
+	    Region[Row][Col].nationalityImg.src = "visible.png";
+	    Region[Row][Col].unitImg.src = "visible.png";
+	    R = Terrain[T].name+", "+Math.floor(100*Terrain[T].defense)+"% defense";
 	}
     }
-    return(document.getElementById(S).title);
-}
-
-
-function RegionTitle(Row, Col, Title) {
-    var S = 'p'+Row+'_'+Col;
-    document.getElementById(S).title = Title;
+    Region[Row][Col].fogImg.title = R;
+    return Region[Row][Col].fogImg.title;
 }
 
 function GenerateMap(Region) {
 
-    for (Row=-1; Row<=MaxRow+1; Row++) {
+    for (Row=0; Row<MaxRow; Row++) {
 	Region[Row] = new Array();
     }
 
     // sea by default
-    for (Row=-1; Row<=MaxRow+1; Row++) {
-	for (Col=-1; Col<=MaxCol+1; Col++) {
-	    Region[Row][Col] = {terrain: Ocean, unit: -1, city: -1};
+    for (Row=0; Row<MaxRow; Row++) {
+	for (Col=0; Col<MaxCol; Col++) {
+	    Region[Row][Col] = new Territory(Ocean, Row, Col); // {terrain: Ocean, unit: -1, city: -1};
 	}
     }
     // glaciers
-    for (Col=-1; Col<MaxCol+1; Col++) {
+    for (Col=0; Col<MaxCol; Col++) {
 	Region[0][Col].terrain = Glacier;
 	if (Rand(3)==1) {
 	    Region[1][Col].terrain = Glacier;
@@ -575,11 +640,11 @@ function GenerateMap(Region) {
     NarrowestRow = MaxRow;
     for (Row=1; Row<MaxRow-3; Row++) {
 	for (Col=Land1; Col<=LandEnd1; Col++) {
-	    Region[Row][Col].terrain = TerrainAtLatitude(Row);
+	    if (Col < MaxCol) {Region[Row][Col].terrain = TerrainAtLatitude(Row);}
 	}
 	if (Row>Rand(4)) {
 	    for (Col=Land2; Col<=LandEnd2; Col++) {
-		Region[Row][Col].terrain = TerrainAtLatitude(Row);
+		if (Col < MaxCol) {Region[Row][Col].terrain = TerrainAtLatitude(Row);}
 	    }
 	    if ((Row>4) & (LandEnd1-Land1>=2) & (StartRow==0)) {
 		StartRow = Row;
@@ -601,6 +666,12 @@ function GenerateMap(Region) {
     }
     for (Col=0; Col<MaxCol/2; Col++) {
 	Region[NarrowestRow][Col].terrain = Ocean;
+    }
+
+    for (Row=0; Row<MaxRow; Row++) {
+	for (Col=0; Col<MaxCol; Col++) {
+	    Region[Row][Col].regionImg.src = Terrain[Region[Row][Col].terrain].symbol+".png";
+	}
     }
 
 }
@@ -767,7 +838,7 @@ function MoveUnit(U,Row,Col) {
 	for (B=-1; B<=1; B++) {
 	    //alert(Region[X+A][Y+B].terrain);
 	    var S = 'p'+(Row+A)+'_'+(Col+B);
-	    if (((A!=0)||(B!=0)) && (Unit[U].player) && (document.getElementById(S).src.indexOf('u.png')!=-1) && ((Region[Row+A][Col+B].terrain!=Ocean)||(Rand(10)==1)) && (Rand(Math.abs(Row-StartRow))+Rand(3)>5)) {
+	    if (((A!=0)||(B!=0)) && (Unit[U].player) && !Region[Row+A][Col+B].IsExplored() && ((Region[Row+A][Col+B].terrain!=Ocean)||(Rand(10)==1)) && (Rand(Math.abs(Row-StartRow))+Rand(3)>5)) {
 		// Barbarians
 		Unit.push({type: Rand(4)+1, row: Row+A, col: Col+B, movement: 0, active: false, player: false, city: -1, health: 10, TroopshipClass: Math.min(Transport,TroopshipClass+Rand(2)-1), veterancy: 1+(Rand(2)-1)/10});
 		Region[Row+A][Col+B].unit = Unit.length-1;
@@ -781,11 +852,12 @@ function MoveUnit(U,Row,Col) {
 		    }
 		}
 	    }
-          if (Unit[U].player){
+        if (Unit[U].player){
 		    RegionImage(Row+A, Col+B, false);
-          }
+	    	Region[Row+A][Col+B].SetVisibility(true);
+        }
 	    if(!LostAtSea && (Unit[U].type==Settler)) {
-		document.getElementById(S).title = CitySiteString(Row+A,Col+B);
+		Region[Row+A][Col+B].SetTitle = CitySiteString(Row+A,Col+B);
 	    }
 	}
     }
@@ -854,10 +926,10 @@ function MoveUnitToDestination(U) {
 
 
 function PeaceInOurTime() {
-    for (U=0; U<Units.length; U++) {
-	if (!Units[U].player) {
-	    Units[U].destinationRow=-1;
-	    Units[U].active = false;
+    for (U=0; U<Unit.length; U++) {
+	if (!Unit[U].player) {
+	    Unit[U].destinationRow=-1;
+	    Unit[U].active = false;
 	}
     }
 }
@@ -995,6 +1067,24 @@ function CreateCityBuildQueque(C) {
     City[C].canBuild.style.overflowY = "auto";
     City[C].canBuild.style.display = "none";
     City[C].queque.appendChild(City[C].canBuild);
+
+    var tile = Region[Row][Col].fogImg;
+    tile.oldOnMouseOver = tile.onmouseover;
+    tile.onmouseover = function() {
+	tile.oldOnMouseOver();
+	City[C].quequeImage.src = Product[City[C].product].imgStub + "_focus.png";
+    };
+    tile.onmouseout = function() {
+	if (City[C].productChosen) {City[C].quequeImage.src = Product[City[C].product].imgStub + "_enemy.png";}
+	else {City[C].quequeImage.src = Product[City[C].product].imgStub + "_player.png";}
+	City[C].canBuild.style.display = "none";
+    };
+    tile.oldOnClick = tile.onclick
+    tile.onclick = function() {
+	this.oldOnClick();
+	City[C].quequeImage.focus();
+	City[C].canBuild.style.display = "";
+    };
 
     City[C].quequeImage.onmouseover = function() {
 	City[C].canBuild.style.display = "";
@@ -1137,6 +1227,7 @@ var Toolbar = {
         else if (element.stored_text == null) {text = "";}
         else {text = element.stored_text;}
 
+	//if (Boolean(text)) {alert(text);}
 	this.SetText(text);
 	element.stored_text = text;
 	element.title = "";
@@ -1378,13 +1469,6 @@ function i(Row, Col) {
 	}
     }
 }
-
-for (Row=0; Row<MaxRow; Row++) {
-    for (Col=0; Col<MaxCol; Col++) {
-	document.write('<img src=u.png id=p', Row,'_', Col,' onclick="i(', Row, ',', Col, ')" onmouseover="Toolbar.OnHover(this);" />');
-    }
-    document.writeln("<br>");
-}
 GenerateMap(Region);
 SetTechHelp();
 
@@ -1392,30 +1476,22 @@ SetTechHelp();
 for (X=Ocean; X<=Mountains; X++) {
     document.write("<img style='display:none' src="+Terrain[X].symbol+".png />");
 }
-document.write("<img style='display:none' src=city_player.png />");
+document.write("<img style='display:none' src=city.png />");
 
-for (Col=0; Col<MaxUnit-1; Col++) {
-    document.write("<img style='display:none' src="+Product[Col+1].imgStub+"_player.png />");
-    document.write("<img style='display:none' src="+Product[Col+1].imgStub+"_focus.png />");
-    document.write("<img style='display:none' src="+Product[Col+1].imgStub+"_enemy.png />");
-}
 
-for (Row=0; Row<7; Row++) {
-    for (Col=0; Col<MaxCol; Col++) {
-	document.getElementById('p'+Row+"_"+Col).src = "u.png";
-    }
-}
 
 for (Row=StartRow-1; Row<=StartRow+1; Row++) {
     for (Col=StartCol-1; Col<=StartCol+2; Col++) {
-	document.getElementById('p'+Row+"_"+Col).src = Terrain[Region[Row][Col].terrain].symbol+".png";
+	Region[Row][Col].SetVisibility(true);
     }
 }
 
-document.getElementById('p'+StartRow+"_"+StartCol).src = "settler_player.png";
-document.getElementById('p'+StartRow+"_"+(StartCol+1)).src = "warrior_player.png";
+//document.getElementById('p'+StartRow+"_"+StartCol).src = "settler_player.png";
+//document.getElementById('p'+StartRow+"_"+(StartCol+1)).src = "warrior_player.png";
 Unit[0] = {type: Settler, row: StartRow, col: StartCol, movement: 1, active: true, player: true, city: -1, health: 10, TroopshipClass: Boat, veterancy:1};
 Unit[1] = {type: Warrior, row: StartRow, col: StartCol+1, movement: 1, active: true, player: true, city: -1, health: 10, TroopshipClass: Boat, veterancy:1};
+Region[StartRow][StartCol].SetUnit(Unit[0], true);
+Region[StartRow][StartCol+1].SetUnit(Unit[1], false);
 Region[StartRow][StartCol].unit = 0;
 Region[StartRow][StartCol+1].unit = 1;
 
