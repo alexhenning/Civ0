@@ -15,13 +15,11 @@
     .clipped {
          display: block;
          position: relative;
-         height: 60px;
-         width: 400px;
     }
 </style>
 <body id="body" onload="Toolbar.OnResize()" onresize="Toolbar.OnResize()" onkeypress="KeyPressHandler(event)" style="min-width: 600px; min-height: 510px; height: 100%; padding-top: 30px; margin: 0px;">
 
-<div id="controlbar" style="font-size: 16px; color: black; background-color: white; padding 2px; position: fixed; left: 0px; right: 0px; top: 0px; height: 30px; max-width: 600px;">
+<div id="controlbar" style="font-size: 16px; color: black; background-color: white; padding 2px; position: fixed; left: 0px; right: 0px; top: 0px; height: 30px; max-width: 600px; z-index: 5;">
 <span style="float: left;">
 <select id="techOptions"><option>City Building</option></select>
 <select id="wonderOptions"><option>Nothing</option></select></span>
@@ -29,7 +27,7 @@
 <form><input id="resumeButton" type="button" style="float: right" value="Resume" onClick="ActiveUnit=0; for (U=0; U<Unit.length; U++) {Unit[U].active=true;Unit[U].destinationRow=-1}; Turn();"></form>
 </div>
 
-<div id="toolbar" style="font-size: 16px; color: black; background-color: white; padding 2px; position: fixed; left: 0px; right: 0px; bottom: 0px; max-width: 600px;">
+<div id="toolbar" style="font-size: 16px; color: black; background-color: white; padding 2px; position: fixed; left: 0px; right: 0px; bottom: 0px; max-width: 600px; z-index: 5;">
 <span id="message" style="float: left; max-width: 100%; overflow-y: auto;"></span>
 </div>
 <script type="text/javascript">;
@@ -350,54 +348,54 @@ Supermarket = 73;
 Temple = 74;
 University = 75;
 Wharf = 76;
-Product[Airport] = {type: 'building', name: 'Airport', imgStub: 'airport.png', prereq: Radio, prebuilding: Houses, cost: 120, upkeep: 3, code: 'City[C].veterancy["air"] = 6;', help: "Increases the veterancy of newly built air units."};
-Product[Aqueduct] = {type: 'building', name: 'Aqueduct', imgStub: 'aqueduct.png', prereq: Construction, prebuilding: Houses, cost: 60, upkeep: 2, code: 'City[C].healthyCitizens += 4;', help: "Makes up to four unhealthy citizens healthy."};
-Product[Bank] = {type: 'building', name: 'Bank', imgStub: 'bank.png', prereq: Banking, prebuilding: Marketplace, cost: 80, upkeep: 2, code: 'City[C].trade *= 1.333;', help: "Together with the Marketplace improvement, a Bank increases the trade points within a city by 100%."};
-Product[Barracks] = {type: 'building', name: 'Barracks', imgStub: 'barracks.png', prereq: CityBuilding, prebuilding: Houses, cost: 30, upkeep: 1, code: 'City[C].veterancy["land"] = 2;', help: "Increases the veterancy of newly built land units."};
-Product[Cathedral] = {type: 'building', name: 'Cathedral', imgStub: 'cathedral.png', prereq: Monotheism, prebuilding: Houses, cost: 80, upkeep: 3, code: 'City[C].happyCitizens += 3;', help: "A Cathedral makes 3 unhappy citizens happy. The discovery of Theology increases the effect of a Cathedral, making an additional unhappy citizen happy. Under Theocracy, makes 2 additional unhappy citizens happy."};
-Product[CityWalls] = {type: 'building', name: 'City Walls', imgStub: 'citywalls.png', prereq: Masonry, prebuilding: Houses, cost: 60, upkeep: 0, code: 'City[C].defenseAgainst["land"] = 3;', help: "City Walls make it easier to defend a city. They triple the defence strength of units within the city against ground units. They are ineffective against airborne and sea units as well as Howitzers. City Walls also prevent the loss of population which occurs when a defending unit is destroyed by a land unit."};
-Product[CoastalDefense] = {type: 'building', name: 'Coastal Defense', imgStub: 'coastaldefense.png', prereq: Metallurgy, prebuilding: Wharf, cost: 60, upkeep: 1, code: 'City[C].defenseAgainst["sea"] = 2;', help: "Increases the defence strength of units within a city by a factor of 2 when defending against bombardments from enemy ships."};
-Product[Colosseum] = {type: 'building', name: 'Colosseum', imgStub: 'colosseum.png', prereq: Construction, prebuilding: Houses, cost: 70, upkeep: 4, code: 'City[C].happyCitizens += 3;', help: "Entertains the citizens of a city, making 3 unhappy citizens happy. (Four after the discovery of Electricity.) Under a Republic, makes 2 additional unhappy citizens happy."};
-Product[Courthouse] = {type: 'building', name: 'Courthouse', imgStub: 'courthouse.png', prereq: CodeofLaws, prebuilding: Houses, cost: 60, upkeep: 1, code: 'City[C].happyCitizens += 1; City[C].corruptionRate *= 0.5;', help: "Reduces the corruption and waste in a city by 50%. Under a Monarchy, a Courthouse makes 2 unhappy citizen happy."};
-Product[Factory] = {type: 'building', name: 'Factory', imgStub: 'factory.png', prereq: Industrialization, prebuilding: Houses, cost: 140, upkeep: 4, code: 'City[C].healthyCitizens -= 2;', help: "Increases the production points in a city by 50%. May cause up to two citizens to become unhealthy."};
-Product[Farmland] = {type: 'building', name: 'Farmland', imgStub: 'farmland.png', prereq: Refrigeration, prebuilding: Irrigation, cost: 20, upkeep: 0, code: 'City[C].food += 3;', help: "Adds 3 food points to a city."};
-Product[Garrison] = {type: 'building', name: 'Garrison', imgStub: 'garrison.png', prereq: Gunpowder, prebuilding: Barracks, cost: 30, upkeep: 1, code: 'City[C].veterancy["land"] = 5;', help: "Increases the veterancy of newly built land units. Cumulative with barracks."};
-Product[Granary] = {type: 'building', name: 'Granary', imgStub: 'granary.png', prereq: Pottery, prebuilding: Houses, cost: 40, upkeep: 1, code: 'City[C].food *= 2; City[C].healthyCitizens += 2;', help: "The amount of stored food will be set to half full whenever a city with a Granary shrinks or grows. This helps a city to grow faster and more easily withstand famine. Makes up to two unhealthy citizens healthy."};
-Product[Harbor] = {type: 'building', name: 'Harbor', imgStub: 'harbor.png', prereq: Seafaring, prebuilding: Wharf, cost: 40, upkeep: 1, code: 'City[C].food += NeighboringRegions(Row,Col,".terrain==Ocean");', help: "Adds 1 extra food point on all Sea regions in a city. The city needs to be coastal to build this improvement."};
-Product[Houses] = {type: 'building', name: 'Houses', imgStub: 'houses.png', prereq: CityBuilding, prebuilding: Houses, cost: 0, upkeep: 0, code: '', help: "Base building required by all others."};
-Product[HydroPlant] = {type: 'building', name: 'Hydro Plant', imgStub: 'hydroplant.png', prereq: Electronics, prebuilding: Factory, cost: 180, upkeep: 4, code: 'City[C].production *= 1.5;', help: "Increases the production points in a city by an additional 50%."};
-Product[Library] = {type: 'building', name: 'Library', imgStub: 'library.png', prereq: Writing, prebuilding: Houses, cost: 60, upkeep: 1, code: 'City[C].science = 2;', help: "Doubles the science output of a city."};
-Product[Irrigation] = {type: 'building', name: 'Irrigation', imgStub: 'irrigation.png', prereq: Pottery, prebuilding: Houses, cost: 20, upkeep: 0, code: 'City[C].food += 3;', help: "Adds 3 food points to a city."};
-Product[Marketplace] = {type: 'building', name: 'Marketplace', imgStub: 'marketplace.png', prereq: Currency, prebuilding: Houses, cost: 60, upkeep: 0, code: 'City[C].trade *= 1.5;', help: "Increases the trade points in a city by 50%."};
-Product[MassTransit] = {type: 'building', name: 'Mass Transit', imgStub: 'masstransit.png', prereq: MassProduction, prebuilding: Houses, cost: 120, upkeep: 4, code: 'City[C].trade *= 1.25;', help: "Improves the trade points of the city by 25%."};
-Product[MfgPlant] = {type: 'building', name: 'Mfg. Plant', imgStub: 'mfg.plant.png', prereq: Robotics, prebuilding: Factory, cost: 220, upkeep: 6, code: 'City[C].production *= 1.5; City[C].healthyCitizens -= 3;', help: "Increases the production points in a city by an additional 50%. May cause up to three citizens to become unhealthy."};
-Product[MilitaryAcademy] = {type: 'building', name: 'Military Academy', imgStub: 'militaryacademy.png', prereq: MobileWarfare, prebuilding: Houses, cost: 30, upkeep: 1, code: 'City[C].veterancy["land"] = 9;', help: "Increases the veterancy of newly built land units. Cumulative with barracks and garrison. Under Communism, makes 2 unhappy citizens happy."};
-Product[Mine] = {type: 'building', name: 'Mine', imgStub: 'mine.png', prereq: IronWorking, prebuilding: Houses, cost: 20, upkeep: 0, code: 'City[C].production += 3;', help: "Adds 3 production points to a city."};
-Product[NuclearPlant] = {type: 'building', name: 'Nuclear Plant', imgStub: 'nuclearplant.png', prereq: NuclearPower, prebuilding: Factory, cost: 120, upkeep: 2, code: 'City[C].production *= 1.5;', help: "Increases the production points in a city by an additional 50%."};
-Product[OffshorePlatform] = {type: 'building', name: 'Offshore Platform', imgStub: 'offshoreplatform.png', prereq: Miniaturization, prebuilding: Wharf, cost: 120, upkeep: 3, code: 'City[C].production += NeighboringRegions(Row,Col,".terrain==Ocean");', help: "Adds 1 extra production point on all Sea squares in a city. The city needs to be coastal to build this improvement."};
-Product[Palace] = {type: 'building', name: 'Palace', imgStub: 'palace.png', prereq: Masonry, prebuilding: Houses, cost: 70, upkeep: 0, code: 'City[C].happyCitizens += 1; City[C].corruptionRate *= 0.5;', help: "Makes a city the capital and the center of your government. Corruption in other cities is related to how far away from the capital they are, except when the government is Democracy or Communism. The cost of inciting a revolt in a city also depends upon the city's distance from the capital (under all forms of government)."};
-Product[PoliceStation] = {type: 'building', name: 'Police Station', imgStub: 'policestation.png', prereq: Communism, prebuilding: Courthouse, cost: 50, upkeep: 2, code: 'City[C].happyCitizens += 1; City[C].corruptionRate *= 0.5;', help: "Makes one unhappy citizen happy. Under Democracy, makes 2 additional unhappy citizens happy."};
-Product[PortFacility] = {type: 'building', name: 'Port Facility', imgStub: 'portfacility.png', prereq: AmphibiousWarfare, prebuilding: Wharf, cost: 60, upkeep: 3, code: 'City[C].veterancy["sea"] = 6;', help: "Increases the veterancy of newly built sea units."};
-Product[PowerPlant] = {type: 'building', name: 'Power Plant', imgStub: 'powerplant.png', prereq: Refining, prebuilding: Factory, cost: 130, upkeep: 4, code: 'City[C].healthyCitizens -= 4;', help: "Increases the production points in a city by an additional 50%. May cause up to four citizens to become unhealthy."};
-Product[Quarry] = {type: 'building', name: 'Quarry', imgStub: 'quarry.png', prereq: Masonry, prebuilding: Houses, cost: 20, upkeep: 0, code: 'City[C].production += 3;', help: "Adds 3 production points to a city."};
-Product[RailroadStation] = {type: 'building', name: 'Railroad Station', imgStub: 'railroadstation.png', prereq: Railroad, prebuilding: Roads, cost: 20, upkeep: 0, code: 'City[C].trade += 3;', help: "Adds 3 trade points to a city."};
-Product[RecyclingCenter] = {type: 'building', name: 'Recycling Center', imgStub: 'recyclingcenter.png', prereq: Recycling, prebuilding: Houses, cost: 140, upkeep: 2, code: 'City[C].healthyCitizens += 2; City[C].happyCitizens += 1;', help: "Building a Recycling Center makes one unhappy citizen happy. Makes up to two unhealthy citizens healthy."};
-Product[ResearchLab] = {type: 'building', name: 'Research Lab', imgStub: 'researchlab.png', prereq: Computers, prebuilding: Library, cost: 120, upkeep: 3, code: 'City[C].science *= 1.5;', help: "Together with a Library, a Research Lab increases the science production of a city by 200%. Together with a Library and a University, a Research Lab increases the science production of a city by 450%."};
-Product[Roads] = {type: 'building', name: 'Roads', imgStub: 'roads.png', prereq: CityBuilding, prebuilding: Houses, cost: 20, upkeep: 0, code: 'City[C].trade += 3;', help: "Adds 3 trade points to a city."};
-Product[SAMBattery] = {type: 'building', name: 'SAM Battery', imgStub: 'sambattery.png', prereq: Rocketry, prebuilding: Houses, cost: 70, upkeep: 2, code: 'City[C].defenseAgainst["air"] = 2;', help: "Doubles the defense of all units inside the city when attacked by non-nuclear air units."};
-Product[SDIDefense] = {type: 'building', name: 'SDI Defense', imgStub: 'sdidefense.png', prereq: Laser, prebuilding: Houses, cost: 140, upkeep: 4, code: 'City[C].defenseAgainst["missile"] = 3;', help: "Protects a city and its environs (up to 2 squares away) from attacks by Nuclear units. A Nuclear unit attacking a city with SDI Defense, or attacking a unit (or deliberately exploded) within range, is shot down and simply has no effect. Also, doubles defence for units in the city against non-nuclear missiles."};
-Product[SewerSystem] = {type: 'building', name: 'Sewer System', imgStub: 'sewersystem.png', prereq: Sanitation, prebuilding: Aqueduct, cost: 80, upkeep: 2, code: 'City[C].healthyCitizens += 8;', help: "Makes up to four unhealthy citizens healthy."};
-Product[StockExchange] = {type: 'building', name: 'Stock Exchange', imgStub: 'stockexchange.png', prereq: Economics, prebuilding: Bank, cost: 120, upkeep: 3, code: 'City[C].trade *= 1.25;', help: "Together with a Marketplace and a Bank, a Stock Exchange boosts trade points in a city by 150%."};
-Product[SuperHighways] = {type: 'building', name: 'Super Highways', imgStub: 'superhighways.png', prereq: Automobile, prebuilding: Roads, cost: 120, upkeep: 3, code: 'City[C].trade *= 1.25;', help: "Increases trade resources by 25%."};
-Product[Supermarket] = {type: 'building', name: 'Supermarket', imgStub: 'supermarket.png', prereq: Refrigeration, prebuilding: Houses, cost: 80, upkeep: 3, code: 'City[C].healthyCitizens += 2;', help: "Increases the food resources by 50% on each farmland square which is being used around the city. Farmland squares are those which have been irrigated a second time. Makes up to two unhealthy citizens healthy."};
-Product[Temple] = {type: 'building', name: 'Temple', imgStub: 'temple.png', prereq: CeremonialBurial, prebuilding: Houses, cost: 30, upkeep: 1, code: 'City[C].happyCitizens += 1;', help: "Makes one unhappy citizen happy. Both the Mysticism advance and the Oracle wonder double this effect. With both Mysticism and the Oracle, 4 citizens are made happy."};
-Product[University] = {type: 'building', name: 'University', imgStub: 'university.png', prereq: University, prebuilding: Library, cost: 120, upkeep: 3, code: 'City[C].science *= 1.5;', help: "Together with a Library, a University increases the science production of a city by 250%."};
-Product[Wharf] = {type: 'building', name: 'Wharf', imgStub: 'wharf.png', prereq: CityBuilding, prebuilding: Houses, cost: 0, upkeep: 0, code: '', help: "Enables later seaside improvements."};
+Product[Airport] = {type: 'building', name: 'Airport', img: {row: 0, col: 0}, prereq: Radio, prebuilding: Houses, cost: 120, upkeep: 3, code: 'City[C].veterancy["air"] = 6;', help: "Increases the veterancy of newly built air units."};
+Product[Aqueduct] = {type: 'building', name: 'Aqueduct', img: {row: 0, col: 1}, prereq: Construction, prebuilding: Houses, cost: 60, upkeep: 2, code: 'City[C].healthyCitizens += 4;', help: "Makes up to four unhealthy citizens healthy."};
+Product[Bank] = {type: 'building', name: 'Bank', img: {row: 0, col: 2}, prereq: Banking, prebuilding: Marketplace, cost: 80, upkeep: 2, code: 'City[C].trade *= 1.333;', help: "Together with the Marketplace improvement, a Bank increases the trade points within a city by 100%."};
+Product[Barracks] = {type: 'building', name: 'Barracks', img: {row: 0, col: 3}, prereq: CityBuilding, prebuilding: Houses, cost: 30, upkeep: 1, code: 'City[C].veterancy["land"] = 2;', help: "Increases the veterancy of newly built land units."};
+Product[Cathedral] = {type: 'building', name: 'Cathedral', img: {row: 0, col: 4}, prereq: Monotheism, prebuilding: Houses, cost: 80, upkeep: 3, code: 'City[C].happyCitizens += 3;', help: "A Cathedral makes 3 unhappy citizens happy. The discovery of Theology increases the effect of a Cathedral, making an additional unhappy citizen happy. Under Theocracy, makes 2 additional unhappy citizens happy."};
+Product[CityWalls] = {type: 'building', name: 'City Walls', img: {row: 0, col: 5}, prereq: Masonry, prebuilding: Houses, cost: 60, upkeep: 0, code: 'City[C].defenseAgainst["land"] = 3;', help: "City Walls make it easier to defend a city. They triple the defence strength of units within the city against ground units. They are ineffective against airborne and sea units as well as Howitzers. City Walls also prevent the loss of population which occurs when a defending unit is destroyed by a land unit."};
+Product[CoastalDefense] = {type: 'building', name: 'Coastal Defense', img: {row: 0, col: 6}, prereq: Metallurgy, prebuilding: Wharf, cost: 60, upkeep: 1, code: 'City[C].defenseAgainst["sea"] = 2;', help: "Increases the defence strength of units within a city by a factor of 2 when defending against bombardments from enemy ships."};
+Product[Colosseum] = {type: 'building', name: 'Colosseum', img: {row: 0, col: 7}, prereq: Construction, prebuilding: Houses, cost: 70, upkeep: 4, code: 'City[C].happyCitizens += 3;', help: "Entertains the citizens of a city, making 3 unhappy citizens happy. (Four after the discovery of Electricity.) Under a Republic, makes 2 additional unhappy citizens happy."};
+Product[Courthouse] = {type: 'building', name: 'Courthouse', img: {row: 0, col: 8}, prereq: CodeofLaws, prebuilding: Houses, cost: 60, upkeep: 1, code: 'City[C].happyCitizens += 1; City[C].corruptionRate *= 0.5;', help: "Reduces the corruption and waste in a city by 50%. Under a Monarchy, a Courthouse makes 2 unhappy citizen happy."};
+Product[Factory] = {type: 'building', name: 'Factory', img: {row: 0, col: 9}, prereq: Industrialization, prebuilding: Houses, cost: 140, upkeep: 4, code: 'City[C].healthyCitizens -= 2;', help: "Increases the production points in a city by 50%. May cause up to two citizens to become unhealthy."};
+Product[Farmland] = {type: 'building', name: 'Farmland', img: {row: 0, col: 10}, prereq: Refrigeration, prebuilding: Irrigation, cost: 20, upkeep: 0, code: 'City[C].food += 3;', help: "Adds 3 food points to a city."};
+Product[Garrison] = {type: 'building', name: 'Garrison', img: {row: 0, col: 11}, prereq: Gunpowder, prebuilding: Barracks, cost: 30, upkeep: 1, code: 'City[C].veterancy["land"] = 5;', help: "Increases the veterancy of newly built land units. Cumulative with barracks."};
+Product[Granary] = {type: 'building', name: 'Granary', img: {row: 0, col: 12}, prereq: Pottery, prebuilding: Houses, cost: 40, upkeep: 1, code: 'City[C].food *= 2; City[C].healthyCitizens += 2;', help: "The amount of stored food will be set to half full whenever a city with a Granary shrinks or grows. This helps a city to grow faster and more easily withstand famine. Makes up to two unhealthy citizens healthy."};
+Product[Harbor] = {type: 'building', name: 'Harbor', img: {row: 0, col: 13}, prereq: Seafaring, prebuilding: Wharf, cost: 40, upkeep: 1, code: 'City[C].food += NeighboringRegions(Row,Col,".terrain==Ocean");', help: "Adds 1 extra food point on all Sea regions in a city. The city needs to be coastal to build this improvement."};
+Product[Houses] = {type: 'building', name: 'Houses', img: {row: 0, col: 14}, prereq: CityBuilding, prebuilding: Houses, cost: 0, upkeep: 0, code: '', help: "Base building required by all others."};
+Product[HydroPlant] = {type: 'building', name: 'Hydro Plant', img: {row: 0, col: 15}, prereq: Electronics, prebuilding: Factory, cost: 180, upkeep: 4, code: 'City[C].production *= 1.5;', help: "Increases the production points in a city by an additional 50%."};
+Product[Library] = {type: 'building', name: 'Library', img: {row: 0, col: 16}, prereq: Writing, prebuilding: Houses, cost: 60, upkeep: 1, code: 'City[C].science = 2;', help: "Doubles the science output of a city."};
+Product[Irrigation] = {type: 'building', name: 'Irrigation', img: {row: 0, col: 17}, prereq: Pottery, prebuilding: Houses, cost: 20, upkeep: 0, code: 'City[C].food += 3;', help: "Adds 3 food points to a city."};
+Product[Marketplace] = {type: 'building', name: 'Marketplace', img: {row: 0, col: 18}, prereq: Currency, prebuilding: Houses, cost: 60, upkeep: 0, code: 'City[C].trade *= 1.5;', help: "Increases the trade points in a city by 50%."};
+Product[MassTransit] = {type: 'building', name: 'Mass Transit', img: {row: 0, col: 19}, prereq: MassProduction, prebuilding: Houses, cost: 120, upkeep: 4, code: 'City[C].trade *= 1.25;', help: "Improves the trade points of the city by 25%."};
+Product[MfgPlant] = {type: 'building', name: 'Mfg. Plant', img: {row: 0, col: 20}, prereq: Robotics, prebuilding: Factory, cost: 220, upkeep: 6, code: 'City[C].production *= 1.5; City[C].healthyCitizens -= 3;', help: "Increases the production points in a city by an additional 50%. May cause up to three citizens to become unhealthy."};
+Product[MilitaryAcademy] = {type: 'building', name: 'Military Academy', img: {row: 0 , col: 21}, prereq: MobileWarfare, prebuilding: Houses, cost: 30, upkeep: 1, code: 'City[C].veterancy["land"] = 9;', help: "Increases the veterancy of newly built land units. Cumulative with barracks and garrison. Under Communism, makes 2 unhappy citizens happy."};
+Product[Mine] = {type: 'building', name: 'Mine', imgStub: {row: 0, col: 22}, prereq: IronWorking, prebuilding: Houses, cost: 20, upkeep: 0, code: 'City[C].production += 3;', help: "Adds 3 production points to a city."};
+Product[NuclearPlant] = {type: 'building', name: 'Nuclear Plant', img: {row: 0, col: 23}, prereq: NuclearPower, prebuilding: Factory, cost: 120, upkeep: 2, code: 'City[C].production *= 1.5;', help: "Increases the production points in a city by an additional 50%."};
+Product[OffshorePlatform] = {type: 'building', name: 'Offshore Platform', img: {row: 0, col: 24}, prereq: Miniaturization, prebuilding: Wharf, cost: 120, upkeep: 3, code: 'City[C].production += NeighboringRegions(Row,Col,".terrain==Ocean");', help: "Adds 1 extra production point on all Sea squares in a city. The city needs to be coastal to build this improvement."};
+Product[Palace] = {type: 'building', name: 'Palace', img: {row: 0, col: 25}, prereq: Masonry, prebuilding: Houses, cost: 70, upkeep: 0, code: 'City[C].happyCitizens += 1; City[C].corruptionRate *= 0.5;', help: "Makes a city the capital and the center of your government. Corruption in other cities is related to how far away from the capital they are, except when the government is Democracy or Communism. The cost of inciting a revolt in a city also depends upon the city's distance from the capital (under all forms of government)."};
+Product[PoliceStation] = {type: 'building', name: 'Police Station', img: {row: 0, col: 26}, prereq: Communism, prebuilding: Courthouse, cost: 50, upkeep: 2, code: 'City[C].happyCitizens += 1; City[C].corruptionRate *= 0.5;', help: "Makes one unhappy citizen happy. Under Democracy, makes 2 additional unhappy citizens happy."};
+Product[PortFacility] = {type: 'building', name: 'Port Facility', img: {row: 0, col: 27}, prereq: AmphibiousWarfare, prebuilding: Wharf, cost: 60, upkeep: 3, code: 'City[C].veterancy["sea"] = 6;', help: "Increases the veterancy of newly built sea units."};
+Product[PowerPlant] = {type: 'building', name: 'Power Plant', img: {row: 0, col: 28}, prereq: Refining, prebuilding: Factory, cost: 130, upkeep: 4, code: 'City[C].healthyCitizens -= 4;', help: "Increases the production points in a city by an additional 50%. May cause up to four citizens to become unhealthy."};
+Product[Quarry] = {type: 'building', name: 'Quarry', img: {row: 0, col: 29}, prereq: Masonry, prebuilding: Houses, cost: 20, upkeep: 0, code: 'City[C].production += 3;', help: "Adds 3 production points to a city."};
+Product[RailroadStation] = {type: 'building', name: 'Railroad Station', img: {row: 0, col: 30}, prereq: Railroad, prebuilding: Roads, cost: 20, upkeep: 0, code: 'City[C].trade += 3;', help: "Adds 3 trade points to a city."};
+Product[RecyclingCenter] = {type: 'building', name: 'Recycling Center', img: {row: 0, col: 31}, prereq: Recycling, prebuilding: Houses, cost: 140, upkeep: 2, code: 'City[C].healthyCitizens += 2; City[C].happyCitizens += 1;', help: "Building a Recycling Center makes one unhappy citizen happy. Makes up to two unhealthy citizens healthy."};
+Product[ResearchLab] = {type: 'building', name: 'Research Lab', img: {row: 0, col: 32}, prereq: Computers, prebuilding: Library, cost: 120, upkeep: 3, code: 'City[C].science *= 1.5;', help: "Together with a Library, a Research Lab increases the science production of a city by 200%. Together with a Library and a University, a Research Lab increases the science production of a city by 450%."};
+Product[Roads] = {type: 'building', name: 'Roads', img: {row: 0, col: 33}, prereq: CityBuilding, prebuilding: Houses, cost: 20, upkeep: 0, code: 'City[C].trade += 3;', help: "Adds 3 trade points to a city."};
+Product[SAMBattery] = {type: 'building', name: 'SAM Battery', img: {row: 0, col: 34}, prereq: Rocketry, prebuilding: Houses, cost: 70, upkeep: 2, code: 'City[C].defenseAgainst["air"] = 2;', help: "Doubles the defense of all units inside the city when attacked by non-nuclear air units."};
+Product[SDIDefense] = {type: 'building', name: 'SDI Defense', img: {row: 0, col: 35}, prereq: Laser, prebuilding: Houses, cost: 140, upkeep: 4, code: 'City[C].defenseAgainst["missile"] = 3;', help: "Protects a city and its environs (up to 2 squares away) from attacks by Nuclear units. A Nuclear unit attacking a city with SDI Defense, or attacking a unit (or deliberately exploded) within range, is shot down and simply has no effect. Also, doubles defence for units in the city against non-nuclear missiles."};
+Product[SewerSystem] = {type: 'building', name: 'Sewer System', img: {row: 0, col: 36}, prereq: Sanitation, prebuilding: Aqueduct, cost: 80, upkeep: 2, code: 'City[C].healthyCitizens += 8;', help: "Makes up to four unhealthy citizens healthy."};
+Product[StockExchange] = {type: 'building', name: 'Stock Exchange', img: {row: 0, col: 37}, prereq: Economics, prebuilding: Bank, cost: 120, upkeep: 3, code: 'City[C].trade *= 1.25;', help: "Together with a Marketplace and a Bank, a Stock Exchange boosts trade points in a city by 150%."};
+Product[SuperHighways] = {type: 'building', name: 'Super Highways', img: {row: 0, col: 38}, prereq: Automobile, prebuilding: Roads, cost: 120, upkeep: 3, code: 'City[C].trade *= 1.25;', help: "Increases trade resources by 25%."};
+Product[Supermarket] = {type: 'building', name: 'Supermarket', img: {row: 0, col: 39}, prereq: Refrigeration, prebuilding: Houses, cost: 80, upkeep: 3, code: 'City[C].healthyCitizens += 2;', help: "Increases the food resources by 50% on each farmland square which is being used around the city. Farmland squares are those which have been irrigated a second time. Makes up to two unhealthy citizens healthy."};
+Product[Temple] = {type: 'building', name: 'Temple', img: {row: 0, col: 40}, prereq: CeremonialBurial, prebuilding: Houses, cost: 30, upkeep: 1, code: 'City[C].happyCitizens += 1;', help: "Makes one unhappy citizen happy. Both the Mysticism advance and the Oracle wonder double this effect. With both Mysticism and the Oracle, 4 citizens are made happy."};
+Product[University] = {type: 'building', name: 'University', img: {row: 0, col: 41}, prereq: University, prebuilding: Library, cost: 120, upkeep: 3, code: 'City[C].science *= 1.5;', help: "Together with a Library, a University increases the science production of a city by 250%."};
+Product[Wharf] = {type: 'building', name: 'Wharf', img: {row: 0, col: 42}, prereq: CityBuilding, prebuilding: Houses, cost: 0, upkeep: 0, code: '', help: "Enables later seaside improvements."};
 var MaxBuilding = Wharf;
 var MaxProduct = Wharf;
 
 var Troopship = new Array();
-Boat = 1; Troopship[Boat] = {type: 'unit', name: 'Boat', img: {row: 2, col: 4}, prereq: CityBuilding, cost: 40, class: 'N', mobility: 1, attack: 0, defense: 1, health: 10, firepower: 1, TroopshipCapacity: 2, obsolete: false};
+Boat = 1; Troopship[Boat] = {type: 'unit', name: 'Boat', img: {row: 1, col: 18}, prereq: CityBuilding, cost: 40, class: 'N', mobility: 1, attack: 0, defense: 1, health: 10, firepower: 1, TroopshipCapacity: 2, obsolete: false};
 Trireme = 2; Troopship[Trireme] = {type: 'unit', name: 'Trireme', img: {row: 1, col: 7}, prereq: MapMaking, cost: 40, class: 'N', mobility: 2, attack: 1, defense: 1, health: 10, firepower: 1, TroopshipCapacity: 2, obsolete: false};
 Caravel = 3; Troopship[Caravel] = {type: 'unit', name: 'Caravel', img: {row: 1, col: 3}, prereq: Navigation, cost: 40, class: 'N', mobility: 3, attack: 2, defense: 1, health: 10, firepower: 1, TroopshipCapacity: 3, obsolete: false};
 Galleon = 4; Troopship[Galleon] = {type: 'unit', name: 'Galleon', img: {row: 1, col: 15}, prereq: Magnetism, cost: 40, class: 'N', mobility: 4, attack: 2, defense: 2, health: 20, firepower: 1, TroopshipCapacity: 4, obsolete: false};
@@ -447,29 +445,30 @@ MaxCol = 30; //prompt("How wide a world is it?","30");
 StartRow = 0;
 StartCol = 0;
 
-function SetImgToUnit(Img, Vp, Row, Col) {
-    Img.src = "units.png";
-    var top = 20 * Row, left = 20 * Col;
-    var bottom = top + 20, right = left + 20;
-    /*Img.left = Img.left ? Img.left : parseInt(Img.style.left);
-    Img.top = Img.top ? Img.top : parseInt(Img.style.top);
-    Img.style.clip = "rect(" + top + "px," + right + "px," + bottom + "px," + left + "px)";
-    Img.style.left = Img.left - left + "px";
-    Img.style.top = Img.top - top + "px";*/
-    Img.style.left = "-" + left + "px";
-    Img.style.top = "-" + top + "px";
+Body = document.getElementById("body");
+
+function CreateElement(name, parent, extra, style) { // CreateElement('div', $('body'), {id: 'magic'}, [['width', '100px']])
+    var elem = document.createElement(name);
+    elem.id = extra.id ? extra.id : "";
+    elem.className = extra.className ? extra.className : "";
+    elem.src = extra.src ? extra.src : "";
+    for (var i = 0; i < style.length; i++) {
+	elem.style[style[i][0]] = style[i][1];
+    }
+    parent.appendChild(elem);
+    return elem;
 }
 
-function CreateImage(src, row, col, layer, attach, z) {
-    var img = document.createElement("img");
-    img.src = src;
-    img.id = "p"+row+"_"+col+"_"+layer;
-    img.className = "img";
-    img.style.left = 20 * col + "px";
-    img.style.top = 20 * row + 30 +"px";
-    img.style.zIndex = z;
-    attach.appendChild(img);
-    return img;
+function SetImgToProduct(Img, Vp, P) {
+    // alert(P.img.row); alert(P.img.col);
+    var top = 20 * P.img.row;
+    var left = 20 * P.img.col;
+    if (P.type == 'unit') {Img.src = 'units.png';} 
+    else {Img.src = 'buildings.png';}
+    Img.style.left = '-' + left + 'px';
+    Img.style.top = '-' + top + 'px';
+    Img.style.height = 'auto';
+    Img.style.width = 'auto';
 }
 
 function Territory(terrain, row, col) {
@@ -479,20 +478,25 @@ function Territory(terrain, row, col) {
     this.unit = -1;
     this.city = -1;
     
-    this.viewport = document.createElement("div");
-    this.viewport.className = "viewport";
-    this.viewport.style.left = 20 * col + "px";
-    this.viewport.style.top = 20 * row + 30 +"px";
-    document.getElementById("body").appendChild(this.viewport);
-
-    this.regionImg = CreateImage(Terrain[terrain].symbol+".png", row, col, "region", document.getElementById("body"), 101);
-    this.nationalityImg = CreateImage("visible.png", row, col, "nationality", document.getElementById("body"), 102);
-    this.unitImg = CreateImage("visible.png", row, col, "unit", this.viewport, 103);
-    this.unitImg.className = "clipped";
-    this.fogImg = CreateImage("unexplored.png", row, col, "fog", document.getElementById("body"), 104);
+    this.top = 20 * row + 30 +"px";
+    this.left = 20 * col + "px";
+    this.regionImg = CreateElement('img', Body, 
+				   {className: 'img', src: Terrain[terrain].symbol+".png"}, 
+				   [['left', this.left], ['top', this.top], ['zIndex', 1]]);
+    this.nationalityImg = CreateElement('img', Body, 
+					{className: 'img', src: "visible.png"}, 
+					[['left', this.left], ['top', this.top], ['zIndex', 2]]);
+    this.viewport = CreateElement('div', Body, 
+				  {className: 'viewport'}, 
+				  [['left', this.left], ['top', this.top]]);
+    this.unitImg = CreateElement('img', this.viewport, 
+				 {className: 'clipped', src: "visible.png"}, 
+				 [['left', this.left], ['top', this.top], ['zIndex', 3]]);
+    this.fogImg = CreateElement('img', Body, 
+				{className: 'img', src: "unexplored.png"}, 
+				[['left', this.left], ['top', this.top], ['zIndex', 4]]);
     this.fogImg.onmouseover = function() {Toolbar.OnHover(this);};
     this.fogImg.onclick = function() {i(row, col);};
-    //this.SetTitle("FAIL");
 }
 Territory.prototype.SetVisibility = function(visible) {
     if (visible) {this.fogImg.src = "visible.png";}
@@ -506,13 +510,15 @@ Territory.prototype.SetUnit = function(unit, focus) {
     var UnitProps;
     if (this.terrain != Ocean) {UnitProps = Product[unit.type];}
     else {UnitProps = Troopship[unit.TroopshipClass];}
-    SetImgToUnit(this.unitImg, this.viewport, UnitProps.img.row, UnitProps.img.col);
+    SetImgToProduct(this.unitImg, this.viewport, UnitProps);
 };
 Territory.prototype.SetCity = function(focus, player) {
     if (focus) {this.nationalityImg.src = "active.png";}
     else if (player) {this.nationalityImg.src = "player.png";}
     else {this.nationalityImg.src = "enemy.png";}
     this.unitImg.src = "city.png";
+    this.unitImg.style.top = '0px';
+    this.unitImg.style.left = '0px';
 };
 Territory.prototype.IsExplored = function() {return this.fogImg.src.indexOf('unexplored.png') == -1};
 
@@ -1006,33 +1012,29 @@ function FoundCity(Row,Col,Player) {
 
 function CreateCityBuildQueque(C, Row, Col) {
     var cities = document.getElementById("cities");
-    City[C].queque = document.createElement('div');
-    City[C].queque.id = City[C].name+"_queque";
-    City[C].queque.style.cssFloat = "left";
-    City[C].queque.style.styleFloat = "left"; // for ie
-    cities.appendChild(City[C].queque);
+    City[C].queque = CreateElement('div', cities, {id: City[C].name + '_queque'}, [['cssFloat', 'left'], ['zIndex', 5]]);
 
-    City[C].quequeImage = document.createElement('img');
-    City[C].quequeImage.id = City[C].name;
-    City[C].quequeImage.src = Product[City[C].product].imgStub + "_enemy.png";
-    City[C].queque.appendChild(City[C].quequeImage);
+    City[C].quequeWrapper = CreateElement('div', City[C].queque, {}, 
+					  [['position', 'relative'], ['cssFloat', 'left'], ['height', '20px']]);
+    City[C].quequeDiv = CreateElement('div', City[C].quequeWrapper, {className: 'viewport'}, 
+				      [['position', 'relative'], ['left', '0px'], ['height', '20px'], ['width', '20px'], ['top', '0px'], ['zIndex', 9]]);
+    City[C].quequeImage = CreateElement('img', City[C].quequeDiv, {id: City[C].name, src: 'units.png', className: 'clipped'}, [['zIndex', 9]]);
+    City[C].highlighter = CreateElement('img', City[C].quequeWrapper, {src: 'player.png'}, 
+					[['height', '20px'], ['width', '20px'], ['position', 'relative'], ['left', '0px'], ['top', '-20px'], ['zIndex', 7]]);
 
-    City[C].canBuild = document.createElement('div');
-    City[C].canBuild.style.width = "40px";
-    City[C].canBuild.style.maxHeight = (window.screen.height - 100) + "px";
-    City[C].canBuild.style.overflowY = "auto";
-    City[C].canBuild.style.display = "none";
-    City[C].queque.appendChild(City[C].canBuild);
+    City[C].canBuild = CreateElement('div', City[C].queque, 
+				     {id: City[C].name + '_canbuild'}, 
+				     [['maxHeight', '50%'], ['width', '40px'], ['overflowY', 'auto'], ['display', 'none']]);;
 
     var tile = Region[Row][Col].fogImg;
     tile.oldOnMouseOver = tile.onmouseover;
     tile.onmouseover = function() {
 	tile.oldOnMouseOver();
-	City[C].quequeImage.src = Product[City[C].product].imgStub + "_focus.png";
+	City[C].highlighter.src = "active.png";
     };
     tile.onmouseout = function() {
-	if (City[C].productChosen) {City[C].quequeImage.src = Product[City[C].product].imgStub + "_enemy.png";}
-	else {City[C].quequeImage.src = Product[City[C].product].imgStub + "_player.png";}
+	if (City[C].productChosen) {City[C].highlighter.src = "enemy.png";}
+	else {City[C].highlighter.src = "player.png";}
 	City[C].canBuild.style.display = "none";
     };
     tile.oldOnClick = tile.onclick
@@ -1044,7 +1046,7 @@ function CreateCityBuildQueque(C, Row, Col) {
 
     City[C].quequeImage.onmouseover = function() {
 	City[C].canBuild.style.display = "";
-	tile.src = "city_focus.png";
+	//tile.src = "city_focus.png";
     };
     City[C].quequeImage.onmouseout = function() {
 	City[C].canBuild.style.display = "none";
@@ -1052,12 +1054,13 @@ function CreateCityBuildQueque(C, Row, Col) {
     };
     City[C].canBuild.onmouseover = function() {
 	City[C].canBuild.style.display = "";
-	tile.src = "city_focus.png";
+	//tile.src = "city_focus.png";
     };
     City[C].canBuild.onmouseout = function() {
 	City[C].canBuild.style.display = "none";
 	RegionImage(Row, Col, false)
     };
+    SetImgToProduct(City[C].quequeImage, City[C].quequeDiv, Product[City[C].product]);
 }
 
 function WorkingCitizenOutput(C) {
@@ -1079,28 +1082,30 @@ function ChangeProduct(C) {
     var initial = -1;
     City[C].productChosen = false;
     var AddX = function(X) {
-	var image = document.createElement('img');
+	var wrapper = CreateElement('div', City[C].canBuild, {}, [['position', 'relative'], ['cssFloat', 'left'], ['height', '20px']]);
+	var nationalityImg = CreateElement('img', wrapper, {className: 'img', src: "enemy.png"},  [['position', 'relative'], ['left', '0px'], ['top', '0px'], ['zIndex', 7]]);
+	var viewport = CreateElement('div', wrapper, {className: 'viewport'}, [['position', 'relative'], ['left', '0px'], ['top', '-20px']]);
+	var image = CreateElement('img', viewport, {className: 'clipped'}, [['left', '0px'], ['top', '0px'], ['zIndex', 8]]);
 	image.unit = Product[X];
 	image.value = X;
-	image.src = Product[X].imgStub + "_enemy.png";
-	City[C].canBuild.appendChild(image);
 
 	image.onmouseover = function() {
-	    Toolbar.SetText(image.unit.name+" (costs "+image.unit.cost+"): "+image.unit.help);
-	    image.src = image.unit.imgStub+"_focus.png";
+	    Toolbar.SetText(this.unit.name+" (costs "+this.unit.cost+"): "+this.unit.help);
+	    nationalityImg.src = "active.png";
 	}
 	image.onmouseout = function() {
 	    Toolbar.SetText("");
-	    image.src = image.unit.imgStub+"_enemy.png";
+	    nationalityImg.src = "enemy.png";
 	}
 	image.onclick = function() {
 	    Toolbar.SetText("");
-	    image.src = image.unit.imgStub+"_enemy.png";
+	    nationalityImg.src = "enemy.png";
 	    City[C].canBuild.style.display = "none";
-	    City[C].product = image.value;
+	    City[C].product = this.value;
 	    City[C].productChosen = true;
-	    City[C].quequeImage.src = image.unit.imgStub+"_enemy.png";
+	    SetImgToProduct(City[C].quequeImage, City[C].quequeDiv, this.unit);
 	}
+	SetImgToProduct(image, viewport, image.unit);
     }
     for (X=MaxUnit; X>=Settler; X--) {
 	if (Tech[Product[X].prereq].playerOwned) {
