@@ -1,36 +1,36 @@
 <html><title>Civ 0--Civilization: Year 0, a JavaScript open-source implementation of a civilization-style game</title>
-<style>
-    .img {
-         position: absolute;
-         height: 20px;
-         width: 20px;
-    }
-    .viewport {
-         overflow: hidden;
-         #position: relative;
-         position: absolute;
-         height: 20px;
-         width: 20px;
-    }
-    .clipped {
-         display: block;
-         position: relative;
-    }
+     <style>
+     .img {
+     position: absolute;
+     height: 20px;
+     width: 20px;
+ }
+.viewport {
+     overflow: hidden;
+     #position: relative;
+     position: absolute;
+     height: 20px;
+     width: 20px;
+ }
+.clipped {
+     display: block;
+     position: relative;
+ }
 </style>
-<body id="body" onload="Toolbar.OnResize()" onresize="Toolbar.OnResize()" onkeypress="KeyPressHandler(event)" style="min-width: 600px; min-height: 510px; height: 100%; padding-top: 30px; margin: 0px;">
+    <body id="body" onload="Toolbar.OnResize()" onresize="Toolbar.OnResize()" onkeypress="KeyPressHandler(event)" style="min-width: 600px; min-height: 510px; height: 100%; padding-top: 30px; margin: 0px;">
 
-<div id="controlbar" style="font-size: 16px; color: black; background-color: white; padding 2px; position: fixed; left: 0px; right: 0px; top: 0px; height: 30px; max-width: 600px; z-index: 5;">
-<span style="float: left;">
-<select id="techOptions"><option>City Building</option></select>
-<select id="wonderOptions"><option>Nothing</option></select></span>
-<span id="cities" style="float: left; padding-left: 5px;"></span>
-<form><input id="resumeButton" type="button" style="float: right" value="Resume" onClick="ActiveUnit=0; for (U=0; U<Unit.length; U++) {Unit[U].active=true;Unit[U].destinationRow=-1}; Turn();"></form>
-</div>
+     <div id="controlbar" style="font-size: 16px; color: black; background-color: white; padding 2px; position: fixed; left: 0px; right: 0px; top: 0px; height: 30px; max-width: 600px; z-index: 5;">
+     <span style="float: left;">
+     <select id="techOptions"><option>City Building</option></select>
+     <select id="wonderOptions"><option>Nothing</option></select></span>
+     <span id="cities" style="float: left; padding-left: 5px;"></span>
+     <form><input id="resumeButton" type="button" style="float: right" value="Resume" onClick="ActiveUnit=0; for (U=0; U<Unit.length; U++) {Unit[U].active=true;Unit[U].destinationRow=-1}; Turn();"></form>
+     </div>
 
-<div id="toolbar" style="font-size: 16px; color: black; background-color: white; padding 2px; position: fixed; left: 0px; right: 0px; bottom: 0px; max-width: 600px; z-index: 5;">
-<span id="message" style="float: left; max-width: 100%; overflow-y: auto;"></span>
-</div>
-<script type="text/javascript">;
+     <div id="toolbar" style="font-size: 16px; color: black; background-color: white; padding 2px; position: fixed; left: 0px; right: 0px; bottom: 0px; max-width: 600px; z-index: 5;">
+     <span id="message" style="float: left; max-width: 100%; overflow-y: auto;"></span>
+     </div>
+     <script type="text/javascript">;
 
 var Debug = 1;
 
@@ -499,6 +499,7 @@ function Territory(terrain, row, col) {
     this.fogImg.onclick = function() {i(row, col);};
 }
 Territory.prototype.SetVisibility = function(visible) {
+    if (!Boolean(this.fogImg)) {return;}
     if (visible) {this.fogImg.src = "visible.png";}
     else {this.fogImg.src = "fog.png";}
 };
@@ -589,22 +590,29 @@ function TerrainAtLatitude(Row) {
 function RegionImage(Row, Col, focus) {
     var R;
     var U = Region[Row][Col].unit;
-    if ((U!=-1)&&(Unit[U] !== undefined)) {
-	if (Unit[U].player && focus) {Region[Row][Col].fogImg.focus();}
-	R = Region[Row][Col].terrain!=Ocean ? Product[Unit[U].type].name :
-	    Troopship[Unit[U].TroopshipClass].name+" (carrying "+Product[Unit[U].type].name+")";
-	R += ", health "+Unit[U].health+", "+(Math.floor(100*Terrain[Region[Unit[U].row][Unit[U].col].terrain].defense))+"% defense";
-	R += ", "+Math.floor(100*Unit[U].veterancy-100)+"% veterancy";
-	Region[Row][Col].SetUnit(Unit[U], focus);
-    } else {
-	if(Region[Row][Col].city!=-1) {
-	    Region[Row][Col].SetCity(focus, true);
-	    R = CityDescription(Region[Row][Col].city,true);
+    if (CanSee(Row, Col)) {
+	Territory.prototype.SetVisibility(true);
+	if ((U!=-1)&&(Unit[U] !== undefined)) {
+	    if (Unit[U].player && focus) {Region[Row][Col].fogImg.focus();}
+	    R = Region[Row][Col].terrain!=Ocean ? Product[Unit[U].type].name :
+		Troopship[Unit[U].TroopshipClass].name+" (carrying "+Product[Unit[U].type].name+")";
+	    R += ", health "+Unit[U].health+", "+(Math.floor(100*Terrain[Region[Unit[U].row][Unit[U].col].terrain].defense))+"% defense";
+	    R += ", "+Math.floor(100*Unit[U].veterancy-100)+"% veterancy";
+	    Region[Row][Col].SetUnit(Unit[U], focus);
 	} else {
-	    var T=Region[Row][Col].terrain;
-	    Region[Row][Col].nationalityImg.src = "visible.png";
-	    Region[Row][Col].unitImg.src = "visible.png";
-	    R = Terrain[T].name+", "+Math.floor(100*Terrain[T].defense)+"% defense";
+	    if(Region[Row][Col].city!=-1) {
+		Region[Row][Col].SetCity(focus, true);
+		R = CityDescription(Region[Row][Col].city, true);
+	    } else {
+		var T=Region[Row][Col].terrain;
+		Region[Row][Col].nationalityImg.src = "visible.png";
+		Region[Row][Col].unitImg.src = "visible.png";
+		R = Terrain[T].name+", "+Math.floor(100*Terrain[T].defense)+"% defense";
+	    }
+	}
+    } else {
+	if (Region[Row][Col].IsExplored()) {
+	    Territory.prototype.SetVisibility(false);
 	}
     }
     Region[Row][Col].fogImg.title = R;
@@ -699,6 +707,11 @@ function NeighboringRegions(Row,Col,Code) {
 function UpdateEntireMap() {
     for (Row=0; Row<MaxRow; Row++) {
 	for (Col=0; Col<MaxCol; Col++) {
+	    if (CanSee(Row, Col)) {
+		Region[Row][Col].SetVisibility(true);
+	    } else if (Region[Row][Col].IsExplored()) {
+		Region[Row][Col].SetVisibility(false);
+	    }
 	    RegionImage(Row,Col,false);
 	}
     }
@@ -728,6 +741,20 @@ function UpdateView(U,C) {
     return(false);
 }
 
+function CanSee(Row, Col) {
+    if (!Boolean(Region[Row][Col])) {return false;}
+    for (var A=-1; A<=1; A++) {
+	for (var B=-1; B<=1; B++) {
+	    if (Region[Row+A] && Region[Row+A][Col+B]) {
+		var U = Region[Row+A][Col+B].unit;
+		if (U != null && Unit[U] && Unit[U].player) {return true;}
+		var C = Region[Row+A][Col+B].city;
+		if (C != null && City[C] && City[C].player) {return true;}
+	    }
+	}
+    }
+    return false;
+}
 
 
 /* Units */
@@ -770,7 +797,7 @@ function DefenseStrength(Attacker,Defender) {
     var DefenseStr=Product[Unit[Defender].type].defense*Unit[Defender].veterancy*Terrain[Region[Unit[Defender].row][Unit[Defender].col].terrain].defense;
     var C=Region[Unit[Defender].row][Unit[Defender].col].city;
     if (C>=0) {
-	    DefenseStr *= City[C].defenseAgainst[Unit[Attacker].kind];
+	DefenseStr *= City[C].defenseAgainst[Unit[Attacker].kind];
     }
     return(DefenseStr);
 }
@@ -799,30 +826,30 @@ function Combat(Attacker,Defender,Message) {
     //alert("Combat! "+Unit[Attacker].health+" vs. "+Unit[Defender].health);
     Unit[Defender].health=Math.max(Unit[Defender].health,0);
     Unit[Attacker].health=Math.max(Unit[Attacker].health,0);
-	/* Careful: Deletions can change the order of the Unit array and invalidate subsequent indices */
-	if ((Unit[Attacker].health==0) && (Unit[Defender].health==0)) {
-	    alert(Message+"Both units were killed in combat.");
+    /* Careful: Deletions can change the order of the Unit array and invalidate subsequent indices */
+    if ((Unit[Attacker].health==0) && (Unit[Defender].health==0)) {
+	alert(Message+"Both units were killed in combat.");
+	DeleteUnit(Attacker);
+	DeleteUnit(Defender);
+    } else {
+	if (Unit[Attacker].health==0) {
+	    alert(Message+CombatPronoun(Attacker)+" attacking "+Product[Unit[Attacker].type].name+" was killed in combat. "+CombatPronoun(Defender)+" defending "+Product[Unit[Defender].type].name+"'s health is "+Unit[Defender].health+".");
+	    IncreaseUnitVeterancy(Defender);
+	    RegionImage(Unit[Defender].row,Unit[Defender].col,false);
 	    DeleteUnit(Attacker);
-	    DeleteUnit(Defender);
 	} else {
-	    if (Unit[Attacker].health==0) {
-		alert(Message+CombatPronoun(Attacker)+" attacking "+Product[Unit[Attacker].type].name+" was killed in combat. "+CombatPronoun(Defender)+" defending "+Product[Unit[Defender].type].name+"'s health is "+Unit[Defender].health+".");
-		IncreaseUnitVeterancy(Defender);
-		RegionImage(Unit[Defender].row,Unit[Defender].col,false);
-		DeleteUnit(Attacker);
+	    if (Unit[Defender].health==0) {
+		alert(Message+CombatPronoun(Defender)+" defending "+Product[Unit[Defender].type].name+" was killed in combat. "+CombatPronoun(Attacker)+" attacking "+Product[Unit[Attacker].type].name+"'s health is "+Unit[Attacker].health+".");
+		RegionImage(Unit[Attacker].row,Unit[Attacker].col,false);
+		IncreaseUnitVeterancy(Attacker);
+		DeleteUnit(Defender);
 	    } else {
-		if (Unit[Defender].health==0) {
-		    alert(Message+CombatPronoun(Defender)+" defending "+Product[Unit[Defender].type].name+" was killed in combat. "+CombatPronoun(Attacker)+" attacking "+Product[Unit[Attacker].type].name+"'s health is "+Unit[Attacker].health+".");
-		    RegionImage(Unit[Attacker].row,Unit[Attacker].col,false);
-		    IncreaseUnitVeterancy(Attacker);
-		    DeleteUnit(Defender);
-		} else {
-		    alert(Message+"Combat was a draw. "+CombatPronoun(Attacker)+" attacking "+Product[Unit[Attacker].type].name+"'s health is "+Unit[Attacker].health+". "+CombatPronoun(Defender)+" defending "+Product[Unit[Defender].type].name+"'s health is "+Unit[Defender].health+".");
-		    RegionImage(Unit[Defender].row,Unit[Defender].col,false);
-		    RegionImage(Unit[Attacker].row,Unit[Attacker].col,false);
-		}
+		alert(Message+"Combat was a draw. "+CombatPronoun(Attacker)+" attacking "+Product[Unit[Attacker].type].name+"'s health is "+Unit[Attacker].health+". "+CombatPronoun(Defender)+" defending "+Product[Unit[Defender].type].name+"'s health is "+Unit[Defender].health+".");
+		RegionImage(Unit[Defender].row,Unit[Defender].col,false);
+		RegionImage(Unit[Attacker].row,Unit[Attacker].col,false);
 	    }
 	}
+    }
 }
 
 
@@ -858,10 +885,10 @@ function MoveUnit(U,Row,Col) {
 		    }
 		}
 	    }
-        if (Unit[U].player){
-		    RegionImage(Row+A, Col+B, false);
-	    	Region[Row+A][Col+B].SetVisibility(true);
-        }
+	    if (Unit[U].player){
+		RegionImage(Row+A, Col+B, false);
+		Region[Row+A][Col+B].SetVisibility(true);
+	    }
 	    if(!LostAtSea && (Unit[U].type==Settler)) {
 		Region[Row+A][Col+B].SetTitle = CitySiteString(Row+A,Col+B);
 	    }
@@ -871,6 +898,7 @@ function MoveUnit(U,Row,Col) {
 	RegionImage(Row, Col, true);
 	Combat(Barbarian,U,"Ambushed by a barbarian "+Product[Unit[Barbarian].type].name+"! ");
     }
+    RegionImage(Row, Col, false);
 }
 
 function CombatNeighboringUnit(Attacker) {
@@ -900,7 +928,7 @@ function MoveUnitToDestination(U) {
 	return(false);
     }
     if((!Unit[U].player)&&(Unit[U].health<Product[Unit[U].type].health)) {
-      RestoreUnitHealth(U);
+	RestoreUnitHealth(U);
 	return(true);
     }
     var GoalRow=Unit[U].row;
@@ -941,20 +969,20 @@ function PeaceInOurTime() {
 }
 
 function RestoreUnitHealth(U) {
-	    if(Unit[U].health!=Product[Unit[U].type].health) {
-		Unit[U].health += HealingRate;
-		if(Unit[U].health>=Product[Unit[U].type].health) {
-		    Unit[U].health = Product[Unit[U].type].health;
-		    Unit[U].active = Unit[U].player;
-		}
-	    }
+    if(Unit[U].health!=Product[Unit[U].type].health) {
+	Unit[U].health += HealingRate;
+	if(Unit[U].health>=Product[Unit[U].type].health) {
+	    Unit[U].health = Product[Unit[U].type].health;
+	    Unit[U].active = Unit[U].player;
+	}
+    }
 }
 
 function RestoreAllUnitsHealth() {
     for (U=0; U<Unit.length; U++) {
 	// restore health to standby units
 	if (!Unit[U].active) {
-		RestoreUnitHealth(U);
+	    RestoreUnitHealth(U);
 	}
 	if (Unit[U].active) {
 	    Unit[U].movement = Product[Unit[U].type].mobility;
@@ -1019,7 +1047,7 @@ function FoundCity(Row,Col,Player) {
     /* Initialize buildings */
     City[C].building = new Array();
     for (X=MaxUnit+1; X<MaxBuilding; X++) {
-		City[C].building[X] = false;
+	City[C].building[X] = false;
     }
     City[C].building[Houses] = true;
     City[C].building[Wharf] = (NeighboringRegions(Row,Col,".terrain==Ocean")>0);
@@ -1038,31 +1066,31 @@ function FoundCity(Row,Col,Player) {
     /* Name the city */
     City[City.length-1].name = "City #"+(City.length);
     if (Player) {
-		if (PlayerCity<=PlayerCityName.length-1) {
-		    City[City.length-1].name = PlayerCityName[PlayerCity];
-		}
-		PlayerCity++;
-		if (Unit[1].city=-1) {
-		    Unit[1].city=City.length-1;
-		    RegionImage(Unit[1].row, Unit[1].col, false);
-	    } else {
-			RegionImage(Row, Col, false);
-	    }
-	    CreateCityBuildQueque(C);
-        ChangeProduct(C);
+	if (PlayerCity<=PlayerCityName.length-1) {
+	    City[City.length-1].name = PlayerCityName[PlayerCity];
 	}
+	PlayerCity++;
+	if (Unit[1].city=-1) {
+	    Unit[1].city=City.length-1;
+	    RegionImage(Unit[1].row, Unit[1].col, false);
+	} else {
+	    RegionImage(Row, Col, false);
+	}
+	CreateCityBuildQueque(C);
+        ChangeProduct(C);
+    }
     if (Player) {
         X = 1;
     	do{
-			Row = Rand(MaxRow);
-			Col = Rand(MaxCol);
-			X++;
-		}while ((X<10) && !TooCloseToCity(Row,Col) && (Region[Row][Col].terrain != Ocean) && (NeighboringRegions(Row,Col,".unit!=-1")>0));
-		if (X<10){
-		    alert("Enemy city founded at "+Row+", "+Col+" (attempt #"+X+").");
-			FoundCity(Row,Col,false);
-			UpdateView(-1,City.length-1);
-		}
+	    Row = Rand(MaxRow);
+	    Col = Rand(MaxCol);
+	    X++;
+	}while ((X<10) && !TooCloseToCity(Row,Col) && (Region[Row][Col].terrain != Ocean) && (NeighboringRegions(Row,Col,".unit!=-1")>0));
+	if (X<10){
+	    alert("Enemy city founded at "+Row+", "+Col+" (attempt #"+X+").");
+	    FoundCity(Row,Col,false);
+	    UpdateView(-1,City.length-1);
+	}
     }
 }
 
@@ -1094,7 +1122,7 @@ function CreateCityBuildQueque(C) {
 	City[C].canBuild.style.display = "none";
     };
     tile.oldOnClick = tile.onclick
-    tile.onclick = function() {
+	tile.onclick = function() {
 	this.oldOnClick();
 	City[C].quequeImage.focus();
 	City[C].canBuild.style.display = "";
@@ -1186,9 +1214,9 @@ function NextProduct(C) {
 	if (Product[P].type=='unit') {
 	    Unit.push({type: P, row: City[C].row, col: City[C].col, movement: Product[City[C].product].mobility, health: Product[P].health, active: true, player: City[C].player, city: C, TroopshipClass: TroopshipClass, veterancy: Rand(City[C].veterancy[Product[City[C].product].kind])/10+0.9});
 	    if (City[C].player){
-		    Region[City[C].row][City[C].col].unit = Unit.length-1;
-		    RegionImage(City[C].row, City[C].col, false);
-		}
+		Region[City[C].row][City[C].col].unit = Unit.length-1;
+		RegionImage(City[C].row, City[C].col, false);
+	    }
 	} else {
 	    if (Product[P].type=='building') {
 		City[C].building[P] = true;
@@ -1287,7 +1315,7 @@ function KeyPressHandler(event) {
     var key = String.fromCharCode(event.which ? event.which : event.keyCode);
     var unit = Unit[ActiveUnit];
     switch (key) {
-    //case "#": toggleToControlBar
+	//case "#": toggleToControlBar
     case "*": case "r": ActiveUnit=0; for (U=0; U<Unit.length; U++) {Unit[U].active=true;Unit[U].destinationRow=-1}; Turn(); break;
     case "k": OnPhone = !OnPhone; break;
     case "#": case "t":
@@ -1296,8 +1324,8 @@ function KeyPressHandler(event) {
 	FocusOnTech = !FocusOnTech;
 	break;
 
-    //movement OnPhone true = 123\n456\n789\n0 phone set up | OnPhone false = 789\n456\n123\n0 keyboard setup
-    //case "0": pass
+	//movement OnPhone true = 123\n456\n789\n0 phone set up | OnPhone false = 789\n456\n123\n0 keyboard setup
+	//case "0": pass
     case "1": if (OnPhone) {i(unit.row-1, unit.col-1);} else {i(unit.row+1, unit.col-1);} break;
     case "2": if (OnPhone) {i(unit.row-1, unit.col);} else {i(unit.row+1, unit.col);} break;
     case "3": if (OnPhone) {i(unit.row-1, unit.col+1);} else {i(unit.row+1, unit.col+1);} break;
@@ -1308,7 +1336,7 @@ function KeyPressHandler(event) {
     case "8": if (OnPhone) {i(unit.row+1, unit.col);} else {i(unit.row-1, unit.col);} break;
     case "9": if (OnPhone) {i(unit.row+1, unit.col+1);} else {i(unit.row-1, unit.col+1);} break;
 
-    //default: alert(key);
+	//default: alert(key);
     }
 }
 
@@ -1400,10 +1428,10 @@ function Turn() {
     //alert("starting loop with "+ActiveUnit+" and Unit.length of "+Unit.length);
     do{
 	while ((ActiveUnit>0) && (!Unit[ActiveUnit].active) && (Unit[ActiveUnit].player)) {
-          if (!UpdateView(ActiveUnit)){
-              ActiveUnit--;
-          }
-      }
+	    if (!UpdateView(ActiveUnit)){
+		ActiveUnit--;
+	    }
+	}
 	while ((ActiveUnit>0) && ((!Unit[ActiveUnit].active) || (Unit[ActiveUnit].movement==0) || (!Unit[ActiveUnit].player))) {
 	    while ((Unit[ActiveUnit].active) && (Unit[ActiveUnit].movement) && (!Unit[ActiveUnit].player)) {
 		Unit[ActiveUnit].active=MoveUnitToDestination(ActiveUnit);
@@ -1418,12 +1446,13 @@ function Turn() {
 	    RestoreAllUnitsHealth();
 	    NextTech();
 	    NextWonder();
+	    UpdateEntireMap();
 	    for (C=0; C<City.length; C++) {
 		NextCitizen(C);
-            if (City[C].player){
-                UpdateView(-1,C);
-		NextProduct(C);
-            }
+		if (City[C].player){
+		    UpdateView(-1,C);
+		    NextProduct(C);
+		}
 	    }
 	    ActiveUnit = Unit.length-1;
 	    while (ActiveUnit && ((!Unit[ActiveUnit].active) || (!Unit[ActiveUnit].movement) || (!Unit[ActiveUnit].player))) {
@@ -1526,13 +1555,13 @@ NextTech();
 Turn();
 
 </script>
-<!--
+    <!--
 
-cd C:\Documents and Settings\jhenning\My Documents\To Be Filed - New\Troy Press\Games\Civ0
-git add index.htm
-git comment -m "Description"
-git push origin master
--->
-</body>
-</html>
+    cd C:\Documents and Settings\jhenning\My Documents\To Be Filed - New\Troy Press\Games\Civ0
+	git add index.htm
+	git comment -m "Description"
+	git push origin master
+	-->
+	</body>
+	</html>
 
