@@ -1076,7 +1076,7 @@ function FoundCity(Row,Col,Player) {
 	} else {
 	    RegionImage(Row, Col, false);
 	}
-	CreateCityBuildQueque(C);
+	CreateCityBuildQueque(Row,Col,C);
         ChangeProduct(C);
     }
     if (Player) {
@@ -1094,9 +1094,9 @@ function FoundCity(Row,Col,Player) {
     }
 }
 
-function CreateCityBuildQueque(C) {
+function CreateCityBuildQueque(Row,Col,C) {
     var cities = document.getElementById("cities");
-    City[C].queque = CreateElement('div', cities, {id: City[C].name + '_queque'}, [['cssFloat', 'left'], ['zIndex', 5]]);
+    City[C].queque = CreateElement('div', cities, {id: City[C].name + '_queque'}, [['cssFloat', 'left'], ['width', '20px'],  ['zIndex', 5]]);
 
     City[C].quequeWrapper = CreateElement('div', City[C].queque, {}, 
 					  [['position', 'relative'], ['cssFloat', 'left'], ['height', '20px']]);
@@ -1109,6 +1109,7 @@ function CreateCityBuildQueque(C) {
     City[C].canBuild = CreateElement('div', City[C].queque, 
 				     {id: City[C].name + '_canbuild'}, 
 				     [['maxHeight', '50%'], ['width', '40px'], ['overflowY', 'auto'], ['display', 'none']]);;
+				     //[['width', '60px'], ['overflowY', 'scroll'], ['display', 'none'], ['position', 'relative'], ['top', '20px'], ['left', '-20px']]);;
 
     var tile = Region[Row][Col].fogImg;
     tile.oldOnMouseOver = tile.onmouseover;
@@ -1166,7 +1167,7 @@ function ChangeProduct(C) {
     City[C].canBuild.innerHTML = "";
     var initial = -1;
     var AddX = function(X) {
-	var wrapper = CreateElement('div', City[C].canBuild, {}, [['position', 'relative'], ['cssFloat', 'left'], ['height', '20px']]);
+	var wrapper = CreateElement('div', City[C].canBuild, {}, [['position', 'relative'], ['cssFloat', 'left'], ['height', '20px'], ['width', '20px']]);
 	var nationalityImg = CreateElement('img', wrapper, {className: 'img', src: "enemy.png"},  [['position', 'relative'], ['left', '0px'], ['top', '0px'], ['zIndex', 7]]);
 	var viewport = CreateElement('div', wrapper, {className: 'viewport'}, [['position', 'relative'], ['left', '0px'], ['top', '-20px']]);
 	var image = CreateElement('img', viewport, {className: 'clipped'}, [['left', '0px'], ['top', '0px'], ['zIndex', 8]]);
@@ -1202,7 +1203,8 @@ function ChangeProduct(C) {
 	if ((Tech[Product[X].prereq].playerOwned)&&(!City[C].building[X])) { AddX(X); }
     }
     City[C].product = initial;
-    City[C].quequeImage.src = Product[initial].imgStub + "_player.png";
+    SetImgToProduct(City[C].quequeImage, City[C].quequeDiv, Product[initial]);
+    //City[C].quequeImage.src = Product[initial].imgStub + "_player.png";
     City[C].quequeImage.focus();
 }
 
@@ -1555,8 +1557,8 @@ NextTech();
 Turn();
 
 </script>
-    <!--
-
+<!--
+    
     cd C:\Documents and Settings\jhenning\My Documents\To Be Filed - New\Troy Press\Games\Civ0
 	git add index.htm
 	git comment -m "Description"
@@ -1564,4 +1566,3 @@ Turn();
 	-->
 	</body>
 	</html>
-
