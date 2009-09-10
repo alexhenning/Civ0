@@ -743,6 +743,8 @@ function UpdateView(U,C) {
 
 function CanSee(Row, Col) {
     if (!Boolean(Region[Row][Col])) {return false;}
+    else if (ShowAll) {return true;}
+    else if (!FogOn && Region[Row][Col].IsExplored()) {return true;}
     for (var A=-1; A<=1; A++) {
 	for (var B=-1; B<=1; B++) {
 	    if (Region[Row+A] && Region[Row+A][Col+B]) {
@@ -1259,8 +1261,11 @@ function ForCitiesWith(Building, Code) {
 /* UI */
 
 var ActiveUnit = 0;
-OnPhone = true;
-FocusOnTech = true;
+var OnPhone = true;
+var FocusOnTech = true;
+var DebugOn = false;
+var ShowAll = false;
+var FogOn = true;
 
 function GetWidth(elem) {
     return elem.getBoundingClientRect().right - elem.getBoundingClientRect().left;
@@ -1338,7 +1343,9 @@ function KeyPressHandler(event) {
     case "8": if (OnPhone) {i(unit.row+1, unit.col);} else {i(unit.row-1, unit.col);} break;
     case "9": if (OnPhone) {i(unit.row+1, unit.col+1);} else {i(unit.row-1, unit.col+1);} break;
 
-	//default: alert(key);
+    case "d": DebugOn = true; break;
+    case "f": if (DebugOn) FogOn = !FogOn; UpdateEntireMap(); break;
+    case "s": if (DebugOn) ShowAll = !ShowAll; UpdateEntireMap(); break;
     }
 }
 
