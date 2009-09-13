@@ -1046,7 +1046,7 @@ function AttackNearestEnemy(tolerance) {
 	    if (nearestEnemy == prevEnemy) {
 		momentum++;
 	    } else if (momentum > 0) {
-		momentum -= 1;
+		momentum -= 1.5;
 	    } else {
 		prevEnemy = nearestEnemy;
 		momentum = 1;
@@ -1061,7 +1061,27 @@ function AttackNearestEnemy(tolerance) {
     }
 }
 
-function DefendNearestCity(U) {}
+function DefendCity(C) {
+    /* Sets destination
+       U: unit this function thinks for.
+       tolerance: a variable that affects likelihood of attacking player. should be between 1 and 5 */
+    var momentum = 0;
+    var prevEnemy = -1;
+    return function(U) {
+	var nearestEnemy = NearestPlayer(Unit[U].row, Unit[U].col);
+	if (nearestEnemy == prevEnemy) {
+	    momentum++;
+	} else if (momentum > 0) {
+	    momentum -= 1.5;
+	} else {
+	    prevEnemy = nearestEnemy;
+	    momentum = 1;
+	}
+	Unit[U].destinationRow = (Unit[prevEnemy].row + City[C].row) / 2;
+	Unit[U].destinationCol = (Unit[prevEnemy].col + City[C].col) / 2;
+	console.log("Enemy "+U+" is after defending city "+C+" from unit "+prevEnemy+" with a momentum of "+momentum+". Heading towards ["+Unit[U].destinationRow+", "+Unit[U].destinationCol+"]"); 
+    }
+}
 
 function NearestPlayer(Row, Col) {
     var distance = -1;
@@ -1217,22 +1237,18 @@ function AIGovernor(timeToBuild, C) {
 	    var brain;
 	    if (Rand(10) > Distance(City[C].row, City[C].col, Unit[player].row, Unit[player].col)) { // build defense
 		unit = bestDefender;
-		//destinationRow = (Unit[player].row + City[C].row) / 2;
-		//destinationCol = (Unit[player].col + City[C].col) / 2;
-		brain = AttackNearestEnemy(3);
+		brain = DefendCity(C);
 	    } else { // build offense
 		unit = bestAttacker;
 		brain = AttackNearestEnemy(Rand(3));
 	    }
 	    BuildUnit(unit, C);
-	    alert("AI built: " + Product[unit].name);
+	    console.info("AI built: " + Product[unit].name);
 	    Region[City[C].row][City[C].col].unit = U;
 	    Unit[U].Think = brain;
 	    Unit[U].active = true;
-	    //Unit[U].destinationRow = destinationRow;
-	    //Unit[U].destinationCol = destinationCol;
 	    timeToBuild = 10 + (Rand(5) - 3); //10 +/- 2
-	    //alert("Next unit in " + timeToBuild + " turns.");
+	    console.log("Next unit in " + timeToBuild + " turns.");
 	}
     }
 }
