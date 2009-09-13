@@ -523,6 +523,14 @@ Territory.prototype.SetCity = function(Row, Col, focus) {
 };
 Territory.prototype.IsExplored = function() {return this.fogImg.src.indexOf('unexplored.png') == -1};
 
+function GetRegion(Row, Col) {
+    return Region[Row] && Region[Row][Col] ? Region[Row][Col] : false;
+}
+
+function GetRegionProp(Row, Col, Prop) {
+    return Region[Row] && Region[Row][Col] ? Region[Row][Col][Prop] : false;
+}
+
 var Region = new Array();
 TerrainProbability = new Array("ttc","ttttc", "tppp", "pppgfs", "gfs", "jjsgg", "jjjssg", "gggd", "dddgg");
 
@@ -588,35 +596,37 @@ function TerrainAtLatitude(Row) {
 }
 
 function RegionImage(Row, Col, focus) {
-    var R;
-    var U = Region[Row][Col].unit;
-    if (CanSee(Row, Col)) {
-	Territory.prototype.SetVisibility(true);
-	if ((U!=-1)&&(Unit[U] !== undefined)) {
-	    if (Unit[U].player && focus) {Region[Row][Col].fogImg.focus();}
-	    R = Region[Row][Col].terrain!=Ocean ? Product[Unit[U].type].name :
-		Troopship[Unit[U].TroopshipClass].name+" (carrying "+Product[Unit[U].type].name+")";
-	    R += ", health "+Unit[U].health+", "+(Math.floor(100*Terrain[Region[Unit[U].row][Unit[U].col].terrain].defense))+"% defense";
-	    R += ", "+Math.floor(100*Unit[U].veterancy-100)+"% veterancy";
-	    Region[Row][Col].SetUnit(Unit[U], focus);
-	} else {
-	    if(Region[Row][Col].city!=-1) {
-		Region[Row][Col].SetCity(Row, Col, focus);
-		R = CityDescription(Region[Row][Col].city, true);
+    if (GetRegion(Row, Col)) {
+	var R;
+	var U = Region[Row][Col].unit;
+	if (CanSee(Row, Col)) {
+	    Territory.prototype.SetVisibility(true);
+	    if ((U!=-1)&&(Unit[U] !== undefined)) {
+		if (Unit[U].player && focus) {Region[Row][Col].fogImg.focus();}
+		R = Region[Row][Col].terrain!=Ocean ? Product[Unit[U].type].name :
+		    Troopship[Unit[U].TroopshipClass].name+" (carrying "+Product[Unit[U].type].name+")";
+		R += ", health "+Unit[U].health+", "+(Math.floor(100*Terrain[Region[Unit[U].row][Unit[U].col].terrain].defense))+"% defense";
+		R += ", "+Math.floor(100*Unit[U].veterancy-100)+"% veterancy";
+		Region[Row][Col].SetUnit(Unit[U], focus);
 	    } else {
-		var T=Region[Row][Col].terrain;
-		Region[Row][Col].nationalityImg.src = "visible.png";
-		Region[Row][Col].unitImg.src = "visible.png";
-		R = Terrain[T].name+", "+Math.floor(100*Terrain[T].defense)+"% defense";
+		if(Region[Row][Col].city!=-1) {
+		    Region[Row][Col].SetCity(Row, Col, focus);
+		    R = CityDescription(Region[Row][Col].city, true);
+		} else {
+		    var T=Region[Row][Col].terrain;
+		    Region[Row][Col].nationalityImg.src = "visible.png";
+		    Region[Row][Col].unitImg.src = "visible.png";
+		    R = Terrain[T].name+", "+Math.floor(100*Terrain[T].defense)+"% defense";
+		}
+	    }
+	} else {
+	    if (Region[Row][Col].IsExplored()) {
+		Territory.prototype.SetVisibility(false);
 	    }
 	}
-    } else {
-	if (Region[Row][Col].IsExplored()) {
-	    Territory.prototype.SetVisibility(false);
-	}
+	Region[Row][Col].fogImg.title = R;
+	return Region[Row][Col].fogImg.title;
     }
-    Region[Row][Col].fogImg.title = R;
-    return Region[Row][Col].fogImg.title;
 }
 
 function GenerateMap(Region) {
@@ -695,7 +705,7 @@ function NeighboringRegions(Row,Col,Code) {
     var X=0;
     for (var A=-1; A<=1; A++) {
 	for (var B=-1; B<=1; B++) {
-	    if(eval("Region["+(Row+A)+"]["+(Col+B)+"]"+Code)) {
+	    if(GetRegion(Row+A, Col+B) && eval("Region["+(Row+A)+"]["+(Col+B)+"]"+Code)) {
 		X++;
 	    }
 	}
@@ -742,12 +752,12 @@ function UpdateView(U,C) {
 }
 
 function CanSee(Row, Col) {
-    if (!Boolean(Region[Row][Col])) {return false;}
+    if (!Boolean(GetRegion(Row, Col))) {return false;}
     else if (ShowAll) {return true;}
     else if (!FogOn && Region[Row][Col].IsExplored()) {return true;}
     for (var A=-1; A<=1; A++) {
 	for (var B=-1; B<=1; B++) {
-	    if (Region[Row+A] && Region[Row+A][Col+B]) {
+	    if (GetRegion(Row+A, Col+B)) {
 		var U = Region[Row+A][Col+B].unit;
 		if (U != null && Unit[U] && Unit[U].player) {return true;}
 		var C = Region[Row+A][Col+B].city;
@@ -871,31 +881,25 @@ function MoveUnit(U,Row,Col) {
     var Barbarian=-1;
     for (A=-1; A<=1; A++) {
 	for (B=-1; B<=1; B++) {
-	    //alert(Region[X+A][Y+B].terrain);
-	    var S = 'p'+(Row+A)+'_'+(Col+B);
-	    if (((A!=0)||(B!=0)) && (Unit[U].player) && !Region[Row+A][Col+B].IsExplored() && ((Region[Row+A][Col+B].terrain!=Ocean)||(Rand(10)==1)) && (Rand(Math.abs(Row-StartRow))+Rand(3)>5)) {
-		// Barbarians
-		Unit.push({type: Rand(4)+1, row: Row+A, col: Col+B, movement: 0, active: false, player: false, city: -1, health: 10, TroopshipClass: Math.min(Transport,TroopshipClass+Rand(2)-1), veterancy: 1+(Rand(2)-1)/10});
-		var U = Unit.length-1;
-		Region[Row+A][Col+B].unit = U;
-		Unit[U].Think = AttackNearestEnemy(U, Rand(5));
-		Unit[U].active = true;
-	    } /*else {
-		if ((Unit[U].player) && (Region[Row+A][Col+B].unit!=-1) && !Unit[Region[Row+A][Col+B].unit].player) {
-		    Barbarian=Region[Row+A][Col+B].unit;
-		    if(Rand(25)<=5+City.length) {
-			Unit[Barbarian].destinationRow = StartRow;
-			Unit[Barbarian].destinationCol = StartCol;
-			Unit[Barbarian].active = true;
-		    }
-		}
-	    }*/
-	    if (Unit[U].player){
+	    if (GetRegion(Row+A, Col+B)) {
 		RegionImage(Row+A, Col+B, false);
-		Region[Row+A][Col+B].SetVisibility(true);
-	    }
-	    if(!LostAtSea && (Unit[U].type==Settler)) {
-		Region[Row+A][Col+B].SetTitle = CitySiteString(Row+A,Col+B);
+		//alert(Region[X+A][Y+B].terrain);
+		var S = 'p'+(Row+A)+'_'+(Col+B);
+		if (((A!=0)||(B!=0)) && (Unit[U].player) && GetRegion(Row+A, Col+B) && !Region[Row+A][Col+B].IsExplored() && ((Region[Row+A][Col+B].terrain!=Ocean)||(Rand(10)==1)) && (Rand(Math.abs(Row-StartRow))+Rand(3)>5)) {
+		    // Barbarians
+		    Unit.push({type: Rand(4)+1, row: Row+A, col: Col+B, movement: 0, active: false, player: false, city: -1, health: 10, TroopshipClass: Math.min(Transport,TroopshipClass+Rand(2)-1), veterancy: 1+(Rand(2)-1)/10});
+		    var U = Unit.length-1;
+		    Region[Row+A][Col+B].unit = U;
+		    Unit[U].Think = AttackNearestEnemy(U, Rand(5));
+		    Unit[U].active = true;
+		}
+		if (Unit[U].player){
+		    RegionImage(Row+A, Col+B, false);
+		    Region[Row+A][Col+B].SetVisibility(true);
+		}
+		if(!LostAtSea && (Unit[U].type==Settler)) {
+		    Region[Row+A][Col+B].SetTitle = CitySiteString(Row+A,Col+B);
+		}
 	    }
 	}
     }
@@ -912,7 +916,7 @@ function CombatNeighboringUnit(Attacker) {
     var GoalCost=99;
     for (Row=Unit[Attacker].row-1; Row<=Unit[Attacker].row+1; Row++) {
 	for (Col=Unit[Attacker].col-1; Col<=Unit[Attacker].col+1; Col++) {
-	    if ((Region[Row][Col].unit != -1) && Unit[Region[Row][Col].unit].player) {
+	    if (GetRegion(Row, Col) && (Region[Row][Col].unit != -1) && Unit[Region[Row][Col].unit].player) {
 		console.log("Unit "+Attacker+" attacking Region["+Row+", "+Col+"].unit = "+Region[Row][Col].unit);
 		DefenseStr = DefenseStrength(Attacker,Region[Row][Col].unit);
 		if ((Region[Row][Col].unit>=0) && (DefenseStr<GoalCost)) {
@@ -945,7 +949,7 @@ function MoveUnitToDestination(U) {
     var GoalCost=99;
     for (Row=Unit[U].row-1; Row<=Unit[U].row+1; Row++) {
 	for (Col=Unit[U].col-1; Col<=Unit[U].col+1; Col++) {
-	    if ((Region[Row][Col].unit==-1) && (Region[Row][Col].city==-1) && (Distance(Row,Col,Unit[U].destinationRow,Unit[U].destinationCol)<=GoalDistance)) {
+	    if (GetRegion(Row, Col) && (Region[Row][Col].unit==-1) && (Region[Row][Col].city==-1) && (Distance(Row,Col,Unit[U].destinationRow,Unit[U].destinationCol)<=GoalDistance)) {
 		if ((Distance(Row,Col,Unit[U].destinationRow,Unit[U].destinationCol)<GoalDistance)||(Terrain[Region[Row][Col].terrain].movementCost<GoalCost)) {
 		    GoalDistance = Distance(Row,Col,Unit[U].destinationRow,Unit[U].destinationCol);
 		    GoalRow=Row;
@@ -1012,7 +1016,7 @@ function AttackNearestEnemy(U, tolerance) {
 	    if (nearestEnemy == prevEnemy) {
 		momentum++;
 	    } else if (momentum > 0) {
-		momentum -= 2;
+		momentum -= 1;
 	    } else {
 		prevEnemy = nearestEnemy;
 		momentum = 1;
@@ -1056,16 +1060,18 @@ function CitySiteStats(Row,Col) {
     var Stats = {food: 0, production: 0, trade: 0};
     for (var A=-1; A<=1; A++) {
 	for (var B=-1; B<=1; B++) {
-	    Stats.food += Terrain[Region[Row+A][Col+B].terrain].food;
-	    Stats.production += Terrain[Region[Row+A][Col+B].terrain].production;
-	    Stats.trade += Terrain[Region[Row+A][Col+B].terrain].trade;
+	    if (GetRegion(Row+A, Col+B)) {
+		Stats.food += Terrain[Region[Row+A][Col+B].terrain].food;
+		Stats.production += Terrain[Region[Row+A][Col+B].terrain].production;
+		Stats.trade += Terrain[Region[Row+A][Col+B].terrain].trade;
+	    }
 	}
     }
     return(Stats);
 }
 
 function CitySiteString(Row,Col) {
-    if (Region[Row][Col].terrain!=Ocean) {
+    if (GetRegion(Row, Col) && Region[Row][Col].terrain!=Ocean) {
 	var Stats = CitySiteStats(Row,Col);
 	return ("City has potential for "+(Stats.food+Stats.production+Stats.trade)+" points ("+Stats.food+"f/"+Stats.production+"p/"+Stats.trade+"t)");
     } else {
@@ -1093,6 +1099,7 @@ function TooCloseToCity(Row,Col) {
 
 
 function FoundCity(Row,Col,Player) {
+    if (!Boolean(GetRegion(Row, Col))) {console.error("FoundCity("+Row+", "+Col+", "+Player+") failed. Region does not exist"); return false;}
     var Stats=CitySiteStats(Row,Col);
     City.push({name: "Unnamed", player: Player, foodReserve: 0, productionReserve: 0, row: Row, col: Col, food: Stats.food, production: Stats.production, trade: Stats.trade, science: 1, corruptionRate: 1, product: Warrior, citizens: 2, happyCitizens: 4, healthyCitizens: 4});
     var C = City.length-1;
@@ -1147,7 +1154,7 @@ function BuildEnemyCity() {
 	X++;
 	//alert((X<30) +" "+ !TooCloseToCity(Row,Col) +" "+ (Region[Row][Col].terrain != Ocean) +" "+ !CanSee(Row,Col)  +" "+ ((X<30) && (TooCloseToCity(Row,Col) || (Region[Row][Col].terrain == Ocean) || CanSee(Row,Col))));
 	//} while ((X<30) && !TooCloseToCity(Row,Col) && (Region[Row][Col].terrain != Ocean) && (NeighboringRegions(Row,Col,".unit!=-1")>0));
-    } while ((X<30) && (TooCloseToCity(Row,Col) || (Region[Row][Col].terrain == Ocean) || CanSee(Row,Col)));
+    } while ((X<30) && GetRegion(Row, Col) && (TooCloseToCity(Row,Col) || (Region[Row][Col].terrain == Ocean) || CanSee(Row,Col)));
     if (X<30){
 	alert("Enemy city founded at "+Row+", "+Col+" (attempt #"+(X-1)+").");
 	FoundCity(Row,Col,false);
@@ -1464,10 +1471,10 @@ function KeyPressHandler(event) {
     case "8": if (OnPhone) {i(unit.row+1, unit.col);} else {i(unit.row-1, unit.col);} break;
     case "9": if (OnPhone) {i(unit.row+1, unit.col+1);} else {i(unit.row-1, unit.col+1);} break;
 
-    case "d": DebugOn = true; break;
-    case "f": if (DebugOn) FogOn = !FogOn; UpdateEntireMap(); break;
-    case "s": if (DebugOn) ShowAll = !ShowAll; UpdateEntireMap(); break;
-    case "b": BuildEnemyCity(); break;
+    case "d": DebugOn = !DebugOn; break;
+    case "f": if (DebugOn) {FogOn = !FogOn; UpdateEntireMap();} break;
+    case "s": if (DebugOn) {ShowAll = !ShowAll; UpdateEntireMap();} break;
+    case "b": if (DebugOn) {BuildEnemyCity();} break;
     }
 }
 
@@ -1616,46 +1623,48 @@ function Turn() {
 
 
 function i(Row, Col) {
-    Unit[ActiveUnit].destinationRow=-1;
-    if ((Row==Unit[ActiveUnit].row) & (Col==Unit[ActiveUnit].col)) {
-	if (Unit[ActiveUnit].type==Settler) {
-	    if ((Region[Row][Col].terrain!=Ocean) && !TooCloseToCity(Row,Col) && (confirm("Build a city here? " + CitySiteString(Row,Col) + "."))) {
-		FoundCity(Row,Col,true);
-		DeleteUnit(ActiveUnit);
-		RegionImage(Row, Col, false);
-		Turn();
+    if (GetRegion(Row, Col)) {
+	Unit[ActiveUnit].destinationRow=-1;
+	if ((Row==Unit[ActiveUnit].row) & (Col==Unit[ActiveUnit].col)) {
+	    if (Unit[ActiveUnit].type==Settler) {
+		if ((Region[Row][Col].terrain!=Ocean) && !TooCloseToCity(Row,Col) && (confirm("Build a city here? " + CitySiteString(Row,Col) + "."))) {
+		    FoundCity(Row,Col,true);
+		    DeleteUnit(ActiveUnit);
+		    RegionImage(Row, Col, false);
+		    Turn();
+		} else {
+		    RegionImage(Row, Col, true);
+		}
 	    } else {
-		RegionImage(Row, Col, true);
+		if(confirm("Put the unit - "+RegionImage(Row,Col,false)+" - on sentry duty (standby)?")) {
+		    Unit[ActiveUnit].active = false;
+		    Unit[ActiveUnit].movement = 0;
+		    RegionImage(Row, Col, false);
+		    Turn();
+		} else {
+		    RegionImage(Row, Col, true);
+		}
 	    }
 	} else {
-	    if(confirm("Put the unit - "+RegionImage(Row,Col,false)+" - on sentry duty (standby)?")) {
-		Unit[ActiveUnit].active = false;
-		Unit[ActiveUnit].movement = 0;
-		RegionImage(Row, Col, false);
+	    if (Distance(Row, Col, Unit[ActiveUnit].row, Unit[ActiveUnit].col)<=Math.min(Unit[ActiveUnit].movement,1.5)) {
+		if (Region[Row][Col].unit!=-1) {
+		    Combat(ActiveUnit,Region[Row][Col].unit,"");
+		} else {
+		    MoveUnit(ActiveUnit,Row,Col);
+		}
 		Turn();
 	    } else {
-		RegionImage(Row, Col, true);
+		//if (document.getElementById('p'+Row+'_'+Col).src!="u.png") {
+		//alert(Row+", "+Col);
+		Unit[ActiveUnit].destinationRow = Row;
+		Unit[ActiveUnit].destinationCol = Col;
+		if(MoveUnitToDestination(ActiveUnit)) {
+		    Turn();
+		}
+		//} else {
+		//   RegionImage(Unit[ActiveUnit].row, Unit[ActiveUnit].col, true);
+		//}
 	    }
-	}
-    } else {
-	if (Distance(Row, Col, Unit[ActiveUnit].row, Unit[ActiveUnit].col)<=Math.min(Unit[ActiveUnit].movement,1.5)) {
-	    if (Region[Row][Col].unit!=-1) {
-		Combat(ActiveUnit,Region[Row][Col].unit,"");
-	    } else {
-		MoveUnit(ActiveUnit,Row,Col);
-	    }
-	    Turn();
-	} else {
-	    //if (document.getElementById('p'+Row+'_'+Col).src!="u.png") {
-            //alert(Row+", "+Col);
-	    Unit[ActiveUnit].destinationRow = Row;
-	    Unit[ActiveUnit].destinationCol = Col;
-	    if(MoveUnitToDestination(ActiveUnit)) {
-		Turn();
-	    }
-	    //} else {
-	    //   RegionImage(Unit[ActiveUnit].row, Unit[ActiveUnit].col, true);
-	    //}
 	}
     }
 }
