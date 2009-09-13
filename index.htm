@@ -513,9 +513,9 @@ Territory.prototype.SetUnit = function(unit, focus) {
     else {UnitProps = Troopship[unit.TroopshipClass];}
     SetImgToProduct(this.unitImg, this.viewport, UnitProps);
 };
-Territory.prototype.SetCity = function(focus, player) {
+Territory.prototype.SetCity = function(Row, Col, focus) {
     if (focus) {this.nationalityImg.src = "active.png";}
-    else if (player) {this.nationalityImg.src = "player.png";}
+    else if (City[Region[Row][Col].city].player) {this.nationalityImg.src = "player.png";}
     else {this.nationalityImg.src = "enemy.png";}
     this.unitImg.src = "city.png";
     this.unitImg.style.top = '0px';
@@ -601,7 +601,7 @@ function RegionImage(Row, Col, focus) {
 	    Region[Row][Col].SetUnit(Unit[U], focus);
 	} else {
 	    if(Region[Row][Col].city!=-1) {
-		Region[Row][Col].SetCity(focus, true);
+		Region[Row][Col].SetCity(Row, Col, focus);
 		R = CityDescription(Region[Row][Col].city, true);
 	    } else {
 		var T=Region[Row][Col].terrain;
@@ -1080,20 +1080,77 @@ function FoundCity(Row,Col,Player) {
 	}
 	CreateCityBuildQueque(Row,Col,C);
         ChangeProduct(C);
+
+	BuildEnemyCity();
+    } else {
+	City[C].AIGovernor = AIGovernor(10, C);
+	//City[C].AIGovernor.timeToBuild = 10;
     }
-    if (Player) {
-        X = 1;
-    	do{
-	    Row = Rand(MaxRow);
-	    Col = Rand(MaxCol);
-	    X++;
-	}while ((X<10) && !TooCloseToCity(Row,Col) && (Region[Row][Col].terrain != Ocean) && (NeighboringRegions(Row,Col,".unit!=-1")>0));
-	if (X<10){
-	    alert("Enemy city founded at "+Row+", "+Col+" (attempt #"+X+").");
-	    FoundCity(Row,Col,false);
-	    UpdateView(-1,City.length-1);
+}
+
+function BuildEnemyCity() {
+    X = 1;
+    do {
+	Row = Rand(MaxRow);
+	Col = Rand(MaxCol);
+	X++;
+	//alert((X<30) +" "+ !TooCloseToCity(Row,Col) +" "+ (Region[Row][Col].terrain != Ocean) +" "+ !CanSee(Row,Col)  +" "+ ((X<30) && (TooCloseToCity(Row,Col) || (Region[Row][Col].terrain == Ocean) || CanSee(Row,Col))));
+	//} while ((X<30) && !TooCloseToCity(Row,Col) && (Region[Row][Col].terrain != Ocean) && (NeighboringRegions(Row,Col,".unit!=-1")>0));
+    } while ((X<30) && (TooCloseToCity(Row,Col) || (Region[Row][Col].terrain == Ocean) || CanSee(Row,Col)));
+    if (X<30){
+	alert("Enemy city founded at "+Row+", "+Col+" (attempt #"+(X-1)+").");
+	FoundCity(Row,Col,false);
+	UpdateView(-1,City.length-1);
+    }
+}
+
+function AIGovernor(timeToBuild, C) {
+    return function() {
+	timeToBuild--;
+	if (0 == timeToBuild) {
+	    availableUnits = AvailableUnits().reverse();
+	    var bestDefense = -1;
+	    var bestAttack = -1;
+	    var bestDefender, bestAttacker;
+	    units = AvailableUnits();
+	    while (units.length) {
+		unit = units.pop();
+		if (Product[unit].defense > bestDefense) {
+		    bestDefense = unit.defense;
+		    bestDefender = unit;
+		}
+		if (Product[unit].attack > bestAttack) {
+		    bestAttack = unit.attack;
+		    bestAttacker = unit;
+		}
+	    }
+	    if (Rand(20) > NearestPlayer(City[C].Row, City[C].Col)) { // build defense
+		BuildUnit(bestDefender, C);
+		alert("AI built: " + Product[bestDefender].name);
+	    } else { // build offense
+		BuildUnit(bestAttacker, C);
+		alert("AI built: " + Product[bestAttacker].name);
+	    }
+	    Region[City[C].row][City[C].col].unit = Unit.length-1
+	    timeToBuild = 10 + (Rand(5) - 3); //10 +/- 2
+	    //alert("Next unit in " + timeToBuild + " turns.");
 	}
     }
+}
+
+function BuildUnit(T, C) {
+    Unit.push({"type": T, "row": City[C].row, "col": City[C].col, "movement": Product[T].mobility, "health": Product[T].health, "active": true, "player": City[C].player, "city": C, "TroopshipClass": TroopshipClass, "veterancy": Rand(City[C].veterancy[Product[City[C].product].kind])/10+0.9});
+}
+
+function NearestPlayer(Row, Col) {
+    distance = -1;
+    for (var i = 0; i < Unit.length; i++) {
+	if (Unit[i].player) {
+	    var d = Distance(Row, Col, Unit[i].row, Unit[i].col);
+	    if (d > distance) distance = d;
+	}
+    }
+    return distance;
 }
 
 function CreateCityBuildQueque(Row,Col,C) {
@@ -1165,6 +1222,19 @@ function NextCitizen(C) {
     RegionImage(City[C].row,City[C].col,false);
 }
 
+function AvailableUnits() {
+    "Return array of indices of available units";
+    var arr = [];
+    var count = 0
+    for (X=Settler; X<=MaxUnit; X++) {
+	if (Tech[Product[X].prereq].playerOwned) {
+	    arr[count] = X;
+	    count++;
+	}
+    }
+    return arr;
+}
+
 function ChangeProduct(C) {
     City[C].canBuild.innerHTML = "";
     var initial = -1;
@@ -1194,11 +1264,11 @@ function ChangeProduct(C) {
 	}
 	SetImgToProduct(image, viewport, image.unit);
     }
-    for (X=MaxUnit; X>=Settler; X--) {
-	if (Tech[Product[X].prereq].playerOwned) {
-	    if (initial == -1) {initial = X;}
-	    AddX(X);
-	}
+    units = AvailableUnits();
+    while (units.length) {
+	var unit = units.pop();
+	if (initial == -1) initial = unit;
+	AddX(unit);
     }
     for (X=MaxBuilding-1; X>MaxUnit; X--) {
 	//if ((Tech[Product[X].prereq].playerOwned)&&(City[C].building[(Product[X].prebuilding)])&&(!City[C].building[X])) {
@@ -1213,10 +1283,10 @@ function ChangeProduct(C) {
 function NextProduct(C) {
     var P=City[C].product;
     City[C].productionReserve += Math.max(City[C].production*WorkingCitizenOutput(C),1);
-    if (City[C].productionReserve>=Product[P].cost/2) {
+    if (City[C].productionReserve>=Product[P].cost/2 && City[C].player) {
 	City[C].productionReserve -= Product[P].cost/2;
 	if (Product[P].type=='unit') {
-	    Unit.push({type: P, row: City[C].row, col: City[C].col, movement: Product[City[C].product].mobility, health: Product[P].health, active: true, player: City[C].player, city: C, TroopshipClass: TroopshipClass, veterancy: Rand(City[C].veterancy[Product[City[C].product].kind])/10+0.9});
+	    BuildUnit(P, C);
 	    if (City[C].player){
 		Region[City[C].row][City[C].col].unit = Unit.length-1;
 		RegionImage(City[C].row, City[C].col, false);
@@ -1346,6 +1416,7 @@ function KeyPressHandler(event) {
     case "d": DebugOn = true; break;
     case "f": if (DebugOn) FogOn = !FogOn; UpdateEntireMap(); break;
     case "s": if (DebugOn) ShowAll = !ShowAll; UpdateEntireMap(); break;
+    case "b": BuildEnemyCity(); break;
     }
 }
 
@@ -1455,14 +1526,16 @@ function Turn() {
 	    RestoreAllUnitsHealth();
 	    NextTech();
 	    NextWonder();
-	    UpdateEntireMap();
 	    for (C=0; C<City.length; C++) {
 		NextCitizen(C);
 		if (City[C].player){
 		    UpdateView(-1,C);
 		    NextProduct(C);
+		} else {
+		    City[C].AIGovernor();
 		}
 	    }
+	    UpdateEntireMap();
 	    ActiveUnit = Unit.length-1;
 	    while (ActiveUnit && ((!Unit[ActiveUnit].active) || (!Unit[ActiveUnit].movement) || (!Unit[ActiveUnit].player))) {
 		ActiveUnit--;
