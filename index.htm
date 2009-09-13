@@ -1124,14 +1124,22 @@ function AIGovernor(timeToBuild, C) {
 		    bestAttacker = unit;
 		}
 	    }
-	    if (Rand(20) > NearestPlayer(City[C].Row, City[C].Col)) { // build defense
-		BuildUnit(bestDefender, C);
-		alert("AI built: " + Product[bestDefender].name);
+	    var player = NearestPlayer(City[C].row, City[C].col);
+	    if (Rand(10) > Distance(City[C].row, City[C].col, Unit[player].row, Unit[player].col)) { // build defense
+		unit = bestDefender;
+		destinationRow = (Unit[player].row + City[C].row) / 2;
+		destinationCol = (Unit[player].col + City[C].col) / 2;
 	    } else { // build offense
-		BuildUnit(bestAttacker, C);
-		alert("AI built: " + Product[bestAttacker].name);
+		unit = bestAttacker;
+		destinationRow = Unit[player].row;
+		destinationCol = Unit[player].col;
 	    }
-	    Region[City[C].row][City[C].col].unit = Unit.length-1
+	    BuildUnit(unit, C);
+	    alert("AI built: " + Product[unit].name);
+	    U = Unit.length-1;
+	    Region[City[C].row][City[C].col].unit = U;
+	    Unit[U].destinationRow = destinationRow;
+	    Unit[U].destinationCol = destinationCol;
 	    timeToBuild = 10 + (Rand(5) - 3); //10 +/- 2
 	    //alert("Next unit in " + timeToBuild + " turns.");
 	}
@@ -1143,14 +1151,18 @@ function BuildUnit(T, C) {
 }
 
 function NearestPlayer(Row, Col) {
-    distance = -1;
+    var distance = -1;
+    var unit = -1;
     for (var i = 0; i < Unit.length; i++) {
 	if (Unit[i].player) {
 	    var d = Distance(Row, Col, Unit[i].row, Unit[i].col);
-	    if (d > distance) distance = d;
+	    if (d > distance) {
+		distance = d;
+		unit = i;
+	    }
 	}
     }
-    return distance;
+    return unit;
 }
 
 function CreateCityBuildQueque(Row,Col,C) {
