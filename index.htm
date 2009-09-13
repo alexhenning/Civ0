@@ -715,6 +715,36 @@ function NeighboringRegions(Row,Col,Code) {
 
 
 function UpdateEntireMap() {
+    function UpdateAround(Row, Col, radius) {
+	for (var A = -radius; A <= radius; A++) {
+	    for (var B = -radius; B <= radius; B++) {
+		if (GetRegion(Row+A, Col+B)) {Region[Row+A][Col+B].SetVisibility(true);}
+	    }
+	}
+    }
+    for (Row=0; Row<MaxRow; Row++) {
+	for (Col=0; Col<MaxCol; Col++) {
+	    if (Region[Row][Col].IsExplored()) {
+		Region[Row][Col].SetVisibility(false);
+		if (!FogOn && Region[Row][Col].IsExplored()) {Region[Row][Col].SetVisibility(true);}
+	    }
+	    if (ShowAll) {Region[Row][Col].SetVisibility(true);}
+	    RegionImage(Row,Col,false);
+	}
+    }
+    for (var i = 0; i < Unit.length; i++) {
+	if (Unit[i].player) {
+	    UpdateAround(Unit[i].row, Unit[i].col, 1);
+	}
+    }
+    for (var i = 0; i < City.length; i++) {
+	if (City[i].player) {
+	    UpdateAround(City[i].row, City[i].col, 1);
+	}
+    }
+}
+
+function UpdateEntireMapOld() {
     for (Row=0; Row<MaxRow; Row++) {
 	for (Col=0; Col<MaxCol; Col++) {
 	    if (CanSee(Row, Col)) {
@@ -725,6 +755,23 @@ function UpdateEntireMap() {
 	    RegionImage(Row,Col,false);
 	}
     }
+}
+
+function CanSee(Row, Col) {
+    if (!Boolean(GetRegion(Row, Col))) {return false;}
+    else if (ShowAll) {return true;}
+    else if (!FogOn && Region[Row][Col].IsExplored()) {return true;}
+    for (var A=-1; A<=1; A++) {
+	for (var B=-1; B<=1; B++) {
+	    if (GetRegion(Row+A, Col+B)) {
+		var U = Region[Row+A][Col+B].unit;
+		if (U != null && Unit[U] && Unit[U].player) {return true;}
+		var C = Region[Row+A][Col+B].city;
+		if (C != null && City[C] && City[C].player) {return true;}
+	    }
+	}
+    }
+    return false;
 }
 
 
@@ -749,23 +796,6 @@ function UpdateView(U,C) {
     }
     //if (U==-1) alert("Updated city view.");
     return(false);
-}
-
-function CanSee(Row, Col) {
-    if (!Boolean(GetRegion(Row, Col))) {return false;}
-    else if (ShowAll) {return true;}
-    else if (!FogOn && Region[Row][Col].IsExplored()) {return true;}
-    for (var A=-1; A<=1; A++) {
-	for (var B=-1; B<=1; B++) {
-	    if (GetRegion(Row+A, Col+B)) {
-		var U = Region[Row+A][Col+B].unit;
-		if (U != null && Unit[U] && Unit[U].player) {return true;}
-		var C = Region[Row+A][Col+B].city;
-		if (C != null && City[C] && City[C].player) {return true;}
-	    }
-	}
-    }
-    return false;
 }
 
 
@@ -890,7 +920,7 @@ function MoveUnit(U,Row,Col) {
 		    Unit.push({type: Rand(4)+1, row: Row+A, col: Col+B, movement: 0, active: false, player: false, city: -1, health: 10, TroopshipClass: Math.min(Transport,TroopshipClass+Rand(2)-1), veterancy: 1+(Rand(2)-1)/10});
 		    var U = Unit.length-1;
 		    Region[Row+A][Col+B].unit = U;
-		    Unit[U].Think = AttackNearestEnemy(U, Rand(5));
+		    Unit[U].Think = AttackNearestEnemy(Rand(5));
 		    Unit[U].active = true;
 		}
 		if (Unit[U].player){
@@ -1004,13 +1034,13 @@ function RestoreAllUnitsHealth() {
 
 /* AI (Units) */
 
-function AttackNearestEnemy(U, tolerance) {
+function AttackNearestEnemy(tolerance) {
     /* Sets destination
        U: unit this function thinks for.
        tolerance: a variable that affects likelihood of attacking player. should be between 1 and 5 */
     var momentum = 0;
     var prevEnemy = -1;
-    return function() {
+    return function(U) {
 	if (!(Rand(10) < tolerance) || (momentum > tolerance)) { // attack
 	    var nearestEnemy = NearestPlayer(Unit[U].row, Unit[U].col);
 	    if (nearestEnemy == prevEnemy) {
@@ -1189,10 +1219,10 @@ function AIGovernor(timeToBuild, C) {
 		unit = bestDefender;
 		//destinationRow = (Unit[player].row + City[C].row) / 2;
 		//destinationCol = (Unit[player].col + City[C].col) / 2;
-		brain = AttackNearestEnemy(U, 3);
+		brain = AttackNearestEnemy(3);
 	    } else { // build offense
 		unit = bestAttacker;
-		brain = AttackNearestEnemy(U, Rand(3));
+		brain = AttackNearestEnemy(Rand(3));
 	    }
 	    BuildUnit(unit, C);
 	    alert("AI built: " + Product[unit].name);
@@ -1572,7 +1602,7 @@ function Turn() {
 	}
 	while ((ActiveUnit>0) && ((!Unit[ActiveUnit].active) || (Unit[ActiveUnit].movement==0) || (!Unit[ActiveUnit].player))) {
 	    while ((Unit[ActiveUnit].active) && (Unit[ActiveUnit].movement) && (!Unit[ActiveUnit].player)) {
-		Unit[ActiveUnit].Think();
+		Unit[ActiveUnit].Think(ActiveUnit);
 		Unit[ActiveUnit].active=MoveUnitToDestination(ActiveUnit);
 	    }
 	    ActiveUnit--;
