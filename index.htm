@@ -876,8 +876,11 @@ function MoveUnit(U,Row,Col) {
 	    if (((A!=0)||(B!=0)) && (Unit[U].player) && !Region[Row+A][Col+B].IsExplored() && ((Region[Row+A][Col+B].terrain!=Ocean)||(Rand(10)==1)) && (Rand(Math.abs(Row-StartRow))+Rand(3)>5)) {
 		// Barbarians
 		Unit.push({type: Rand(4)+1, row: Row+A, col: Col+B, movement: 0, active: false, player: false, city: -1, health: 10, TroopshipClass: Math.min(Transport,TroopshipClass+Rand(2)-1), veterancy: 1+(Rand(2)-1)/10});
-		Region[Row+A][Col+B].unit = Unit.length-1;
-	    } else {
+		var U = Unit.length-1;
+		Region[Row+A][Col+B].unit = U;
+		Unit[U].Think = AttackNearestEnemy(U, Rand(5));
+		Unit[U].active = true;
+	    } /*else {
 		if ((Unit[U].player) && (Region[Row+A][Col+B].unit!=-1) && !Unit[Region[Row+A][Col+B].unit].player) {
 		    Barbarian=Region[Row+A][Col+B].unit;
 		    if(Rand(25)<=5+City.length) {
@@ -886,7 +889,7 @@ function MoveUnit(U,Row,Col) {
 			Unit[Barbarian].active = true;
 		    }
 		}
-	    }
+	    }*/
 	    if (Unit[U].player){
 		RegionImage(Row+A, Col+B, false);
 		Region[Row+A][Col+B].SetVisibility(true);
@@ -909,16 +912,19 @@ function CombatNeighboringUnit(Attacker) {
     var GoalCost=99;
     for (Row=Unit[Attacker].row-1; Row<=Unit[Attacker].row+1; Row++) {
 	for (Col=Unit[Attacker].col-1; Col<=Unit[Attacker].col+1; Col++) {
-	    DefenseStr = DefenseStrength(Attacker,Region[Row][Col].unit);
-	    if ((Region[Row][Col].unit>=0) && (DefenseStr<GoalCost)) {
-		GoalRow=Row;
-		GoalCol=Col;
-		GoalCost=DefenseStr;
+	    if ((Region[Row][Col].unit != -1) && Unit[Region[Row][Col].unit].player) {
+		console.log("Unit "+Attacker+" attacking Region["+Row+", "+Col+"].unit = "+Region[Row][Col].unit);
+		DefenseStr = DefenseStrength(Attacker,Region[Row][Col].unit);
+		if ((Region[Row][Col].unit>=0) && (DefenseStr<GoalCost)) {
+		    GoalRow=Row;
+		    GoalCol=Col;
+		    GoalCost=DefenseStr;
+		}
 	    }
 	}
     }
     if((Unit[Attacker].row!=GoalRow)||(Unit[Attacker].col!=GoalCol)) {
-	CombatUnit(Attacker, Region[GoalRow][GoalCol].unit, "Enemy assault!  ");
+	Combat(Attacker, Region[GoalRow][GoalCol].unit, "Enemy assault!  ");
 	return(true);
     } else {
 	return(false);
@@ -992,6 +998,51 @@ function RestoreAllUnitsHealth() {
     }
 }
 
+/* AI (Units) */
+
+function AttackNearestEnemy(U, tolerance) {
+    /* Sets destination
+       U: unit this function thinks for.
+       tolerance: a variable that affects likelihood of attacking player. should be between 1 and 5 */
+    var momentum = 0;
+    var prevEnemy = -1;
+    return function() {
+	if (!(Rand(10) < tolerance) || (momentum > tolerance)) { // attack
+	    var nearestEnemy = NearestPlayer(Unit[U].row, Unit[U].col);
+	    if (nearestEnemy == prevEnemy) {
+		momentum++;
+	    } else if (momentum > 0) {
+		momentum -= 2;
+	    } else {
+		prevEnemy = nearestEnemy;
+		momentum = 1;
+	    }
+	    Unit[U].destinationRow = Unit[prevEnemy].row;
+	    Unit[U].destinationCol = Unit[prevEnemy].col;
+	} else {
+	    Unit[U].destinationRow = Unit[U].row;
+	    Unit[U].destinationCol = Unit[U].col;
+	}
+	console.log("Enemy "+U+" is after unit "+prevEnemy+" with a momentum of "+momentum+". Heading towards ["+Unit[U].destinationRow+", "+Unit[U].destinationCol+"]"); 
+    }
+}
+
+function DefendNearestCity(U) {}
+
+function NearestPlayer(Row, Col) {
+    var distance = -1;
+    var unit = -1;
+    for (var i = 0; i < Unit.length; i++) {
+	if (Unit[i].player) {
+	    var d = Distance(Row, Col, Unit[i].row, Unit[i].col);
+	    if (d > distance) {
+		distance = d;
+		unit = i;
+	    }
+	}
+    }
+    return unit;
+}
 
 /* Nations */
 
@@ -1125,21 +1176,24 @@ function AIGovernor(timeToBuild, C) {
 		}
 	    }
 	    var player = NearestPlayer(City[C].row, City[C].col);
+	    var U = Unit.length;
+	    var brain;
 	    if (Rand(10) > Distance(City[C].row, City[C].col, Unit[player].row, Unit[player].col)) { // build defense
 		unit = bestDefender;
-		destinationRow = (Unit[player].row + City[C].row) / 2;
-		destinationCol = (Unit[player].col + City[C].col) / 2;
+		//destinationRow = (Unit[player].row + City[C].row) / 2;
+		//destinationCol = (Unit[player].col + City[C].col) / 2;
+		brain = AttackNearestEnemy(U, 3);
 	    } else { // build offense
 		unit = bestAttacker;
-		destinationRow = Unit[player].row;
-		destinationCol = Unit[player].col;
+		brain = AttackNearestEnemy(U, Rand(3));
 	    }
 	    BuildUnit(unit, C);
 	    alert("AI built: " + Product[unit].name);
-	    U = Unit.length-1;
 	    Region[City[C].row][City[C].col].unit = U;
-	    Unit[U].destinationRow = destinationRow;
-	    Unit[U].destinationCol = destinationCol;
+	    Unit[U].Think = brain;
+	    Unit[U].active = true;
+	    //Unit[U].destinationRow = destinationRow;
+	    //Unit[U].destinationCol = destinationCol;
 	    timeToBuild = 10 + (Rand(5) - 3); //10 +/- 2
 	    //alert("Next unit in " + timeToBuild + " turns.");
 	}
@@ -1148,21 +1202,6 @@ function AIGovernor(timeToBuild, C) {
 
 function BuildUnit(T, C) {
     Unit.push({"type": T, "row": City[C].row, "col": City[C].col, "movement": Product[T].mobility, "health": Product[T].health, "active": true, "player": City[C].player, "city": C, "TroopshipClass": TroopshipClass, "veterancy": Rand(City[C].veterancy[Product[City[C].product].kind])/10+0.9});
-}
-
-function NearestPlayer(Row, Col) {
-    var distance = -1;
-    var unit = -1;
-    for (var i = 0; i < Unit.length; i++) {
-	if (Unit[i].player) {
-	    var d = Distance(Row, Col, Unit[i].row, Unit[i].col);
-	    if (d > distance) {
-		distance = d;
-		unit = i;
-	    }
-	}
-    }
-    return unit;
 }
 
 function CreateCityBuildQueque(Row,Col,C) {
@@ -1526,6 +1565,7 @@ function Turn() {
 	}
 	while ((ActiveUnit>0) && ((!Unit[ActiveUnit].active) || (Unit[ActiveUnit].movement==0) || (!Unit[ActiveUnit].player))) {
 	    while ((Unit[ActiveUnit].active) && (Unit[ActiveUnit].movement) && (!Unit[ActiveUnit].player)) {
+		Unit[ActiveUnit].Think();
 		Unit[ActiveUnit].active=MoveUnitToDestination(ActiveUnit);
 	    }
 	    ActiveUnit--;
