@@ -786,12 +786,14 @@ function UpdateView(U,C) {
     }
     for (A=-1; A<=1; A++) {
         for (B=-1; B<=1; B++) {
-            RegionImage(Row+A, Col+B, false);
-            if ((U!=-1) && (Region[Row+A][Col+B].unit!=-1) && (!Unit[Region[Row+A][Col+B].unit].player)) {
-                Unit[U].active = true;
-                Unit[U].movement = Product[Unit[U].type].mobility;
-                return(true);
-            }
+	    if (GetRegion(Row+A, Col+B)) {
+		RegionImage(Row+A, Col+B, false);
+		if ((U!=-1) && (Region[Row+A][Col+B].unit!=-1) && (!Unit[Region[Row+A][Col+B].unit].player)) {
+		    Unit[U].active = true;
+		    Unit[U].movement = Product[Unit[U].type].mobility;
+		    return(true);
+		}
+	    }
         }
     }
     //if (U==-1) alert("Updated city view.");
@@ -817,6 +819,8 @@ function DeleteUnit(U) {
 	Unit.pop();
 	ActiveUnit = Unit.length-1;
     } else {
+	//Unit[U].row = 100;
+	//Unit[U].active = false;
 	if (ActiveUnit==U) {ActiveUnit = Unit.length-2};
 	Unit[U] = Unit[Unit.length-1];
 	Region[Unit[U].row][Unit[U].col].unit = U;
@@ -1199,8 +1203,8 @@ function FoundCity(Row,Col,Player) {
 function BuildEnemyCity() {
     X = 1;
     do {
-	Row = Rand(MaxRow);
-	Col = Rand(MaxCol);
+	Row = Rand(MaxRow)-1;
+	Col = Rand(MaxCol)-1;
 	X++;
 	//alert((X<30) +" "+ !TooCloseToCity(Row,Col) +" "+ (Region[Row][Col].terrain != Ocean) +" "+ !CanSee(Row,Col)  +" "+ ((X<30) && (TooCloseToCity(Row,Col) || (Region[Row][Col].terrain == Ocean) || CanSee(Row,Col))));
 	//} while ((X<30) && !TooCloseToCity(Row,Col) && (Region[Row][Col].terrain != Ocean) && (NeighboringRegions(Row,Col,".unit!=-1")>0));
