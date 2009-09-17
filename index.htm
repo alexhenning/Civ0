@@ -32,12 +32,10 @@
      </div>
      <script type="text/javascript">;
 
-var Debug = 1;
+var Debug = 1, Console = Debug;
 
 var Year = 0;
 var ManhattanProjectBuilt = false;
-
-var console = console ? console : false; // for when console doesn't exist
 
 function Rand(X) {
     return(Math.floor(Math.random()*X+1));
@@ -1048,21 +1046,21 @@ function AttackNearestEnemy(tolerance) {
     return function(U) {
 	if (!(Rand(10) < tolerance) || (momentum > tolerance)) { // attack
 	    var nearestEnemy = NearestPlayer(Unit[U].row, Unit[U].col);
-	    if (nearestEnemy == prevEnemy) {
+	    if (Unit[nearestEnemy] == prevEnemy) {
 		momentum++;
 	    } else if (momentum > 0) {
 		momentum -= 1.5;
 	    } else {
-		prevEnemy = nearestEnemy;
+		prevEnemy = Unit[nearestEnemy];
 		momentum = 1;
 	    }
-	    Unit[U].destinationRow = Unit[prevEnemy].row;
-	    Unit[U].destinationCol = Unit[prevEnemy].col;
+	    Unit[U].destinationRow = prevEnemy.row;
+	    Unit[U].destinationCol = prevEnemy.col;
 	} else {
 	    Unit[U].destinationRow = Unit[U].row;
 	    Unit[U].destinationCol = Unit[U].col;
 	}
-	if (console) console.log("Enemy "+U+" is after unit "+prevEnemy+" with a momentum of "+momentum+". Heading towards ["+Unit[U].destinationRow+", "+Unit[U].destinationCol+"]"); 
+	if (Console) console.log("Enemy "+U+" is after unit "+prevEnemy+" with a momentum of "+momentum+". Heading towards ["+Unit[U].destinationRow+", "+Unit[U].destinationCol+"]"); 
     }
 }
 
@@ -1074,17 +1072,17 @@ function DefendCity(C) {
     var prevEnemy = -1;
     return function(U) {
 	var nearestEnemy = NearestPlayer(Unit[U].row, Unit[U].col);
-	if (nearestEnemy == prevEnemy) {
+	if (Unit[nearestEnemy] == prevEnemy) {
 	    momentum++;
 	} else if (momentum > 0) {
 	    momentum -= 1.5;
 	} else {
-	    prevEnemy = nearestEnemy;
+	    prevEnemy = Unit[nearestEnemy];
 	    momentum = 1;
 	}
-	Unit[U].destinationRow = (Unit[prevEnemy].row + City[C].row) / 2;
-	Unit[U].destinationCol = (Unit[prevEnemy].col + City[C].col) / 2;
-	if (console) console.log("Enemy "+U+" is defending city "+C+" from unit "+prevEnemy+" with a momentum of "+momentum+". Heading towards ["+Unit[U].destinationRow+", "+Unit[U].destinationCol+"]"); 
+	Unit[U].destinationRow = (prevEnemy.row + City[C].row) / 2;
+	Unit[U].destinationCol = (prevEnemy.col + City[C].col) / 2;
+	if (Console) console.log("Enemy "+U+" is defending city "+C+" from unit "+prevEnemy+" with a momentum of "+momentum+". Heading towards ["+Unit[U].destinationRow+", "+Unit[U].destinationCol+"]"); 
     }
 }
 
@@ -1154,7 +1152,7 @@ function TooCloseToCity(Row,Col) {
 
 
 function FoundCity(Row,Col,Player) {
-    if (!Boolean(GetRegion(Row, Col))) {if (console) console.error("FoundCity("+Row+", "+Col+", "+Player+") failed. Region does not exist"); return false;}
+    if (!Boolean(GetRegion(Row, Col))) {if (Console) console.error("FoundCity("+Row+", "+Col+", "+Player+") failed. Region does not exist"); return false;}
     var Stats=CitySiteStats(Row,Col);
     City.push({name: "Unnamed", player: Player, foodReserve: 0, productionReserve: 0, row: Row, col: Col, food: Stats.food, production: Stats.production, trade: Stats.trade, science: 1, corruptionRate: 1, product: Warrior, citizens: 2, happyCitizens: 4, healthyCitizens: 4});
     var C = City.length-1;
@@ -1248,12 +1246,12 @@ function AIGovernor(timeToBuild, C) {
 		brain = AttackNearestEnemy(Rand(3));
 	    }
 	    BuildUnit(unit, C);
-	    if (console) console.info("AI built: " + Product[unit].name);
+	    if (Console) console.info("AI built: " + Product[unit].name);
 	    Region[City[C].row][City[C].col].unit = U;
 	    Unit[U].Think = brain;
 	    Unit[U].active = true;
 	    timeToBuild = 10 + (Rand(5) - 3); //10 +/- 2
-	    if (console) console.log("Next unit in " + timeToBuild + " turns.");
+	    if (Console) console.log("Next unit in " + timeToBuild + " turns.");
 	}
     }
 }
