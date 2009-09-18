@@ -536,7 +536,7 @@ TerrainProbability = new Array("ttc","ttttc", "tppp", "pppgfs", "gfs", "jjsgg", 
 var City = new Array();
 
 var Unit = new Array();
-
+var ActiveUnits = new Array();
 
 /* Techs */
 
@@ -810,24 +810,29 @@ function UnitString() {
 }
 
 function DeleteUnit(U) {
-    //alert("["+Unit[U].row+","+Unit[U].col+"]");
     Region[Unit[U].row][Unit[U].col].unit = -1;
     RegionImage(Unit[U].row,Unit[U].col,false);
-    //alert(UnitString());
     if(U==Unit.length-1) {
 	Unit.pop();
-	ActiveUnit = Unit.length-1;
     } else {
-	//Unit[U].row = 100;
-	//Unit[U].active = false;
-	if (ActiveUnit==U) {ActiveUnit = Unit.length-2};
 	Unit[U] = Unit[Unit.length-1];
 	Region[Unit[U].row][Unit[U].col].unit = U;
-	//RegionImage(Unit[U].row,Unit[U].col,false);
-	//alert("["+Unit[U].row+","+Unit[U].col+"].unit="+Region[Unit[U].row][Unit[U].col].unit);
 	Unit.pop();
     }
-    //alert(UnitString());
+    for (var i = 0; i < ActiveUnits.length; i++) {
+	if (ActiveUnits[i] == U) { // the unit is dead and therefore no longer active
+	    if (i != (ActiveUnits.length-1)) {
+		ActiveUnits[i] = ActiveUnits[ActiveUnits.length-1];  
+	    }
+	    ActiveUnits.pop();
+	}
+    }
+    for (var i = 0; i < ActiveUnits.length; i++) {
+	if (ActiveUnits[i] == Unit.length) { // the units index has changed
+	    ActiveUnits[i] = U;
+	}
+    }
+    ActiveUnit = ActiveUnits[0];
 }
 
 function IncreaseUnitVeterancy(U) {
@@ -1060,7 +1065,6 @@ function AttackNearestEnemy(tolerance) {
 	    Unit[U].destinationRow = Unit[U].row;
 	    Unit[U].destinationCol = Unit[U].col;
 	}
-	if (Console) console.log("Enemy "+U+" is after unit "+prevEnemy+" with a momentum of "+momentum+". Heading towards ["+Unit[U].destinationRow+", "+Unit[U].destinationCol+"]"); 
     }
 }
 
@@ -1082,7 +1086,6 @@ function DefendCity(C) {
 	}
 	Unit[U].destinationRow = (prevEnemy.row + City[C].row) / 2;
 	Unit[U].destinationCol = (prevEnemy.col + City[C].col) / 2;
-	if (Console) console.log("Enemy "+U+" is defending city "+C+" from unit "+prevEnemy+" with a momentum of "+momentum+". Heading towards ["+Unit[U].destinationRow+", "+Unit[U].destinationCol+"]"); 
     }
 }
 
@@ -1614,62 +1617,80 @@ function ChangeWonder(value) {
 function Turn() {
     //alert("starting loop with "+ActiveUnit+" and Unit.length of "+Unit.length);
     do{
-	while ((ActiveUnit>0) && (!Unit[ActiveUnit].active) && (Unit[ActiveUnit].player)) {
-	    if (!UpdateView(ActiveUnit)){
-		ActiveUnit--;
-	    }
+	//if (Console) console.log(Unit[ActiveUnit].movement+" "+!Unit[ActiveUnit].movement+" "+!UpdateView(ActiveUnit)+" "+ActiveUnit+" "+ActiveUnits);
+	if ((ActiveUnits.length && !Unit[ActiveUnit].movement)) {
+	    ActiveUnits.shift();
+	    ActiveUnit = ActiveUnits[0];
 	}
-	while ((ActiveUnit>0) && ((!Unit[ActiveUnit].active) || (Unit[ActiveUnit].movement==0) || (!Unit[ActiveUnit].player))) {
-	    while ((Unit[ActiveUnit].active) && (Unit[ActiveUnit].movement) && (!Unit[ActiveUnit].player)) {
-		Unit[ActiveUnit].Think(ActiveUnit);
-		Unit[ActiveUnit].active=MoveUnitToDestination(ActiveUnit);
-	    }
-	    ActiveUnit--;
-	}
+	//if (Console) console.info(": "+ActiveUnit+" "+ActiveUnits);
 	//alert("Active Unit = " + ActiveUnit);
-	if ((Unit[ActiveUnit].active) && (Unit[ActiveUnit].movement) && (Unit[ActiveUnit].player)) {
-	    RegionImage(Unit[ActiveUnit].row, Unit[ActiveUnit].col, true);
-	} else {
-	    Year++;
-	    RestoreAllUnitsHealth();
-	    NextTech();
-	    NextWonder();
-	    for (C=0; C<City.length; C++) {
-		NextCitizen(C);
-		if (City[C].player){
-		    UpdateView(-1,C);
-		    NextProduct(C);
-		} else {
-		    City[C].AIGovernor();
-		}
-	    }
-	    UpdateEntireMap();
-	    ActiveUnit = Unit.length-1;
-	    while (ActiveUnit && ((!Unit[ActiveUnit].active) || (!Unit[ActiveUnit].movement) || (!Unit[ActiveUnit].player))) {
-		ActiveUnit--;
-	    }
-	    if (!ActiveUnit && !Unit[ActiveUnit].active && !Unit[ActiveUnit].player) {
-		for (U=0; U<Unit.length; U++) {
-		    if (Unit[U].player) {
-			Unit[U].active = true;
-			Unit[U].movement = Product[Unit[U].type].mobility;
+	if (ActiveUnits.length) {
+	    for (var A = -1; A <= 1; A++) {
+		for (var B = -1; B <= 1; B++) {
+		    if (GetRegion(Row+A, Col+B)) {
+			Region[Row+A][Col+B].SetVisibility(true);
+			RegionImage(Row+A, Col+B, false);
 		    }
 		}
 	    }
-	    ActiveUnit = Unit.length-1;
-	    while (ActiveUnit && ((!Unit[ActiveUnit].active) || (!Unit[ActiveUnit].movement) || (!Unit[ActiveUnit].player))) {
-		ActiveUnit--;
-	    }
-	    if (!ActiveUnit && !Unit[ActiveUnit].active && !Unit[ActiveUnit].player) {
-		alert("All your units are destroyed. Game over.")
-		    ActiveUnit=-1;
-	    } else {
-		RegionImage(Unit[ActiveUnit].row, Unit[ActiveUnit].col, true);
-	    }
+	    RegionImage(Unit[ActiveUnit].row, Unit[ActiveUnit].col, true);
+	} else {
+	    EndOfTurn()
 	}
     }while(MoveUnitToDestination(ActiveUnit));
 }
 
+function EndOfTurn() {
+    for (var i = 0; i < Unit.length; i++) {
+	if (!Unit[i].player) {
+	    Unit[i].Think(i);
+	    Unit[i].active = MoveUnitToDestination(i);
+	}
+    }
+    Year++;
+    RestoreAllUnitsHealth();
+    NextTech();
+    NextWonder();
+    for (C=0; C<City.length; C++) {
+	NextCitizen(C);
+	if (City[C].player){
+	    UpdateView(-1,C);
+	    NextProduct(C);
+	} else {
+	    City[C].AIGovernor();  
+	}
+    }
+    UpdateEntireMap();
+    ActiveUnit = Unit.length-1;
+    while (ActiveUnit && ((!Unit[ActiveUnit].active) || (!Unit[ActiveUnit].movement) || (!Unit[ActiveUnit].player))) {
+	ActiveUnit--;
+    }
+    if (!ActiveUnit && !Unit[ActiveUnit].active && !Unit[ActiveUnit].player) {
+	for (U=0; U<Unit.length; U++) {
+	    if (Unit[U].player) {
+		Unit[U].active = true;
+		Unit[U].movement = Product[Unit[U].type].mobility;
+	    }
+	}
+    }
+    ActiveUnit = Unit.length-1;
+    var cnt = 0;
+    while (ActiveUnit != -1) {
+	if (Unit[ActiveUnit].active && Unit[ActiveUnit].movement && Unit[ActiveUnit].player) {
+	    ActiveUnits[cnt] = ActiveUnit;
+	    cnt++;
+	}
+	ActiveUnit--;
+    }
+    if (Console) console.log(ActiveUnits);
+    ActiveUnit = ActiveUnits[0];
+    if (!ActiveUnits.length) {
+	alert("All your units are destroyed. Game over.");
+	ActiveUnit=-1;
+    } else {
+	RegionImage(Unit[ActiveUnit].row, Unit[ActiveUnit].col, true);
+    }
+}
 
 function i(Row, Col) {
     if (GetRegion(Row, Col)) {
