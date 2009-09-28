@@ -923,7 +923,7 @@ function MoveUnit(U,Row,Col) {
 		RegionImage(Row+A, Col+B, false);
 		//alert(Region[X+A][Y+B].terrain);
 		var S = 'p'+(Row+A)+'_'+(Col+B);
-		if (((A!=0)||(B!=0)) && (Unit[U].player) && GetRegion(Row+A, Col+B) && !Region[Row+A][Col+B].IsExplored() && ((Region[Row+A][Col+B].terrain!=Ocean)||(Rand(10)==1)) && (Rand(Math.abs(Row-StartRow))+Rand(3)>5)) {
+		if (((A!=0)||(B!=0)) && (Unit[U].player) && GetRegion(Row+A, Col+B) && !Region[Row+A][Col+B].IsExplored() && ((Region[Row+A][Col+B].terrain!=Ocean)||(Rand(10)==1)) && (Rand(Math.abs(Row-StartRow))+Rand(3)>10)) {
 		    // Barbarians
 		    Unit.push({type: Rand(4)+1, row: Row+A, col: Col+B, movement: 0, active: false, player: false, city: -1, health: 10, TroopshipClass: Math.min(Transport,TroopshipClass+Rand(2)-1), veterancy: 1+(Rand(2)-1)/10});
 		    var U = Unit.length-1;
@@ -935,8 +935,12 @@ function MoveUnit(U,Row,Col) {
 		    RegionImage(Row+A, Col+B, false);
 		    Region[Row+A][Col+B].SetVisibility(true);
 		}
-		if(!LostAtSea && (Unit[U].type==Settler)) {
+		if (!LostAtSea && (Unit[U].type==Settler)) {
 		    Region[Row+A][Col+B].SetTitle = CitySiteString(Row+A,Col+B);
+		}
+		var C = Region[Row+A][Col+B].city;
+		if (C != -1 && !cityHasDefenders(C)) {
+		    cityChangeOwnership(C);
 		}
 	    }
 	}
@@ -1256,6 +1260,38 @@ function AIGovernor(timeToBuild, C) {
 	    timeToBuild = 10 + (Rand(5) - 3); //10 +/- 2
 	    if (Console) console.log("Next unit in " + timeToBuild + " turns.");
 	}
+    }
+}
+
+function cityDefenders(C) {
+    var Row = City[C].row;
+    var Col = City[C].col;
+    var defenders = [];
+    var count = 0;
+    for (A=-1; A<=1; A++) {
+	for (B=-1; B<=1; B++) {
+	    if ( GetRegion(Row+A, Col+B) && 
+		 Region[Row+A][Col+B].unit != -1 && 
+		 Unit[Region[Row+A][Col+B].unit].player == City[C].player) {
+		 defenders[count] = Region[Row+A][Col+B].unit;
+		count++;
+	    }
+	}
+    }
+    return defenders;
+}
+
+function  cityHasDefenders(C) {
+    return cityDefenders(C).length > 0;
+}
+
+function cityChangeOwnership(C) {
+    City[C].player = !City[C].player;
+    if (City[C].player) {
+	CreateCityBuildQueque(City[C].row,City[C].col,C);
+        ChangeProduct(C);
+    } else {
+	City[C].queque.style.display = "none";
     }
 }
 
