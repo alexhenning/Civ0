@@ -45,6 +45,11 @@ function Distance(Row1, Col1, Row2, Col2) {
     return Math.sqrt(Math.pow(Row1-Row2,2)+Math.pow(Col1-Col2,2));
 }
 
+Array.prototype.copy =
+    function() {
+    return [].concat(this);
+}
+
 var Terrain = new Array();
 Ocean = 0;
 Terrain[Ocean] = {name: "Ocean", symbol: "o", food: 1, production: 0, trade: 2, movementCost: 1, defense: 1};
@@ -1045,11 +1050,55 @@ function RestoreAllUnitsHealth() {
 }
 
 /* AI (Units) */
+var AIUnitReserve = 2; // Number of units the AI can magically make
+var ToughnessFactor = 1; // Number of units AI get per 1 the player gets
+var BuildingFactor = .25 * ToughnessFactor; // Number of units the AI get per building
+
+function AIKing() {
+    if (Console) console.info("AIKing is thinking...");
+    cities = City.filter(isMine(false));
+    if ((AIUnitReserve - 2*cities.length) >= 6) {
+	//
+    }
+    if (Console) console.info("AIKing: Do I need to defend my cities? ("+cities+")");
+    // check to defend cities
+    for (var i = 0; i < cities.length; i++) {
+	console.log("i = "+i);
+	var nearestEnemy = NearestPlayer(cities[i].row, cities[i].col);
+	if (Console) console.info("AIKing: Thinking... Nearest enemy to city["+i+"]@["+cities[i].row+"]["+cities[i].col+"] is at Region["+Unit[nearestEnemy].row+"]["+Unit[nearestEnemy].col+"].");
+	if (Console) console.info(cities[i].defenders.length);
+	if (Console) console.info(Distance(cities[i].row, cities[i].col, Unit[nearestEnemy].row, Unit[nearestEnemy].col));
+	if ((cities[i].defenders.length < 2) &&
+	    (Distance(cities[i].row, cities[i].col, Unit[nearestEnemy].row, Unit[nearestEnemy].col) <= 5)) {
+	    if (Console) console.info("AIKing: ...City["+i+"] needs defense");
+	    for (var j = 0; j < 2; j++) {
+		var freeSpot = FreeSpotAround(cities[i].row, cities[i].col);
+		if (Console) console.info("AIKing: Defense@["+freeSpot.row+"]["+freeSpot.col+"]");
+		var U = CreateAIUnit(GetDefensiveUnit(), freeSpot.row, freeSpot.col, DefendCity(cities[i]))
+		cities[i].defenders.push(Unit[U]);
+	    }
+	} else if ((cities[i].defenders.length >= 2) &&
+		   (Distance(cities[i].row, cities[i].col, Unit[nearestEnemy].row, Unit[nearestEnemy].col) >= 5)) {
+	    
+	}
+    }
+    if (Console) console.info("...AIKing has thunk");
+}
+
+function GetDefensiveUnit() {
+    var units = AvailableUnits().reverse();
+    var best = 1;
+    units = AvailableUnits();
+    for (var i = 0; i < units.length; i++) {
+	if (Product[units[i]].defense > Product[best].defense || 
+	    (Product[units[i]].defense == Product[best].defense && Product[units[i]].attack > Product[best].attack)) {
+	    best = i;
+	}
+    }
+    return units[best];
+}
 
 function AttackNearestEnemy(tolerance) {
-    /* Sets destination
-       U: unit this function thinks for.
-       tolerance: a variable that affects likelihood of attacking player. should be between 1 and 5 */
     var momentum = 0;
     var prevEnemy = -1;
     return function(U) {
@@ -1072,40 +1121,43 @@ function AttackNearestEnemy(tolerance) {
     }
 }
 
-function DefendCity(C) {
-    /* Sets destination
-       U: unit this function thinks for.
-       tolerance: a variable that affects likelihood of attacking player. should be between 1 and 5 */
-    var momentum = 0;
-    var prevEnemy = -1;
+function DefendCity(city) {
     return function(U) {
-	var nearestEnemy = NearestPlayer(Unit[U].row, Unit[U].col);
-	if (Unit[nearestEnemy] == prevEnemy) {
-	    momentum++;
-	} else if (momentum > 0) {
-	    momentum -= 1.5;
-	} else {
-	    prevEnemy = Unit[nearestEnemy];
-	    momentum = 1;
-	}
-	Unit[U].destinationRow = (prevEnemy.row + City[C].row) / 2;
-	Unit[U].destinationCol = (prevEnemy.col + City[C].col) / 2;
+	Unit[U].destinationRow = Unit[U].row;
+	Unit[U].destinationCol = Unit[U].col;
     }
 }
 
 function NearestPlayer(Row, Col) {
-    var distance = -1;
-    var unit = -1;
-    for (var i = 0; i < Unit.length; i++) {
-	if (Unit[i].player) {
-	    var d = Distance(Row, Col, Unit[i].row, Unit[i].col);
-	    if (d > distance) {
-		distance = d;
-		unit = i;
+    playersUnits = Unit.filter(isMine(true));
+    closest = playersUnits.sort(function (a, b) {
+	    return Distance(Row, Col, a.row, a.col) - Distance(Row, Col, b.row, b.col);
+	})[0];
+    return Unit.indexOf(closest);
+}
+
+function isMine(mine) {
+    return function(obj) {
+	return obj.player == mine;
+    }
+}
+
+function FreeSpotAround(Row, Col) {
+    for (var A = -1; A < 2; A++) {
+	for (var B = -1; B < 2; B++) {
+	    if (GetRegion(Row+A, Col+B) && Region[Row+A][Col+B].unit == -1) {
+		return {row: Row+A, col: Col+B};
 	    }
 	}
     }
-    return unit;
+}
+
+function CreateAIUnit(type, Row, Col, think) {
+    var unit = Unit.push({type: type, row: Row, col: Col, movement: 0, active: true, player: false, city: -1, health: 10, TroopshipClass: Math.min(Transport,TroopshipClass+Rand(2)-1), veterancy: 1+(Rand(2)-1)/10});
+    U = Unit.length - 1;
+    Unit[U].Think = think;
+    Region[Row][Col].unit = U;
+    return U;
 }
 
 /* Nations */
@@ -1171,6 +1223,7 @@ function FoundCity(Row,Col,Player) {
     }
     City[C].building[Houses] = true;
     City[C].building[Wharf] = (NeighboringRegions(Row,Col,".terrain==Ocean")>0);
+    City[C].defenders = [];
     /* Veterancy */
     City[C].veterancy = new Array();
     City[C].veterancy["land"] = 0;
@@ -1287,6 +1340,7 @@ function  cityHasDefenders(C) {
 
 function cityChangeOwnership(C) {
     City[C].player = !City[C].player;
+    RegionImage(City[C].Row, City[C].Col, false);
     if (City[C].player) {
 	CreateCityBuildQueque(City[C].row,City[C].col,C);
         ChangeProduct(C);
@@ -1297,6 +1351,7 @@ function cityChangeOwnership(C) {
 
 function BuildUnit(T, C) {
     Unit.push({"type": T, "row": City[C].row, "col": City[C].col, "movement": Product[T].mobility, "health": Product[T].health, "active": true, "player": City[C].player, "city": C, "TroopshipClass": TroopshipClass, "veterancy": Rand(City[C].veterancy[Product[City[C].product].kind])/10+0.9});
+    AIUnitReserve += ToughnessFactor;
 }
 
 function CreateCityBuildQueque(Row,Col,C) {
@@ -1441,6 +1496,7 @@ function NextProduct(C) {
 	    if (Product[P].type=='building') {
 		City[C].building[P] = true;
 		eval(Product[P].code);
+		AIUnitReserve += BuildingFactor;
 	    }
 	}
 	ChangeProduct(C);
@@ -1677,6 +1733,7 @@ function Turn() {
 }
 
 function EndOfTurn() {
+    AIKing();
     for (var i = 0; i < Unit.length; i++) {
 	if (!Unit[i].player) {
 	    Unit[i].Think(i);
