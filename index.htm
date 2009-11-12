@@ -45,10 +45,23 @@ function Distance(Row1, Col1, Row2, Col2) {
     return Math.sqrt(Math.pow(Row1-Row2,2)+Math.pow(Col1-Col2,2));
 }
 
-Array.prototype.copy =
-    function() {
-    return [].concat(this);
-}
+function map (fun /*, lists*/) {
+    if ((typeof fun != "function") || (arguments.length < 2))
+	throw new TypeError();
+
+    var len = arguments[1].length;
+    var res = new Array(len);
+    for (var i = 0; i < len; i++) {
+	args = [];
+	for (var j = 1; j < arguments.length; j++) {
+	    args[j-1] = arguments[j][i];
+	}
+	res[i] = fun.apply(this, args);
+    }
+
+    return res;
+};
+
 
 var Terrain = new Array();
 Ocean = 0;
@@ -526,6 +539,7 @@ Territory.prototype.SetCity = function(Row, Col, focus) {
     this.unitImg.style.left = '0px';
 };
 Territory.prototype.IsExplored = function() {return this.fogImg.src.indexOf('unexplored.png') == -1};
+Territory.prototype.IsVisible = function() {return this.fogImg.src.indexOf('fog.png') == -1};
 
 function GetRegion(Row, Col) {
     return Region[Row] && Region[Row][Col] ? Region[Row][Col] : false;
@@ -821,7 +835,7 @@ function DeleteUnit(U) {
 	Unit.pop();
     } else {
 	Unit[U] = Unit[Unit.length-1];
-	Region[Unit[U].row][Unit[U].col].unit = U;
+	Region[Unit[Unit.length-1].row][Unit[Unit.length-1].col].unit = U;
 	Unit.pop();
     }
     for (var i = 0; i < ActiveUnits.length; i++) {
@@ -963,7 +977,7 @@ function CombatNeighboringUnit(Attacker) {
     var GoalCost=99;
     for (Row=Unit[Attacker].row-1; Row<=Unit[Attacker].row+1; Row++) {
 	for (Col=Unit[Attacker].col-1; Col<=Unit[Attacker].col+1; Col++) {
-	    if (GetRegion(Row, Col) && (Region[Row][Col].unit != -1) && Unit[Region[Row][Col].unit].player) {
+	    if ((GetRegion(Row, Col) && (Region[Row][Col].unit != -1) && Unit[Region[Row][Col].unit].player)) {
 		if (console) console.log("Unit "+Attacker+" attacking Region["+Row+", "+Col+"].unit = "+Region[Row][Col].unit);
 		DefenseStr = DefenseStrength(Attacker,Region[Row][Col].unit);
 		if ((Region[Row][Col].unit>=0) && (DefenseStr<GoalCost)) {
@@ -1049,6 +1063,10 @@ function RestoreAllUnitsHealth() {
     }
 }
 
+function DistanceSort (a, b) {
+    return Distance(a[0].row, a[0].col, a[1].row, a[1].col) - Distance(b[0].row, b[0].col, b[1].row, b[1].col);
+}
+
 /* AI (Units) */
 var AIUnitReserve = 2; // Number of units the AI can magically make
 var ToughnessFactor = 1; // Number of units AI get per 1 the player gets
@@ -1057,35 +1075,163 @@ var BuildingFactor = .25 * ToughnessFactor; // Number of units the AI get per bu
 function AIKing() {
     if (Console) console.info("AIKing is thinking...");
     cities = City.filter(isMine(false));
-    if ((AIUnitReserve - 2*cities.length) >= 6) {
-	//
+    offensiveStrength = AIUnitReserve - 2*cities.length;
+    if (Console) console.info("AIKing: Should I attack with an offensive strength of "+offensiveStrength+"?");
+    if (offensiveStrength >= (4 + Rand(5))) {
+	army = GetUnits(offensiveStrength);
+	relevantCities = GetTargetAndOrigin();
+	locations = GetViableLocations(relevantCities["target"], relevantCities["origin"]);
+	if (locations.length > army["offensiveStrength"]) {
+	    PlaceUnits(army, locations, relevantCities["target"]);
+
+	    if (Console) console.info("AIKing: I will build an army of "+army["scouts"]+ " scouts, "+army["legions"]+" legions and "+army["champions"]+"champions.");
+	    if (Console) console.info("AIKing: My city of "+relevantCities["origin"].name+" will attack "+relevantCities["target"].name+".");
+	}
     }
-    if (Console) console.info("AIKing: Do I need to defend my cities? ("+cities+")");
+
     // check to defend cities
+    if (Console) console.info("AIKing: Do I need to defend my cities? ("+cities+")");
     for (var i = 0; i < cities.length; i++) {
-	console.log("i = "+i);
 	var nearestEnemy = NearestPlayer(cities[i].row, cities[i].col);
-	if (Console) console.info("AIKing: Thinking... Nearest enemy to city["+i+"]@["+cities[i].row+"]["+cities[i].col+"] is at Region["+Unit[nearestEnemy].row+"]["+Unit[nearestEnemy].col+"].");
-	if (Console) console.info(cities[i].defenders.length);
-	if (Console) console.info(Distance(cities[i].row, cities[i].col, Unit[nearestEnemy].row, Unit[nearestEnemy].col));
+	if (Console) console.info("AIKing: Thinking... Nearest enemy to city["+i+"]@["+cities[i].row+"]["+cities[i].col+"] is at Region["+Unit[nearestEnemy].row+"]["+Unit[nearestEnemy].col+"] which is "+Distance(cities[i].row, cities[i].col, Unit[nearestEnemy].row, Unit[nearestEnemy].col)+" units away. I have "+cities[i].defenders.length+" defenders.");
+
 	if ((cities[i].defenders.length < 2) &&
 	    (Distance(cities[i].row, cities[i].col, Unit[nearestEnemy].row, Unit[nearestEnemy].col) <= 5)) {
-	    if (Console) console.info("AIKing: ...City["+i+"] needs defense");
-	    for (var j = 0; j < 2; j++) {
-		var freeSpot = FreeSpotAround(cities[i].row, cities[i].col);
-		if (Console) console.info("AIKing: Defense@["+freeSpot.row+"]["+freeSpot.col+"]");
-		var U = CreateAIUnit(GetDefensiveUnit(), freeSpot.row, freeSpot.col, DefendCity(cities[i]))
-		cities[i].defenders.push(Unit[U]);
-	    }
-	} else if ((cities[i].defenders.length >= 2) &&
+	    // Defense is needed
+	    if (Console) console.info("AIKing: ...City["+i+"] needs defense.");
+	    AddDefenders(cities[i]);
+	} else if ((cities[i].defenders.length >= 1) &&
 		   (Distance(cities[i].row, cities[i].col, Unit[nearestEnemy].row, Unit[nearestEnemy].col) >= 5)) {
-	    
+	    // Defense is no longer needed
+	    if (Console) console.info("AIKing: ...City["+i+"] no longer needs defense.");
+	    RemoveDefenders(cities[i].defenders);
 	}
     }
     if (Console) console.info("...AIKing has thunk");
 }
 
-function GetDefensiveUnit() {
+function GetUnits(offensiveStrength) {
+    scouts = Rand(3); offensiveStrength -= scouts;
+    legions = offensiveStrength - Rand(2); offensiveStrength -= legions;
+    champions = offensiveStrength; offensiveStrength -= champions;
+    offensiveStrength = scouts + legions + champions;
+    return {"scouts": scouts, "legions": legions, "champions": champions, "offensiveStrength": offensiveStrength};
+}
+function GetTargetAndOrigin() {
+    playerCities = City.filter(isMine(true));
+    cityPairs = [];
+    cnt = 0;
+    for (var i = 0; i < cities.length; i++) {
+	for (var j = 0; j < playerCities.length; j ++) {
+	    cityPairs[cnt] = [cities[i], playerCities[j]];
+	    cnt++;
+	}
+    }
+    var cityPairs = cityPairs.sort(DistanceSort);
+    return {"origin": cityPairs[0][0], "target": cityPairs[0][1]};
+}
+function GetViableLocations(target, origin) {
+    var rows = [origin.row, target.row].sort(); rows = [rows[0]-5, rows[1]+5];
+    var cols = [origin.col, target.col].sort(); cols = [cols[0]-5, cols[1]+5];
+    var locations = [];
+    var cnt = 0;
+    for (var row = rows[0]; row <= rows[1]; row++) {
+	for (var col = cols[0]; col <= cols[1]; col++) {
+	    if (GetRegion(row, col)) {
+		locations[cnt] = Region[row][col];
+		cnt++;
+	    }
+	}
+    }
+    if (Console) console.log(locations.length);
+    locations = locations.filter(function(loc) {
+	    return loc && !loc.IsVisible() && (loc.unit == -1) && (loc.city == -1);
+	});
+    locations = locations.map(function (loc) {
+	    return [loc, target];
+	}).sort(DistanceSort).map(function (loc) {
+		return loc[0];
+	    });
+    return locations;
+}
+function PlaceUnits(army, locations, target) {
+    for (var i = 0; i < army["scouts"]; i++) {
+	var loc = locations.shift();
+	console.info(loc);
+	CreateAIUnit(GetScout(), loc.row, loc.col, AttackCity(target));
+    }
+    buffer = Math.floor((locations.length - army["offensiveStrength"] + army["scouts"]) / 3);
+    for (var i = 0; i < 2 * buffer; i++) {locations.shift();} // eat up free locations to leave space between scouts and warriors
+    for (var i = 0; i < army["legions"]; i++) {
+	var loc = locations.shift();
+	CreateAIUnit(GetLegion(), loc.row, loc.col, AttackCity(target));
+    }
+    for (var i = 0; i < buffer; i++) {locations.shift();} // eat up free locations to leave space between warriors and champions
+    for (var i = 0; i < army["champions"]; i++) {
+	var loc = locations.shift();
+	CreateAIUnit(GetChampion(), loc.row, loc.col, AttackCity(target));
+    }
+}
+
+function AddDefenders(city) {
+    for (var j = 0; j < 2; j++) {
+	var freeSpot = FreeSpotAround(city.row, city.col);
+	if (Console) console.info("AIKing: Built Defense@["+freeSpot.row+"]["+freeSpot.col+"]");
+	var U = CreateAIUnit(GetDefense(), freeSpot.row, freeSpot.col, DefendCity(city));
+	city.defenders.push(Unit[U]);
+    }
+}
+function RemoveDefenders(defenders) {
+    for (var j = 0; j < defenders.length; j++) {
+	var x = Unit.shift();
+	if (Console) console.log(defenders+" "+x+" "+Unit.indexOf(x));
+	if (Unit.indexOf(x) != -1) {
+	    DeleteUnit(Unit.indexOf(x));
+	    AIUnitReserve += 1;
+	}
+    }
+}
+
+function GetScout() {
+    var units = AvailableUnits().reverse();
+    var best = 1;
+    units = AvailableUnits();
+    for (var i = 0; i < units.length; i++) {
+	if (Product[units[i]].mobility > Product[best].mobility || 
+	    (Product[units[i]].mobility == Product[best].mobility && Product[units[i]].attack < Product[best].attack)) {
+	    best = i;
+	}
+    }
+    return units[best];
+}
+
+function GetLegion() {
+    var units = AvailableUnits().reverse();
+    var best = 1;
+    units = AvailableUnits();
+    for (var i = 0; i < units.length; i++) {
+	if (Product[units[i]].attack > Product[best].attack || 
+	    (Product[units[i]].attack == Product[best].attack && Product[units[i]].defense > Product[best].defense)) {
+	    best = i;
+	}
+    }
+    return units[best];
+}
+
+function GetChampion() {
+    var units = AvailableUnits().reverse();
+    var best = 1;
+    units = AvailableUnits();
+    for (var i = 0; i < units.length; i++) {
+	if (Product[units[i]].attack > Product[best].attack || 
+	    (Product[units[i]].attack == Product[best].attack && Product[units[i]].defense > Product[best].defense)) {
+	    best = i;
+	}
+    }
+    return units[best];
+}
+
+function GetDefense() {
     var units = AvailableUnits().reverse();
     var best = 1;
     units = AvailableUnits();
@@ -1118,6 +1264,15 @@ function AttackNearestEnemy(tolerance) {
 	    Unit[U].destinationRow = Unit[U].row;
 	    Unit[U].destinationCol = Unit[U].col;
 	}
+    }
+}
+
+function AttackCity(city) {
+    var momentum = 0;
+    var prevEnemy = -1;
+    return function(U) {
+	Unit[U].destinationRow = city.row;
+	Unit[U].destinationCol = city.col;
     }
 }
 
@@ -1157,6 +1312,7 @@ function CreateAIUnit(type, Row, Col, think) {
     U = Unit.length - 1;
     Unit[U].Think = think;
     Region[Row][Col].unit = U;
+    AIUnitReserve -= 1;
     return U;
 }
 

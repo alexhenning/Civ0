@@ -1,0 +1,11 @@
+
+
+* AI
+** TODO Add lazy city defenders.
+** TODO Add lazy city attackers
+
+* UI
+** TODO Fix coloring of build queques
+
+* Support
+** TODO Support blackberry devices
