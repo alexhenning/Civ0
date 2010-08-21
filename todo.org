@@ -1,11 +1,23 @@
+TODO for civ0
 
+* For 0.1 Functioning alpha
+** AI
+*** TODO Add lazy city defenders.
+*** TODO Add lazy city attackers
+** Fix build queques
+*** TODO Coloring of the queques
+*** TODO Being able to actually see the queque
+*** TODO Limit buildings/units that should only be built in port cities
+** TODO Fix fog of war
+** TODO Allow cities to be captured
+Sometimes it takes a turn or two before tiles are revealed.
 
-* AI
-** TODO Add lazy city defenders.
-** TODO Add lazy city attackers
-
-* UI
-** TODO Fix coloring of build queques
-
-* Support
+* Eventually... (like really low priority...)
+** TODO Support android phones
 ** TODO Support blackberry devices
+** TODO Support iphones
+** TODO Support ipad
+** TODO Fancy terrain rendering
+Render each tile so that it's less blocky by taking into account surrounding territory.
+** TODO Add multiple AI "nationalities"
+Just add a few AI cities with different colors and units with matching colors.
