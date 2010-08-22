@@ -21,7 +21,9 @@ It crashes with the error:
 "Resume" gives you control of an enemy unit, but you can't see it.
 The desired behavior is that the game asks you if you want to change any of your cities production and then runs the AI till you produce a unit or it overruns you.
 
-Also was triggered by the following error even though not all units were dead.
+Also was triggered by the following error even though not all units were dead. (Possibly related to the removing of AI defense of a city; will look into. [Confirmed])
+Suspect RemoveDefenders()
+Fixed it, and it appears that this is no longer an issue.
 : Uncaught TypeError: Cannot read property 'player' of undefined (index.htm:980)
 : CombatNeighboringUnit (index.htm:980)
 : MoveUnitToDestination (index.htm:1028)

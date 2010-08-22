@@ -1183,7 +1183,7 @@ function AddDefenders(city) {
 }
 function RemoveDefenders(defenders) {
     for (var j = 0; j < defenders.length; j++) {
-	var x = Unit.shift();
+	var x = defenders.shift();
 	if (Console) console.log(defenders+" "+x+" "+Unit.indexOf(x));
 	if (Unit.indexOf(x) != -1) {
 	    DeleteUnit(Unit.indexOf(x));
