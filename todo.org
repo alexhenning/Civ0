@@ -1,4 +1,4 @@
-TODO for civ0
+TODO for Civ0
 
 * For 0.1 Functioning alpha
 ** AI

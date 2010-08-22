@@ -513,7 +513,7 @@ function Territory(terrain, row, col) {
 				{className: 'img', src: "unexplored.png"},
 				[['left', this.left], ['top', this.top], ['zIndex', 4]]);
     this.fogImg.onmouseover = function() {Toolbar.OnHover(this);};
-    this.fogImg.onclick = function() {i(row, col);};
+    this.fogImg.onclick = function() {handleInteraction(row, col);};
 }
 Territory.prototype.SetVisibility = function(visible) {
     if (!Boolean(this.fogImg)) {return;}
@@ -1761,15 +1761,15 @@ function KeyPressHandler(event) {
 
 	//movement OnPhone true = 123\n456\n789\n0 phone set up | OnPhone false = 789\n456\n123\n0 keyboard setup
 	//case "0": pass
-    case "1": if (OnPhone) {i(unit.row-1, unit.col-1);} else {i(unit.row+1, unit.col-1);} break;
-    case "2": if (OnPhone) {i(unit.row-1, unit.col);} else {i(unit.row+1, unit.col);} break;
-    case "3": if (OnPhone) {i(unit.row-1, unit.col+1);} else {i(unit.row+1, unit.col+1);} break;
-    case "4": i(unit.row, unit.col-1); break;
-    case "5": i(unit.row, unit.col); break;
-    case "6": i(unit.row, unit.col+1); break;
-    case "7": if (OnPhone) {i(unit.row+1, unit.col-1);} else {i(unit.row-1, unit.col-1);} break;
-    case "8": if (OnPhone) {i(unit.row+1, unit.col);} else {i(unit.row-1, unit.col);} break;
-    case "9": if (OnPhone) {i(unit.row+1, unit.col+1);} else {i(unit.row-1, unit.col+1);} break;
+    case "1": if (OnPhone) {handleInteraction(unit.row-1, unit.col-1);} else {handleInteraction(unit.row+1, unit.col-1);} break;
+    case "2": if (OnPhone) {handleInteraction(unit.row-1, unit.col);} else {handleInteraction(unit.row+1, unit.col);} break;
+    case "3": if (OnPhone) {handleInteraction(unit.row-1, unit.col+1);} else {handleInteraction(unit.row+1, unit.col+1);} break;
+    case "4": handleInteraction(unit.row, unit.col-1); break;
+    case "5": handleInteraction(unit.row, unit.col); break;
+    case "6": handleInteraction(unit.row, unit.col+1); break;
+    case "7": if (OnPhone) {handleInteraction(unit.row+1, unit.col-1);} else {handleInteraction(unit.row-1, unit.col-1);} break;
+    case "8": if (OnPhone) {handleInteraction(unit.row+1, unit.col);} else {handleInteraction(unit.row-1, unit.col);} break;
+    case "9": if (OnPhone) {handleInteraction(unit.row+1, unit.col+1);} else {handleInteraction(unit.row-1, unit.col+1);} break;
 
     case "d": DebugOn = !DebugOn; break;
     case "f": if (DebugOn) {FogOn = !FogOn; UpdateEntireMap();} break;
@@ -1941,7 +1941,7 @@ function EndOfTurn() {
     }
 }
 
-function i(Row, Col) {
+function handleInteraction(Row, Col) {
     if (GetRegion(Row, Col)) {
 	Unit[ActiveUnit].destinationRow=-1;
 	if ((Row==Unit[ActiveUnit].row) & (Col==Unit[ActiveUnit].col)) {
