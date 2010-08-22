@@ -2,15 +2,38 @@ TODO for civ0
 
 * For 0.1 Functioning alpha
 ** AI
-*** TODO Add lazy city defenders.
-*** TODO Add lazy city attackers
-** Fix build queques
-*** TODO Coloring of the queques
-*** TODO Being able to actually see the queque
-*** TODO Limit buildings/units that should only be built in port cities
-** TODO Fix fog of war
-** TODO Allow cities to be captured
+*** TODO [#B] Add lazy city defenders.
+*** TODO [#B] Add lazy city attackers
+** UI
+*** TODO [#A] When selecting a tech, the status bar should show a short description of it.
+It works in firefox, but not chromium?
+*** TODO [#C] When hovering over land while a settler is the active unit, the status bar should show relevent details.
+ie. "A city can't be built here" or "A city built here has the potential for 14 points (12f/0p/2t)"
+*** Fix build queques
+**** TODO [#C] Coloring of the queques
+**** DONE [#A] Being able to actually see the queque
+**** TODO [#B] Limit buildings/units that should only be built in port cities
+** TODO [#A] Fix fog of war
 Sometimes it takes a turn or two before tiles are revealed.
+** TODO [#A] On death of final unit, game gets screwy... Fix!
+It crashes with the error:
+: Uncaught TypeError: Cannot read property 'active' of undefined index.htm:1914 
+"Resume" gives you control of an enemy unit, but you can't see it.
+The desired behavior is that the game asks you if you want to change any of your cities production and then runs the AI till you produce a unit or it overruns you.
+
+Also was triggered by the following error even though not all units were dead.
+: Uncaught TypeError: Cannot read property 'player' of undefined (index.htm:980)
+: CombatNeighboringUnit (index.htm:980)
+: MoveUnitToDestination (index.htm:1028)
+: EndOfTurn (index.htm:1896)
+: Turn (index.htm:1886)
+: i (index.htm:1974)
+: KeyPressHandler (index.htm:1765)
+: (anonymous function) (index.htm:20)
+: onkeypress (index.htm:20)
+** TODO [#B] Allow cities to be captured
+** TODO [#C] Barracks doesn't actually work...
+Barracks should increase veterancy of built units; in reality it doesn't/
 
 * Eventually... (like really low priority...)
 ** TODO Support android phones

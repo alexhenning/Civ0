@@ -1,16 +1,16 @@
 <html><title>Civ 0--Civilization: Year 0, a JavaScript open-source implementation of a civilization-style game</title>
-     <style>
-     .img {
-     position: absolute;
-     height: 20px;
-     width: 20px;
+    <style>
+.img {
+    position: absolute;
+    height: 20px;
+    width: 20px;
  }
 .viewport {
-     overflow: hidden;
-     #position: relative;
-     position: absolute;
-     height: 20px;
-     width: 20px;
+    overflow: hidden;
+    #position: relative;
+    position: absolute;
+    height: 20px;
+    width: 20px;
  }
 .clipped {
      display: block;
@@ -48,7 +48,7 @@ function Distance(Row1, Col1, Row2, Col2) {
 function map (fun /*, lists*/) {
     if ((typeof fun != "function") || (arguments.length < 2))
 	throw new TypeError();
-
+    
     var len = arguments[1].length;
     var res = new Array(len);
     for (var i = 0; i < len; i++) {
@@ -1524,7 +1524,7 @@ function CreateCityBuildQueque(Row,Col,C) {
 
     City[C].canBuild = CreateElement('div', City[C].queque,
 				     {id: City[C].name + '_canbuild'},
-				     [['maxHeight', '50%'], ['width', '40px'], ['overflowY', 'auto'], ['display', 'none']]);;
+				     [['width', '40px'], ['overflowY', ''], ['display', 'none']]);;
 				     //[['width', '60px'], ['overflowY', 'scroll'], ['display', 'none'], ['position', 'relative'], ['top', '20px'], ['left', '-20px']]);;
 
     var tile = Region[Row][Col].fogImg;
