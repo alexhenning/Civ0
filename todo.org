@@ -1,20 +1,7 @@
-TODO for Civ0
+sTODO for Civ0
 
 * For 0.1 Functioning alpha
-** AI
-*** TODO [#B] Add lazy city defenders.
-*** TODO [#B] Add lazy city attackers
-** UI
-*** TODO [#A] When selecting a tech, the status bar should show a short description of it.
-It works in firefox, but not chromium?
-*** TODO [#C] When hovering over land while a settler is the active unit, the status bar should show relevent details.
-ie. "A city can't be built here" or "A city built here has the potential for 14 points (12f/0p/2t)"
-*** Fix build queques
-**** TODO [#C] Coloring of the queques
-**** DONE [#A] Being able to actually see the queque
-**** TODO [#B] Limit buildings/units that should only be built in port cities
-** TODO [#A] Fix fog of war
-Sometimes it takes a turn or two before tiles are revealed.
+At this point we should focus on anything that either makes the game unplayable so that the game is playable. *All else is secondary*
 ** TODO [#A] On death of final unit, game gets screwy... Fix!
 It crashes with the error:
 : Uncaught TypeError: Cannot read property 'active' of undefined index.htm:1914 
@@ -33,9 +20,39 @@ Fixed it, and it appears that this is no longer an issue.
 : KeyPressHandler (index.htm:1765)
 : (anonymous function) (index.htm:20)
 : onkeypress (index.htm:20)
+
+Also triggered by killing all of my units, by having them fight each other.
+: Uncaught TypeError: Cannot read property 'row' of undefined (index.htm:832)
+: DeleteUnit (index.htm:832)
+: Combat (index.htm:902)
+: handleInteraction (index.htm:1980)
+: KeyPressHandler (index.htm:1781)
+: (anonymous function) (index.htm:20)
+: onkeypress (index.htm:21)
+** TODO [#A] Fix fog of war
+Sometimes it takes a turn or two before tiles are revealed.
+** UI
+*** TODO [#A] When selecting a tech, the status bar should show a short description of it.
+It works in firefox, but not chromium?
+
+Try a new event on the hovering over of tech options. I'll look one up when I land.
+*** TODO [#C] When hovering over land while a settler is the active unit, the status bar should show relevent details.
+ie. "A city can't be built here" or "A city built here has the potential for 14 points (12f/0p/2t)"
+*** Fix build queques
+**** TODO [#C] Coloring of the queques
+**** DONE Being able to actually see the queque
+**** TODO [#B] Limit buildings/units that should only be built in port cities
+** AI
+*** TODO [#B] Add lazy city defenders.
+Maybe done?
+*** TODO [#B] Add lazy city attackers
+Not done?
 ** TODO [#B] Allow cities to be captured
-** TODO [#C] Barracks doesn't actually work...
-Barracks should increase veterancy of built units; in reality it doesn't/
+Done?
+** DONE Barracks doesn't actually work...
+Barracks should increase veterancy of built units; in reality it doesn't.
+
+Didn't realize it's effect was random, and had really bad luck apparently.
 
 * Eventually... (like really low priority...)
 ** TODO Support android phones

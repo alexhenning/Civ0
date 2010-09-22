@@ -1506,10 +1506,20 @@ function cityChangeOwnership(C) {
 }
 
 function BuildUnit(T, C) {
-    Unit.push({"type": T, "row": City[C].row, "col": City[C].col, "movement": Product[T].mobility, "health": Product[T].health, "active": true, "player": City[C].player, "city": C, "TroopshipClass": TroopshipClass, "veterancy": Rand(City[C].veterancy[Product[City[C].product].kind])/10+0.9});
+    Unit.push({"type": T,
+	       "row": City[C].row,
+	       "col": City[C].col,
+	       "movement": Product[T].mobility,
+	       "health": Product[T].health,
+	       "active": true,
+	       "player": City[C].player,
+	       "city": C,
+	       "TroopshipClass": TroopshipClass,
+	       "veterancy": Rand(City[C].veterancy[Product[City[C].product].kind])/10+0.9});
     AIUnitReserve += ToughnessFactor;
 }
 
+// TODO: Clean up with [css]classes
 function CreateCityBuildQueque(Row,Col,C) {
     var cities = document.getElementById("cities");
     City[C].queque = CreateElement('div', cities, {id: City[C].name + '_queque'}, [['cssFloat', 'left'], ['width', '20px'],  ['zIndex', 5]]);
@@ -1689,7 +1699,7 @@ function ForCitiesWith(Building, Code) {
 /* UI */
 
 var ActiveUnit = 0;
-var OnPhone = true;
+var OnPhone = false;
 var FocusOnTech = true;
 var DebugOn = false;
 var ShowAll = false;
