@@ -597,6 +597,59 @@ function SetTechHelp() {
 }
 
 
+/* Perlin Noise */
+// Perlin noise is a method for generating smooth noise.
+// We will use it in our map generation. See:
+// http://webstaff.itn.liu.se/~stegu/TNM022-2005/perlinnoiselinks/perlin-noise-math-faq.html
+// http://www.noisemachine.com/talk1/
+
+var gradients = {}
+
+function GetGradient(p) {
+    var g = gradients[p];
+    if (g == undefined) {
+	gradients[p] = GetRandomVector();
+	return gradients[p];
+    }
+    return g;
+}
+
+function GetRandomVector() {
+    var v = [(2 * Math.random()) -1, (2 * Math.random()) -1];
+    while (v[0]*v[0] + v[1]*v[1] > 1) {
+	v = [(2 * Math.random()) -1, (2 * Math.random()) -1];
+    }
+    return v;
+}
+
+function SCurve(t) {
+    return t * t * (3 - (2 * t));
+}
+
+function Lerp(t, a, b) {
+    return a + t * (b - a);
+}
+
+function PerlinNoise(x, y) {
+    var w = Math.floor(x)
+    var h =  Math.floor(y)
+    
+    var grid = [[w, h], [w, h+1], [w+1, h], [w+1, h+1]]
+    var gradients = grid.map(GetGradient);
+    var vectors = grid.map(function(p) {return [x-p[0], y-p[1]]})
+
+    var s = gradients[0][0]*vectors[0][0] + gradients[0][1]*vectors[0][1];
+    var t = gradients[1][0]*vectors[1][0] + gradients[1][1]*vectors[1][1];
+    var u = gradients[2][0]*vectors[2][0] + gradients[2][1]*vectors[2][1];
+    var v = gradients[3][0]*vectors[3][0] + gradients[3][1]*vectors[3][1];
+
+    var curve_x = SCurve(x - w);
+    var a = Lerp(curve_x, s, t);
+    var b = Lerp(curve_x, u, v);
+    var curve_y = SCurve(y - h);
+    return Lerp(curve_y, a, b)
+}
+
 /* Regions */
 
 function TerrainAtLatitude(Row) {
@@ -659,6 +712,21 @@ function GenerateMap(Region) {
 	    Region[Row][Col] = new Territory(Ocean, Row, Col); // {terrain: Ocean, unit: -1, city: -1};
 	}
     }
+
+    var startLocs = [];
+    for (Row=0; Row<MaxRow; Row++) {
+	for (Col=0; Col<MaxCol; Col++) {
+	    if (PerlinNoise(Row/10, Col/10) > .11) {
+		Region[Row][Col].terrain = TerrainAtLatitude(Row);
+		startLocs.push([Row, Col])
+	    }
+	}
+    }
+
+    var startLoc = startLocs[Math.round(Math.random() * (startLocs.length - 1))];
+    StartRow = startLoc[0]
+    StartCol = startLoc[1]
+    
     // glaciers
     for (Col=0; Col<MaxCol; Col++) {
 	Region[0][Col].terrain = Glacier;
@@ -671,44 +739,6 @@ function GenerateMap(Region) {
 	Region[MaxRow-1][Col].terrain = Glacier;
     }
 
-
-    Land1 = Rand(6)+5;
-    LandEnd1 = Land1+Rand(5)+Rand(5);
-    LandOffset2 = Rand(6)+10;
-    Land2 = LandEnd1+LandOffset2;
-    LandEnd2 = Math.min(Land2+Rand(5)+Rand(5),MaxCol);
-    // insert a channel at the narrowest point
-    NarrowestWidth = MaxCol;
-    NarrowestRow = MaxRow;
-    for (Row=1; Row<MaxRow-3; Row++) {
-	for (Col=Land1; Col<=LandEnd1; Col++) {
-	    if (Col < MaxCol) {Region[Row][Col].terrain = TerrainAtLatitude(Row);}
-	}
-	if (Row>Rand(4)) {
-	    for (Col=Land2; Col<=LandEnd2; Col++) {
-		if (Col < MaxCol) {Region[Row][Col].terrain = TerrainAtLatitude(Row);}
-	    }
-	    if ((Row>4) & (LandEnd1-Land1>=2) & (StartRow==0)) {
-		StartRow = Row;
-		StartCol = Land1+Rand(LandEnd1-Land1-1);
-	    }
-	}
-	Land1 = Math.max(Land1+Rand(5)-3,1);
-	LandEnd1 = LandEnd1+Rand(3)-2;
-	if (LandEnd1<Land1-1) {
-	    LandEnd1=Land1+Rand(5)+5;
-	    NarrowestRow=Row;
-	}
-	if ((Row>3+Rand(3))&&(LandEnd1-Land1<NarrowestWidth)) {
-	    NarrowestWidth=LandEnd1-Land1;
-	    NarrowestRow=Row;
-	}
-	Land2 = LandEnd1+LandOffset2+Rand(3)-2;
-	LandEnd2 = Math.min(LandEnd2+Rand(5)-3,MaxCol);
-    }
-    for (Col=0; Col<MaxCol/2; Col++) {
-	Region[NarrowestRow][Col].terrain = Ocean;
-    }
 
     for (Row=0; Row<MaxRow; Row++) {
 	for (Col=0; Col<MaxCol; Col++) {
@@ -2005,8 +2035,6 @@ for (X=Ocean; X<=Mountains; X++) {
     document.write("<img style='display:none' src="+Terrain[X].symbol+".png />");
 }
 document.write("<img style='display:none' src=city.png />");
-
-
 
 for (Row=StartRow-1; Row<=StartRow+1; Row++) {
     for (Col=StartCol-1; Col<=StartCol+2; Col++) {
