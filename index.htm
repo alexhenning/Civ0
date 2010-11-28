@@ -2046,7 +2046,9 @@ document.write("<img style='display:none' src=city.png />");
 
 for (Row=StartRow-1; Row<=StartRow+1; Row++) {
     for (Col=StartCol-1; Col<=StartCol+2; Col++) {
-	Region[Row][Col].SetVisibility(true);
+	if (Region[Row] && Region[Row][Col]) {
+	    Region[Row][Col].SetVisibility(true);
+	}
     }
 }
 
