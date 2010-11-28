@@ -726,7 +726,7 @@ function GenerateMap(Region) {
 	for (Col=0; Col<MaxCol; Col++) {
 	    if (PerlinNoise(Row/10, Col/10) > .11) {
 		Region[Row][Col].terrain = TerrainAtLatitude(Row);
-		startLocs.push([Row, Col])
+		if (Col != (MaxCol-1)) { startLocs.push([Row, Col]); }
 	    }
 	}
     }
