@@ -1,5 +1,7 @@
-<html><title>Civ 0--Civilization: Year 0, a JavaScript open-source implementation of a civilization-style game</title>
-    <style>
+<html>
+    <head>
+      <title>Civ 0</title>
+      <style>
 .img {
     position: absolute;
     height: 20px;
@@ -16,7 +18,11 @@
      display: block;
      position: relative;
  }
-</style>
+      </style>
+      <!-- Custom IOS Settings TODO:Change icon..-->
+      <link rel="apple-touch-icon" href="https://github.com/alexhenning/Civ0/raw/master/city.png">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+    </head>
     <body id="body" onload="Toolbar.OnResize()" onresize="Toolbar.OnResize()" onkeypress="KeyPressHandler(event)" style="min-width: 600px; min-height: 510px; height: 100%; padding-top: 30px; margin: 0px;">
 
      <div id="controlbar" style="font-size: 16px; color: black; background-color: white; padding 2px; position: fixed; left: 0px; right: 0px; top: 0px; height: 30px; max-width: 600px; z-index: 5;">
