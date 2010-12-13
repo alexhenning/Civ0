@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE HTML>
+<html manifest="civ0.manifest">
     <head>
       <title>Civ 0</title>
       <style>
@@ -24,6 +25,8 @@
       <meta name="apple-mobile-web-app-capable" content="yes">
       <meta name="viewport" content="maximum-scale=5.0, initial-scale=2.0, user-scalable=yes">
 
+      <!-- HTLM5 Nonsense -->
+      
     </head>
     <body id="body" onload="Toolbar.OnResize()" onresize="Toolbar.OnResize()" onkeypress="KeyPressHandler(event)" style="min-width: 600px; min-height: 510px; height: 100%; padding-top: 30px; margin: 0px;">
 
@@ -524,9 +527,17 @@ function Territory(terrain, row, col) {
     this.fogImg.onclick = function() {handleInteraction(row, col);};
 }
 Territory.prototype.SetVisibility = function(visible) {
-    if (!Boolean(this.fogImg)) {return;}
-    if (visible) {this.fogImg.src = "visible.png";}
-    else {this.fogImg.src = "fog.png";}
+    if (!Boolean(this.fogImg) || (this.fogImg.src == "unexplored.png")) {
+	return;
+    } else if (visible) {
+	this.fogImg.src = "visible.png";
+    } else {
+	this.fogImg.src = "fog.png";
+	if (true) {
+	    this.nationalityImg.src = "visible.png";
+	    this.unitImg.src = "visible.png";
+	}
+    }
 };
 Territory.prototype.SetUnit = function(unit, focus) {
     if (focus) {this.nationalityImg.src = "active.png";}
@@ -972,40 +983,47 @@ function MoveUnit(U,Row,Col) {
 	Unit[U].col = Col;
 	Unit[U].movement = Math.max(0,Unit[U].movement-Terrain[Region[Row][Col].terrain].movementCost);
 	Region[Row][Col].unit = U;
-    }
-    var Barbarian=-1;
-    for (A=-1; A<=1; A++) {
-	for (B=-1; B<=1; B++) {
-	    if (GetRegion(Row+A, Col+B)) {
-		RegionImage(Row+A, Col+B, false);
-		//alert(Region[X+A][Y+B].terrain);
-		var S = 'p'+(Row+A)+'_'+(Col+B);
-		if (((A!=0)||(B!=0)) && (Unit[U].player) && GetRegion(Row+A, Col+B) && !Region[Row+A][Col+B].IsExplored() && ((Region[Row+A][Col+B].terrain!=Ocean)||(Rand(10)==1)) && (Rand(Math.abs(Row-StartRow))+Rand(3)>10)) {
-		    // Barbarians
-		    Unit.push({type: Rand(4)+1, row: Row+A, col: Col+B, movement: 0, active: false, player: false, city: -1, health: 10, TroopshipClass: Math.min(Transport,TroopshipClass+Rand(2)-1), veterancy: 1+(Rand(2)-1)/10});
-		    var U = Unit.length-1;
-		    Region[Row+A][Col+B].unit = U;
-		    Unit[U].Think = AttackNearestEnemy(Rand(5));
-		    Unit[U].active = true;
-		}
-		if (Unit[U].player){
+	var Barbarian=-1;
+	for (A=-1; A<=1; A++) {
+	    for (B=-1; B<=1; B++) {
+		if (GetRegion(Row+A, Col+B)) {
 		    RegionImage(Row+A, Col+B, false);
-		    Region[Row+A][Col+B].SetVisibility(true);
-		}
-		if (!LostAtSea && (Unit[U].type==Settler)) {
-		    Region[Row+A][Col+B].SetTitle = CitySiteString(Row+A,Col+B);
-		}
-		var C = Region[Row+A][Col+B].city;
-		if (C != -1 && !cityHasDefenders(C)) {
-		    cityChangeOwnership(C);
+		    //alert(Region[X+A][Y+B].terrain);
+		    var S = 'p'+(Row+A)+'_'+(Col+B);
+		    if (((A!=0)||(B!=0)) && (Unit[U].player) && GetRegion(Row+A, Col+B) && !Region[Row+A][Col+B].IsExplored() && ((Region[Row+A][Col+B].terrain!=Ocean)||(Rand(10)==1)) && (Rand(Math.abs(Row-StartRow))+Rand(3)>10)) {
+			// Barbarians
+			Unit.push({type: Rand(4)+1, row: Row+A, col: Col+B, movement: 0, active: false, player: false, city: -1, health: 10, TroopshipClass: Math.min(Transport,TroopshipClass+Rand(2)-1), veterancy: 1+(Rand(2)-1)/10});
+			var U = Unit.length-1;
+			Region[Row+A][Col+B].unit = U;
+			Unit[U].Think = AttackNearestEnemy(Rand(5));
+			Unit[U].active = true;
+		    }
+		    if (Unit[U].player){
+			Region[Row+A][Col+B].SetVisibility(true);
+			RegionImage(Row+A, Col+B, false);
+		    }
+		    if (!LostAtSea && (Unit[U].type==Settler)) {
+			Region[Row+A][Col+B].SetTitle = CitySiteString(Row+A,Col+B);
+		    }
+		    var C = Region[Row+A][Col+B].city;
+		    if (C != -1 && !cityHasDefenders(C)) {
+			cityChangeOwnership(C);
+		    }
 		}
 	    }
 	}
+	if ((Unit[U].player) && (Barbarian!=-1) && (Unit[Barbarian].health>=10) && (Math.abs(Row-StartRow)>Math.abs(OldRow-StartRow))) {
+	    RegionImage(Row, Col, true);
+	    Combat(Barbarian,U,"Ambushed by a barbarian "+Product[Unit[Barbarian].type].name+"! ");
+	}
+	if (Console) {
+	    if (Unit[U] == Region[Unit[U].row][Unit[U].col]) console.error("Unit "+U+": location=("+Unit[U].row+", "+Unit[U].col+")")
+	    //	else console.log("Unit "+U+": location=("+Unit[U].row+", "+Unit[U].col+")")
+	}
     }
-    if ((Unit[U].player) && (Barbarian!=-1) && (Unit[Barbarian].health>=10) && (Math.abs(Row-StartRow)>Math.abs(OldRow-StartRow))) {
-	RegionImage(Row, Col, true);
-	Combat(Barbarian,U,"Ambushed by a barbarian "+Product[Unit[Barbarian].type].name+"! ");
-    }
+    
+
+    
     RegionImage(Row, Col, false);
 }
 
@@ -1912,7 +1930,7 @@ function ChangeWonder(value) {
 
 function Turn() {
     //alert("starting loop with "+ActiveUnit+" and Unit.length of "+Unit.length);
-    do{
+    do {
 	//if (Console) console.log(Unit[ActiveUnit].movement+" "+!Unit[ActiveUnit].movement+" "+!UpdateView(ActiveUnit)+" "+ActiveUnit+" "+ActiveUnits);
 	if ((ActiveUnits.length && !Unit[ActiveUnit].movement)) {
 	    ActiveUnits.shift();
@@ -1921,6 +1939,8 @@ function Turn() {
 	//if (Console) console.info(": "+ActiveUnit+" "+ActiveUnits);
 	//alert("Active Unit = " + ActiveUnit);
 	if (ActiveUnits.length) {
+	    Row = Unit[ActiveUnit].row
+	    Col = Unit[ActiveUnit].col
 	    for (var A = -1; A <= 1; A++) {
 		for (var B = -1; B <= 1; B++) {
 		    if (GetRegion(Row+A, Col+B)) {
@@ -1933,7 +1953,7 @@ function Turn() {
 	} else {
 	    EndOfTurn()
 	}
-    }while(MoveUnitToDestination(ActiveUnit));
+    } while(MoveUnitToDestination(ActiveUnit));
 }
 
 function EndOfTurn() {
