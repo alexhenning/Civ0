@@ -29,7 +29,7 @@ Also triggered by killing all of my units, by having them fight each other.
 : KeyPressHandler (index.htm:1781)
 : (anonymous function) (index.htm:20)
 : onkeypress (index.htm:21)
-** TODO [#A] Fix fog of war
+** DONE [#A] Fix fog of war
 Sometimes it takes a turn or two before tiles are revealed.
 ** UI
 *** TODO [#A] When selecting a tech, the status bar should show a short description of it.
@@ -38,21 +38,24 @@ It works in firefox, but not chromium?
 Try a new event on the hovering over of tech options. I'll look one up when I land.
 *** TODO [#C] When hovering over land while a settler is the active unit, the status bar should show relevent details.
 ie. "A city can't be built here" or "A city built here has the potential for 14 points (12f/0p/2t)"
-*** Fix build queques
+*** DONE Fix build queques
 **** TODO [#C] Coloring of the queques
 **** DONE Being able to actually see the queque
 **** TODO [#B] Limit buildings/units that should only be built in port cities
+*** TODO Drop downs should change to gray when changed
+*** TODO Improve handling of all units being asleep
 ** AI
 *** TODO [#B] Add lazy city defenders.
 Maybe done?
 *** TODO [#B] Add lazy city attackers
 Not done?
-** TODO [#B] Allow cities to be captured
+** DONE [#B] Allow cities to be captured
 Done?
 ** DONE Barracks doesn't actually work...
 Barracks should increase veterancy of built units; in reality it doesn't.
 
 Didn't realize it's effect was random, and had really bad luck apparently.
+
 
 * Eventually... (like really low priority...)
 ** TODO Support android phones
