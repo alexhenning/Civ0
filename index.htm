@@ -19,6 +19,32 @@
      display: block;
      position: relative;
  }
+
+ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  }
+li {
+  float: left;
+  position: relative;
+  padding-right: 1em;
+  background: gray;
+  }
+
+li ul {
+  display: none;
+  position: absolute; 
+  top: 1em;
+  left: 0;
+  background: inherit;
+  }
+li:hover ul { display: block; }
+li ul li {
+    background: inherit;
+    width: 100%;
+}
+li ul li:hover { background: #00ff00; }
       </style>
       <!-- Custom IOS Settings TODO:Change icon..-->
       <link rel="apple-touch-icon" href="https://github.com/alexhenning/Civ0/raw/master/city.png">
@@ -32,8 +58,15 @@
 
      <div id="controlbar" style="font-size: 16px; color: black; background-color: white; padding 2px; position: fixed; left: 0px; right: 0px; top: 0px; height: 30px; max-width: 600px; z-index: 5;">
      <span style="float: left;">
-     <select id="techOptions"><option>City Building</option></select>
-     <select id="wonderOptions"><option>Nothing</option></select></span>
+     <ul>
+       <li id="techli"> <span id="techname">City Building</span>
+	 <ul id="techOptions"><li>City Building</li></ul>
+       </li>
+       <li id="wonderli"> <span id="wondername">None</span>
+	 <ul id="wonderOptions"><li>None</li></ul>
+       </li>
+     </ul>
+</span>
      <span id="cities" style="float: left; padding-left: 5px;"></span>
      <form><input id="resumeButton" type="button" style="float: right" value="Resume" onClick="ActiveUnit=0; for (U=0; U<Unit.length; U++) {Unit[U].active=true;Unit[U].destinationRow=-1}; Turn();"></form>
      </div>
@@ -1799,22 +1832,36 @@ var Toolbar = {
 var Controlbar = {
     controlbar: document.getElementById("controlbar"),
     techOptions: document.getElementById("techOptions"),
+    techLi: document.getElementById("techli"),
     wonderOptions: document.getElementById("wonderOptions"),
+    wonderLi: document.getElementById("wonderli"),
     cities: document.getElementById("cities"),
     HighlightTechOptions: function(bool) {
-	if (bool) {this.techOptions.style.backgroundColor = "red";}
-	else {this.techOptions.style.backgroundColor = "gray";}
+	if (bool) {this.techLi.style.backgroundColor = "red";}
+	else {this.techLi.style.backgroundColor = "gray";}
     },
     HighlightWonderOptions: function(bool) {
-	if (bool) {this.wonderOptions.style.backgroundColor = "red";}
-	else {this.wonderOptions.style.backgroundColor = "gray";}
+	if (bool) {this.wonderLi.style.backgroundColor = "red";}
+	else {this.wonderLi.style.backgroundColor = "gray";}
     },
     ClearOptions: function(select) {
-	for (var i = select.options.length-1; i >= 0; i--) {
-	    select.remove(i);
-	}
+	select.innerHTML = "";
     }
 };
+
+Controlbar.techLi.onmouseover = function() {
+    document.getElementById("techOptions").style.display = "block";
+}
+Controlbar.techLi.onmouseout = function() {
+    document.getElementById("techOptions").style.display = "none";
+}
+
+Controlbar.wonderLi.onmouseover = function() {
+    document.getElementById("wonderOptions").style.display = "block";
+}
+Controlbar.wonderLi.onmouseout = function() {
+    document.getElementById("wonderOptions").style.display = "none";
+}
 
 function KeyPressHandler(event) {
     var key = String.fromCharCode(event.which ? event.which : event.keyCode);
@@ -1849,7 +1896,6 @@ function KeyPressHandler(event) {
 }
 
 
-
 function MenuPrompt(Message, Menu) {
     for (X=0; X<Menu.length; X++) {
 	Message += (X+1)+". "+Menu[X].name+", ";
@@ -1877,20 +1923,28 @@ function NextTech() {
 	Controlbar.ClearOptions(Controlbar.techOptions);
 	for (X=AdvancedFlight; X<=Writing; X++) {
 	    if (!Tech[X].playerOwned & Tech[Tech[X].prereq1].playerOwned & Tech[Tech[X].prereq2].playerOwned) {
-		var o = new Option(Tech[X].name, X);
-		o.onclick = function() {ChangeTech(parseInt(this.value));}
-		o.onmouseover = function() {Toolbar.SetText(Tech[parseInt(this.value)].name+" "+Tech[parseInt(this.value)].help);};
-		Controlbar.techOptions.options.add(o);
+		var li = CreateElement('li',
+				       document.getElementById("techOptions"),
+				       {}, []);
+		li.innerHTML = Tech[X].name;
+		li.value = X
+		li.onclick = function() {ChangeTech(this.value);}
+		li.onmouseover = function() {
+		    Toolbar.SetText(Tech[this.value].name+" "+
+				    Tech[this.value].help);
+		};
 	    }
 	}
-	ChangeTech(parseInt(Controlbar.techOptions.options[0].value));
+	ChangeTech(Controlbar.techOptions.childNodes[0].value)
 	Controlbar.HighlightTechOptions(true);
     }
     CurrentTechCost = 5*TechCount;
 }
 
 function ChangeTech(value) {
+    document.getElementById("techOptions").style.display = "none";
     CurrentTech = value;
+    document.getElementById("techname").innerHTML = Tech[value].name;
     Controlbar.HighlightTechOptions(false);
     Controlbar.techOptions.focus();
 }
@@ -1911,18 +1965,29 @@ function NextWonder() {
 	Controlbar.ClearOptions(Controlbar.wonderOptions);
 	for (W=1; W<MaxWonder; W++) {
 	    if (!Wonder[W].player && Tech[Wonder[W].prereq].playerOwned && !Tech[Wonder[W].obsoleteBy].player) {
-		var o = new Option(Wonder[W].name, W);
-		o.onclick = function() {ChangeWonder(parseInt(this.value));}
-		o.onmouseover = function() {Toolbar.SetText(Wonder[parseInt(this.value)].name+" "+Wonder[parseInt(this.value)].help);};
-		Controlbar.wonderOptions.options.add(o);
+		var li = CreateElement('li',
+				       document.getElementById("wonderOptions"),
+				       {}, []);
+		li.innerHTML = Wonder[W].name;
+		li.value = W;
+		li.onclick = function() {ChangeWonder(this.value);}
+		li.onmouseover = function() {
+		    Toolbar.SetText(Wonder[this.value].name+" "+
+				    Wonder[this.value].help);
+		};
 	    }
 	}
-	if (Controlbar.wonderOptions.length) {ChangeWonder(parseInt(Controlbar.wonderOptions.options[0].value));}
+	if (Controlbar.wonderOptions.length > 0) {
+	    ChangeWonder(Controlbar.wonderOptions.childNodes[0].value);
+	}
+    
 	Controlbar.HighlightWonderOptions(true);
     }
 }
 
 function ChangeWonder(value) {
+    document.getElementById("wonderOptions").style.display = "none";
+    document.getElementById("wondername").innerHTML = Wonder[value].name;
     CurrentWonder = value;
     CurrentWonderCost = Wonder[CurrentWonder].cost;
     Controlbar.HighlightWonderOptions(false);
